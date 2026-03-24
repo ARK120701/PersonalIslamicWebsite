@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CS Projects — Abdurrahman Khan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1f3c;--navy-mid:#162d52;--navy-light:#1e3d6e;--gold:#c8952a;--gold-light:#e8b84b;--gold-pale:#f5d98a;--gold-dim:#8a6218;--white:#ffffff;--off-white:#f8f7f4;--slate:#e8edf5;--text-dark:#0d1f3c;--text-body:#2c3e5a;--text-muted:#5a6a85;--border:#d0d8e8;--shadow-sm:0 2px 8px rgba(13,31,60,.09);--shadow-md:0 6px 24px rgba(13,31,60,.13);--shadow-lg:0 16px 48px rgba(13,31,60,.18);}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.75;color:var(--text-body);background:var(--off-white);}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--slate);}::-webkit-scrollbar-thumb{background:var(--navy-light);}
+nav{position:sticky;top:0;z-index:100;background:var(--navy);border-bottom:3px solid var(--gold);padding:0 3rem;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.nav-brand{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;}
+.nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;display:flex;align-items:center;gap:.4rem;transition:color .2s;}
+.nav-back:hover{color:var(--gold-light);}
+.hero{background:linear-gradient(155deg,var(--navy) 0%,var(--navy-mid) 55%,var(--navy-light) 100%);padding:5rem 2rem 4.5rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='.6' fill='%23c8952a' opacity='.15'/%3E%3C/svg%3E");pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;}
+.hero-eyebrow{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:.5rem;}
+.hero-sub{font-size:1rem;color:rgba(255,255,255,.5);font-style:italic;margin-bottom:1.75rem;}
+.hero-rule{width:80px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto;}
+main{max-width:800px;margin:0 auto;padding:4rem 2rem 6rem;}
+.proj-entry{border-left:3px solid var(--gold-dim);padding:0 0 2.75rem 2rem;position:relative;}
+.proj-entry::before{content:'';position:absolute;left:-6px;top:.45rem;width:10px;height:10px;background:var(--gold);border-radius:50%;}
+.proj-entry:last-child{border-left-color:transparent;padding-bottom:0;}
+.proj-title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--navy);margin-bottom:.2rem;line-height:1.3;}
+.proj-context{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--gold-dim);margin-bottom:.8rem;letter-spacing:.03em;}
+.proj-desc{color:var(--text-body);font-size:.97rem;line-height:1.78;}
+.proj-links{display:flex;gap:.75rem;margin-top:.9rem;flex-wrap:wrap;}
+.proj-link{font-family:'EB Garamond',serif;font-size:.85rem;padding:.35rem .95rem;text-decoration:none;transition:all .18s;border:1px solid var(--border);}
+.proj-link.primary{background:var(--navy);color:var(--gold-pale);border-color:var(--navy);}
+.proj-link.primary:hover{background:var(--navy-light);}
+.proj-link.secondary{color:var(--text-body);}
+.proj-link.secondary:hover{background:var(--slate);}
+.proj-del{background:none;border:none;color:var(--border);cursor:pointer;font-size:.85rem;margin-left:.6rem;transition:color .18s;vertical-align:middle;}
+.proj-del:hover{color:#c0392b;}
+.add-section{margin-bottom:3.5rem;}
+.add-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.5rem;background:var(--navy);color:var(--gold-light);border:none;font-family:'EB Garamond',serif;font-size:.95rem;cursor:pointer;transition:background .18s;}
+.add-btn:hover{background:var(--navy-light);}
+.add-form{display:none;background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:2rem;box-shadow:var(--shadow-md);margin-top:1rem;}
+.add-form.open{display:block;}
+.fr{margin-bottom:1rem;}
+.fr label{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin-bottom:.35rem;font-weight:700;}
+.fr input,.fr textarea{width:100%;padding:.6rem .9rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:1rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.fr input:focus,.fr textarea:focus{border-color:var(--navy-light);}
+.fr textarea{resize:vertical;min-height:100px;}
+.btn-sub{padding:.75rem 2rem;background:var(--navy);color:var(--gold-light);border:none;cursor:pointer;font-family:'EB Garamond',serif;font-size:1rem;letter-spacing:.06em;transition:background .18s;}
+.btn-sub:hover{background:var(--navy-light);}
+.btn-cancel{padding:.75rem 1.5rem;background:transparent;color:var(--text-muted);border:1px solid var(--border);cursor:pointer;font-family:'EB Garamond',serif;font-size:1rem;margin-left:.5rem;transition:all .18s;}
+.btn-cancel:hover{background:var(--slate);}
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--text-muted);}
+.empty-state-icon{font-size:3rem;display:block;margin-bottom:1rem;}
+.admin-only{display:none!important;}body.admin-mode .admin-only{display:block!important;}
+body:not(.admin-mode) .proj-del{display:none!important;}
+.admin-badge{display:none;position:fixed;top:70px;right:1rem;background:var(--gold);color:var(--navy);font-family:'EB Garamond',serif;font-size:.72rem;font-weight:700;padding:.3rem .9rem;letter-spacing:.07em;z-index:999;cursor:pointer;box-shadow:var(--shadow-md);text-transform:uppercase;}
+.admin-badge.visible{display:block;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(13,31,60,.95);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(5px);}
+.overlay.open{display:flex;}
+.auth-box{background:var(--white);width:100%;max-width:380px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);}
+.auth-head{background:var(--navy);padding:1.4rem 2rem;text-align:center;}
+.auth-seal{width:50px;height:50px;border:2px solid rgba(200,149,42,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .65rem;font-size:1.2rem;}
+.auth-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;}
+.auth-body{padding:1.6rem 2rem 2rem;}
+.auth-error{display:none;color:#c0392b;font-size:.82rem;margin-bottom:.75rem;padding:.45rem .75rem;background:#fff0f0;border-left:3px solid #c0392b;}
+.auth-error.show{display:block;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:2.8rem!important;}
+.pw-eye{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;}
+.auth-hint{font-size:.74rem;color:var(--text-muted);text-align:center;margin-top:.75rem;font-style:italic;}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--gold-pale);border-left:3px solid var(--gold);padding:.75rem 1.5rem;font-family:'EB Garamond',serif;font-size:.95rem;z-index:9999;box-shadow:var(--shadow-lg);transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+@media(max-width:680px){nav{padding:0 1rem;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-back">← Abdurrahman Khan</a>
+  <span class="nav-brand">CS Projects</span>
+  <button onclick="requireAdmin()" style="background:none;border:none;cursor:pointer;padding:.4rem .6rem;opacity:0;font-size:.7rem;color:rgba(255,255,255,.15);transition:opacity .2s;" onmouseenter="this.style.opacity='.4'" onmouseleave="this.style.opacity='0'">⚙</button>
+</nav>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Computer Science · CUNY Queens College</div>
+    <h1>Projects</h1>
+    <p class="hero-sub">B.A. Computer Science · Graduated Cum Laude · GPA 3.67 · Completed January 2026</p>
+    <div class="hero-rule"></div>
+  </div>
+</div>
+<main>
+  <div class="add-section admin-only">
+    <button class="add-btn" onclick="toggleForm()">＋ Add Project</button>
+    <div class="add-form" id="add-form">
+      <div class="fr"><label>Project Title</label><input type="text" id="pj-title" placeholder="e.g. Post-Quantum Key Exchange Implementation" /></div>
+      <div class="fr"><label>Course / Context</label><input type="text" id="pj-context" placeholder="e.g. CS 489 — Post-Quantum Cryptography · Queens College" /></div>
+      <div class="fr"><label>Description</label><textarea id="pj-desc" placeholder="Describe the project — what it does, how it was built, what you learned…"></textarea></div>
+      <div class="fr"><label>GitHub Link (optional)</label><input type="url" id="pj-github" placeholder="https://github.com/..." /></div>
+      <div class="fr"><label>Demo / Report Link (optional)</label><input type="url" id="pj-demo" placeholder="https://..." /></div>
+      <button class="btn-sub" onclick="addProject()">Save Project</button>
+      <button class="btn-cancel" onclick="toggleForm()">Cancel</button>
+    </div>
+  </div>
+  <div id="proj-list"></div>
+</main>
+<footer style="background:var(--navy);border-top:3px solid rgba(200,149,42,.3);text-align:center;padding:2.5rem 2rem;">
+  <p style="font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;margin-bottom:.3rem;">Abdurrahman Khan</p>
+  <p style="font-size:.8rem;color:rgba(255,255,255,.3);">Computer Science Portfolio · CUNY Queens College</p>
+  <p style="margin-top:.5rem;"><a href="index.html" style="color:rgba(200,149,42,.6);font-size:.82rem;text-decoration:none;">← Return to Main Site</a></p>
+</footer>
+<div class="overlay" id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-head"><div class="auth-seal">🔐</div><div class="auth-title">Admin Access</div></div>
+    <div class="auth-body">
+      <div class="auth-error" id="auth-error">Incorrect password.</div>
+      <div class="fr"><label>Password</label><div class="pw-wrap"><input type="password" id="auth-pw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')submitLogin()" /><button class="pw-eye" onclick="togglePw()">👁</button></div></div>
+      <button class="btn-sub" style="width:100%;" onclick="submitLogin()">Sign In</button>
+      <button style="width:100%;padding:.75rem;background:transparent;color:var(--text-muted);border:1px solid var(--border);cursor:pointer;font-family:'EB Garamond',serif;font-size:1rem;margin-top:.5rem;" onclick="closeOverlay()">Cancel</button>
+      <p class="auth-hint">Access via <strong>Ctrl+Shift+A</strong></p>
+    </div>
+  </div>
+</div>
+<div class="admin-badge" id="admin-badge" onclick="adminLogout()">⚙ Admin — Sign Out</div>
+<div class="toast" id="toast"></div>
+<script>
+const ADMIN_PASSWORD='admin123';
+const S={get:k=>{try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[];}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+const DEF_PROJECTS = [
+  {
+    title: "8 Queens Algorithm",
+    context: "C++ · January 2023",
+    desc: "• Implemented a C++ algorithm to efficiently calculate all 92 solutions to the 8 Queens Problem using backtracking.\n• Implemented efficient algorithms while developing 6 variants of the 8 Queens Problem, including 2D, 1D with goto, 1D without goto, dummy 8 queens, N Queens, and fancy queens.",
+    github: "", demo: ""
+  },
+  {
+    title: "Surah Visualizer App",
+    context: "Node.js · OAuth 2.0 · Quran API",
+    desc: "• Built a Node.js HTTP server integrating Dribbble OAuth 2.0 and the Quran API, dynamically rendering visual and textual content based on user-selected Surah numbers.\n• Implemented a multi-layer caching system (tokens, API responses, disk persistence, gzip handling) to optimize performance and reduce external API calls.",
+    github: "", demo: ""
+  },
+  {
+    title: "Expense Tracker",
+    context: "JavaScript · React · Firebase",
+    desc: "• A web application built with JavaScript, React, and Firebase, designed to help users manage and track their expenses in real-time. Features a responsive, user-friendly interface with secure user authentication, allowing for easy input, categorisation, and editing of transactions.\n• Includes real-time data synchronisation, budget tracking, data visualisation with charts, and personalised spending summaries.",
+    github: "", demo: ""
+  },
+  {
+    title: "Java Date Sorter",
+    context: "Java · GUI Application",
+    desc: "• Designed and implemented a Java GUI application to efficiently handle and sort a set of data, creating an intuitive user interface for data input and processing.\n• Transformed user-inputted data into Java Date objects and sorted in ascending or descending order based on their temporal values.",
+    github: "", demo: ""
+  },
+  {
+    title: "Inventory Management App",
+    context: "Next.js · React · Firebase · Full-Stack",
+    desc: "• Modern Full-Stack Web Application built with Next.js, React, Firebase, HTML, CSS, and JavaScript, providing a responsive, high-performance platform with server-side rendering, real-time updates, and secure user authentication.\n• Users can store detailed information about items including descriptions, categories, custom attributes, and quantity/inventory levels — enabling real-time stock management and tracking.",
+    github: "", demo: ""
+  },
+  {
+    title: "Containerized ML Inference API",
+    context: "Python · Flask · Docker",
+    desc: "• Designed and deployed a containerised REST API using Python, Flask, and Docker that serves real-time predictions, demonstrating backend service development and cloud-ready architecture.\n• Built a reproducible deployment pipeline by packaging application code, dependencies, and model artifacts into a Docker image and validating functionality through HTTP-based client requests.",
+    github: "", demo: ""
+  }
+];
+
+function renderProjects(){
+  const all=S.get('cs_projects').length?S.get('cs_projects'):DEF_PROJECTS;const list=document.getElementById('proj-list');
+  if(!all.length){list.innerHTML='<div class="empty-state"><span class="empty-state-icon">💻</span><p>No projects added yet.</p></div>';return;}
+  list.innerHTML=all.map((p,i)=>`<div class="proj-entry"><div class="proj-title">${p.title}<button class="proj-del" onclick="deleteProject(${i})" title="Remove">✕</button></div>${p.context?`<div class="proj-context">${p.context}</div>`:''}<p class="proj-desc">${(p.desc||'').replace(/\n/g,'<br>')}</p>${(p.github||p.demo)?`<div class="proj-links">${p.github?`<a class="proj-link primary" href="${p.github}" target="_blank" rel="noopener">GitHub →</a>`:''}${p.demo?`<a class="proj-link secondary" href="${p.demo}" target="_blank" rel="noopener">Demo / Report</a>`:''}</div>`:''}</div>`).join('');
+}
+function toggleForm(){const f=document.getElementById('add-form');f.classList.toggle('open');if(f.classList.contains('open')){['pj-title','pj-context','pj-desc','pj-github','pj-demo'].forEach(id=>document.getElementById(id).value='');}}
+function addProject(){
+  const title=document.getElementById('pj-title').value.trim();if(!title){toast('Please enter a project title.');return;}
+  const p={title,context:document.getElementById('pj-context').value.trim(),desc:document.getElementById('pj-desc').value.trim(),github:document.getElementById('pj-github').value.trim(),demo:document.getElementById('pj-demo').value.trim()};
+  const all=S.get('cs_projects');all.push(p);S.set('cs_projects',all);renderProjects();toggleForm();toast(`"${title}" added.`);
+}
+function deleteProject(i){if(!isAdmin()||!confirm('Remove this project?'))return;const all=S.get('cs_projects');all.splice(i,1);S.set('cs_projects',all);renderProjects();toast('Project removed.');}
+function isAdmin(){return sessionStorage.getItem('__admin')==='1';}
+function applyAdminState(){document.body.classList.toggle('admin-mode',isAdmin());document.getElementById('admin-badge').classList.toggle('visible',isAdmin());}
+function requireAdmin(){if(isAdmin())return;document.getElementById('auth-pw').value='';document.getElementById('auth-error').classList.remove('show');document.getElementById('auth-overlay').classList.add('open');setTimeout(()=>document.getElementById('auth-pw').focus(),120);}
+function submitLogin(){if(document.getElementById('auth-pw').value===ADMIN_PASSWORD){sessionStorage.setItem('__admin','1');document.getElementById('auth-overlay').classList.remove('open');applyAdminState();renderProjects();toast('Admin access granted.');}else{document.getElementById('auth-error').classList.add('show');document.getElementById('auth-pw').value='';document.getElementById('auth-pw').focus();}}
+function closeOverlay(){document.getElementById('auth-overlay').classList.remove('open');}
+function adminLogout(){if(!confirm('Sign out?'))return;sessionStorage.removeItem('__admin');applyAdminState();renderProjects();toast('Signed out.');}
+function togglePw(){const i=document.getElementById('auth-pw');i.type=i.type==='password'?'text':'password';}
+function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000);}
+document.addEventListener('DOMContentLoaded',()=>{
+  applyAdminState();renderProjects();
+  document.getElementById('auth-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOverlay();});
+  document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();requireAdmin();}});
+});
+</script>
+</body>
+</html>

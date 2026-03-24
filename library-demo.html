@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Library Database — Interactive Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0d1f3c; --navy-mid:#162d52; --navy-light:#1e3d6e;
+  --gold:#c8952a; --gold-light:#e8b84b; --gold-pale:#f5d98a; --gold-dim:#8a6218;
+  --white:#ffffff; --off-white:#f8f7f4; --cream:#f2efe8;
+  --text-dark:#0d1f3c; --text-body:#2c3e5a; --text-muted:#5a6a85;
+  --border:#d0d8e8; --green:#27ae60; --red:#c0392b; --blue:#2980b9;
+  --shadow-sm:0 2px 8px rgba(13,31,60,.09); --shadow-md:0 6px 24px rgba(13,31,60,.14);
+  --shadow-lg:0 16px 48px rgba(13,31,60,.20);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:var(--text-body);background:var(--off-white);}
+
+/* ── HEADER ── */
+.site-header{background:var(--navy);border-bottom:3px solid var(--gold);padding:1.2rem 2rem;display:flex;align-items:center;gap:1rem;}
+.site-header h1{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1.2rem;font-weight:700;}
+.demo-badge{background:var(--gold);color:var(--navy);font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .6rem;border-radius:2px;margin-left:.5rem;}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - 58px);}
+.panel{padding:2rem;}
+.panel-left{background:var(--off-white);border-right:1px solid var(--border);}
+.panel-right{background:#0a1628;}
+
+/* ── SECTION HEADERS ── */
+.panel-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);}
+.panel-title-right{color:var(--gold-light);border-bottom-color:rgba(200,149,42,.3);}
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--navy);color:var(--gold-pale);font-size:.65rem;font-weight:700;border-radius:50%;flex-shrink:0;}
+.step-badge-gold{background:var(--gold);color:var(--navy);}
+
+/* ── FLOW DIAGRAM ── */
+.flow{display:flex;flex-direction:column;gap:.5rem;margin-bottom:2rem;}
+.flow-step{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 1rem;background:var(--white);border:1px solid var(--border);border-left:3px solid var(--gold-dim);position:relative;}
+.flow-step.active{border-left-color:var(--gold);background:rgba(200,149,42,.04);}
+.flow-step.done{border-left-color:var(--green);background:rgba(39,174,96,.04);}
+.flow-icon{font-size:1.1rem;flex-shrink:0;margin-top:.1rem;}
+.flow-label{font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:.1rem;}
+.flow-desc{font-size:.78rem;color:var(--text-muted);line-height:1.4;}
+.flow-arrow{text-align:center;color:var(--border);font-size:.9rem;line-height:1;}
+
+/* ── UPLOAD FORM ── */
+.upload-box{border:2px dashed var(--border);padding:1.5rem;text-align:center;background:var(--white);margin-bottom:1.25rem;cursor:pointer;transition:all .2s;position:relative;}
+.upload-box:hover,.upload-box.drag{border-color:var(--gold);background:rgba(200,149,42,.04);}
+.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.upload-icon{font-size:1.8rem;display:block;margin-bottom:.35rem;}
+.upload-label{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--navy);}
+.upload-hint{font-size:.72rem;color:var(--text-muted);font-style:italic;margin-top:.2rem;}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem;}
+.form-grid.full{grid-template-columns:1fr;}
+.fr label{display:block;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.25rem;font-weight:700;}
+.fr input,.fr select,.fr textarea{width:100%;padding:.5rem .75rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.9rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.fr input:focus,.fr select:focus{border-color:var(--gold);}
+.btn-upload{width:100%;padding:.75rem;background:var(--gold);color:var(--navy);border:none;font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;cursor:pointer;letter-spacing:.06em;transition:background .18s;margin-top:.75rem;}
+.btn-upload:hover{background:var(--gold-light);}
+.btn-upload:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;}
+
+/* ── PROGRESS / STATUS ── */
+.status-bar{display:none;margin-top:.75rem;}
+.status-bar.show{display:block;}
+.progress-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:.4rem;}
+.progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;border-radius:2px;}
+.status-text{font-size:.75rem;color:var(--text-muted);font-style:italic;}
+.status-text.ok{color:var(--green);font-style:normal;font-weight:700;}
+.status-text.err{color:var(--red);}
+
+/* ── RIGHT PANEL (database view) ── */
+.db-tabs{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.1);}
+.db-tab{padding:.5rem 1rem;background:transparent;border:none;color:rgba(255,255,255,.4);font-family:'EB Garamond',serif;font-size:.82rem;cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;letter-spacing:.04em;}
+.db-tab.active{color:var(--gold-light);border-bottom-color:var(--gold);}
+
+/* ── TABLE ── */
+.db-table{width:100%;border-collapse:collapse;font-size:.72rem;}
+.db-table th{text-align:left;padding:.45rem .6rem;color:rgba(200,149,42,.7);font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;border-bottom:1px solid rgba(255,255,255,.08);font-weight:500;}
+.db-table td{padding:.45rem .6rem;border-bottom:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.75);font-family:'JetBrains Mono',monospace;font-size:.65rem;vertical-align:middle;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.db-table tr:hover td{background:rgba(255,255,255,.03);}
+.cell-id{color:rgba(200,149,42,.5);}
+.cell-url{color:#6ea8d8;max-width:90px;}
+.cell-topic{padding:.15rem .4rem;background:rgba(200,149,42,.15);color:var(--gold-pale);font-size:.58rem;border-radius:2px;}
+.cell-new{animation:rowFlash .8s ease;}
+@keyframes rowFlash{0%{background:rgba(200,149,42,.2);}100%{background:transparent;}}
+
+/* ── API CONSOLE ── */
+.api-console{background:#060f1e;border:1px solid rgba(255,255,255,.08);padding:1rem;margin-top:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;line-height:1.6;max-height:220px;overflow-y:auto;border-radius:2px;}
+.api-console::-webkit-scrollbar{width:4px;}
+.api-console::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);}
+.log-line{margin-bottom:.2rem;}
+.log-ts{color:rgba(255,255,255,.25);margin-right:.5rem;}
+.log-ok{color:#6dbf8a;}
+.log-info{color:#6ea8d8;}
+.log-warn{color:#e8b84b;}
+.log-err{color:#e07b7b;}
+.log-dim{color:rgba(255,255,255,.35);}
+
+/* ── BOOK CARDS (preview) ── */
+.books-preview{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:1rem;}
+.book-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-top:2px solid var(--gold-dim);padding:.65rem .75rem;transition:all .18s;cursor:pointer;}
+.book-card:hover{border-top-color:var(--gold);background:rgba(255,255,255,.06);}
+.book-card-title{font-size:.75rem;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:.2rem;line-height:1.3;}
+.book-card-meta{font-size:.62rem;color:rgba(255,255,255,.35);font-style:italic;}
+.book-card-dl{display:inline-block;margin-top:.4rem;padding:.2rem .55rem;background:var(--gold);color:var(--navy);font-size:.6rem;font-weight:700;border:none;cursor:pointer;font-family:'JetBrains Mono',monospace;}
+.book-card-new{animation:cardPop .5s ease;}
+@keyframes cardPop{0%{transform:scale(.96);opacity:0;}100%{transform:scale(1);opacity:1;}}
+
+/* ── ARCHITECTURE DIAGRAM ── */
+.arch{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);margin-top:1.5rem;flex-wrap:wrap;}
+.arch-node{text-align:center;padding:.5rem .75rem;border:1px solid rgba(200,149,42,.3);background:rgba(200,149,42,.07);}
+.arch-node-label{font-size:.6rem;color:var(--gold-pale);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;}
+.arch-node-sub{font-size:.55rem;color:rgba(255,255,255,.3);margin-top:.1rem;}
+.arch-arrow{color:rgba(200,149,42,.4);font-size:.8rem;}
+
+/* ── EXPLAINER ── */
+.explainer{background:var(--white);border:1px solid var(--border);border-left:3px solid var(--gold);padding:1rem 1.25rem;margin-bottom:1.25rem;font-size:.82rem;}
+.explainer strong{color:var(--navy);font-weight:700;}
+.explainer code{font-family:'JetBrains Mono',monospace;font-size:.72rem;background:var(--cream);padding:.05rem .3rem;color:var(--navy-light);}
+
+.empty-db{text-align:center;padding:2rem 1rem;color:rgba(255,255,255,.2);font-style:italic;font-size:.8rem;}
+
+@media(max-width:900px){.layout{grid-template-columns:1fr;}.books-preview{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <h1>📚 Islamic Digital Library — Database Demo <span class="demo-badge">Interactive</span></h1>
+</div>
+
+<div class="layout">
+
+  <!-- ══ LEFT: UPLOAD PANEL ══ -->
+  <div class="panel panel-left">
+
+    <div class="panel-title">
+      <span class="step-badge step-badge-gold">1</span>
+      You Upload a PDF
+    </div>
+
+    <div class="explainer">
+      <strong>How it works:</strong> You drag a PDF here → it gets uploaded to <code>Cloudflare R2</code> (permanent storage) → the book details get saved to <code>Supabase</code> (your database) → it appears instantly in your library for anyone to download.
+    </div>
+
+    <!-- Upload zone -->
+    <div class="upload-box" id="upload-zone">
+      <input type="file" id="file-input" accept=".pdf" />
+      <span class="upload-icon">📄</span>
+      <div class="upload-label">Drag a PDF here or click to select</div>
+      <div class="upload-hint">Any PDF · Stored permanently on your server</div>
+    </div>
+
+    <!-- Form -->
+    <div class="form-grid">
+      <div class="fr">
+        <label>Book Title</label>
+        <input type="text" id="f-title" placeholder="e.g. Al-Hidāya Vol. 1" />
+      </div>
+      <div class="fr">
+        <label>Author</label>
+        <input type="text" id="f-author" placeholder="e.g. Imām al-Marghīnānī" />
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="fr">
+        <label>Topic</label>
+        <select id="f-topic">
+          <optgroup label="Fiqh">
+            <option value="fiqh-hanafi">Fiqh — Ḥanafī</option>
+            <option value="fiqh-maliki">Fiqh — Mālikī</option>
+            <option value="fiqh-shafi">Fiqh — Shāfiʿī</option>
+            <option value="fiqh-hanbali">Fiqh — Ḥanbalī</option>
+          </optgroup>
+          <option value="usool">Uṣūl al-Fiqh</option>
+          <option value="hadith">Ḥadīth</option>
+          <option value="tafsir">Tafsīr</option>
+          <option value="tajweed">Tajwīd</option>
+          <option value="qiraat">Qirāʾāt</option>
+          <option value="aqeedah">ʿAqīdah</option>
+          <option value="arabic">Arabic Language</option>
+          <option value="tasawwuf">Taṣawwuf</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="fr">
+        <label>Language</label>
+        <select id="f-lang">
+          <option value="arabic">Arabic</option>
+          <option value="english">English</option>
+          <option value="urdu">Urdu</option>
+          <option value="persian">Persian</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid full">
+      <div class="fr">
+        <label>Year / Date (optional)</label>
+        <input type="text" id="f-date" placeholder="e.g. d. 593 AH  ·  Imām al-Marghīnānī" />
+      </div>
+    </div>
+
+    <button class="btn-upload" id="upload-btn" onclick="simulateUpload()">⬆ Save to Library Database</button>
+
+    <!-- Progress -->
+    <div class="status-bar" id="status-bar">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="status-text" id="status-text">Uploading to Cloudflare R2…</div>
+    </div>
+
+    <!-- Flow steps -->
+    <div class="flow" id="flow" style="margin-top:1.75rem;">
+      <div class="flow-step" id="step-1">
+        <span class="flow-icon">📤</span>
+        <div><div class="flow-label">Step 1 — Upload to Cloudflare R2</div><div class="flow-desc">PDF file sent to your cloud storage bucket. Gets a permanent URL.</div></div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step" id="step-2">
+        <span class="flow-icon">🗄️</span>
+        <div><div class="flow-label">Step 2 — Save to Supabase Database</div><div class="flow-desc">Title, author, topic, language, and file URL saved to your database row.</div></div>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-step" id="step-3">
+        <span class="flow-icon">🌍</span>
+        <div><div class="flow-label">Step 3 — Live on Your Library</div><div class="flow-desc">Anyone visiting your site can now find and download the book instantly.</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ RIGHT: DATABASE + LIVE PREVIEW ══ -->
+  <div class="panel panel-right">
+
+    <div class="panel-title panel-title-right">
+      <span class="step-badge" style="background:rgba(200,149,42,.2);color:var(--gold-pale);">2</span>
+      What Gets Saved in Your Database
+    </div>
+
+    <div class="db-tabs">
+      <button class="db-tab active" onclick="switchTab('table',this)">📋 Database Table</button>
+      <button class="db-tab" onclick="switchTab('preview',this)">📚 Library Preview</button>
+      <button class="db-tab" onclick="switchTab('api',this)">⚡ API Log</button>
+    </div>
+
+    <!-- TABLE VIEW -->
+    <div id="tab-table">
+      <div id="db-empty" class="empty-db" style="display:none;">No books yet — upload one to see it appear here.</div>
+      <div style="overflow-x:auto;">
+        <table class="db-table" id="db-table">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>title</th>
+              <th>author</th>
+              <th>topic</th>
+              <th>lang</th>
+              <th>date</th>
+              <th>file_url</th>
+            </tr>
+          </thead>
+          <tbody id="db-body">
+            <tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,.2);font-style:italic;padding:1.5rem;">Upload a book to see it appear here →</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:.75rem;font-size:.6rem;color:rgba(255,255,255,.2);font-family:'JetBrains Mono',monospace;">
+        supabase → public.library_books · <span id="row-count">0</span> rows
+      </div>
+    </div>
+
+    <!-- LIBRARY PREVIEW -->
+    <div id="tab-preview" style="display:none;">
+      <div id="preview-empty" class="empty-db">Upload books to see them appear in your library.</div>
+      <div class="books-preview" id="books-preview"></div>
+    </div>
+
+    <!-- API LOG -->
+    <div id="tab-api" style="display:none;">
+      <div class="api-console" id="api-console">
+        <div class="log-line"><span class="log-ts">[ready]</span><span class="log-dim">Waiting for upload… Demo uses simulated calls.</span></div>
+        <div class="log-line"><span class="log-ts">[info]</span><span class="log-info">Real setup: R2 bucket + Supabase project takes ~20 min.</span></div>
+      </div>
+    </div>
+
+    <!-- Architecture diagram -->
+    <div class="arch">
+      <div class="arch-node">
+        <div class="arch-node-label">YOUR BROWSER</div>
+        <div class="arch-node-sub">Upload PDF + Metadata</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-node-label">CLOUDFLARE R2</div>
+        <div class="arch-node-sub">PDF File Storage · ∞ GB</div>
+      </div>
+      <div class="arch-arrow">+</div>
+      <div class="arch-node">
+        <div class="arch-node-label">SUPABASE DB</div>
+        <div class="arch-node-sub">Title · Author · URL · Topic</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-node-label">YOUR LIBRARY</div>
+        <div class="arch-node-sub">Browse · Search · Download</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let books = [];
+let rowId = 1;
+let currentTab = 'table';
+
+const topicLabels = {
+  'fiqh-hanafi':'Fiqh — Ḥanafī','fiqh-maliki':'Fiqh — Mālikī','fiqh-shafi':'Fiqh — Shāfiʿī',
+  'fiqh-hanbali':'Fiqh — Ḥanbalī','usool':'Uṣūl al-Fiqh','hadith':'Ḥadīth',
+  'tafsir':'Tafsīr','tajweed':'Tajwīd','qiraat':'Qirāʾāt','aqeedah':'ʿAqīdah',
+  'arabic':'Arabic Language','tasawwuf':'Taṣawwuf','other':'Other'
+};
+
+// ── File input ────────────────────────────────────────────────────────────────
+const zone = document.getElementById('upload-zone');
+const inp  = document.getElementById('file-input');
+
+inp.addEventListener('change', e => {
+  if (e.target.files[0]) prefillTitle(e.target.files[0].name);
+});
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) { prefillTitle(f.name); inp.files = e.dataTransfer.files; }
+});
+
+function prefillTitle(filename) {
+  const t = document.getElementById('f-title');
+  if (!t.value) t.value = filename.replace(/\.pdf$/i,'').replace(/[-_]/g,' ');
+}
+
+// ── Simulate upload ───────────────────────────────────────────────────────────
+function simulateUpload() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { alert('Please enter a book title.'); return; }
+
+  const topic = document.getElementById('f-topic').value;
+  const lang  = document.getElementById('f-lang').value;
+  const author= document.getElementById('f-author').value.trim() || '—';
+  const date  = document.getElementById('f-date').value.trim() || '—';
+
+  const btn = document.getElementById('upload-btn');
+  btn.disabled = true; btn.textContent = 'Uploading…';
+
+  const bar = document.getElementById('status-bar');
+  const fill= document.getElementById('progress-fill');
+  const txt = document.getElementById('status-text');
+  bar.classList.add('show');
+
+  // Reset flow steps
+  ['step-1','step-2','step-3'].forEach(id => {
+    document.getElementById(id).classList.remove('active','done');
+  });
+
+  // Step 1: R2 upload
+  document.getElementById('step-1').classList.add('active');
+  logApi('info', `PUT https://your-bucket.r2.dev/books/${encodeURIComponent(title)}.pdf`);
+  logApi('dim',  `  Content-Type: application/pdf`);
+
+  let p = 0;
+  const t1 = setInterval(() => {
+    p += 8; fill.style.width = Math.min(p,45) + '%';
+    if (p >= 45) {
+      clearInterval(t1);
+      document.getElementById('step-1').classList.remove('active');
+      document.getElementById('step-1').classList.add('done');
+      txt.textContent = 'File uploaded ✓ — Saving to database…';
+      logApi('ok', `  ✓ 200 OK — file stored at r2.dev/books/${title}.pdf`);
+
+      // Step 2: Supabase
+      setTimeout(() => {
+        document.getElementById('step-2').classList.add('active');
+        const fakeUrl = `https://pub-abc123.r2.dev/books/${encodeURIComponent(title)}.pdf`;
+        logApi('info', `POST https://your-project.supabase.co/rest/v1/library_books`);
+        logApi('dim',  `  { title: "${title}", author: "${author}", topic: "${topic}", lang: "${lang}", file_url: "…r2.dev/…" }`);
+
+        const t2 = setInterval(() => {
+          p += 6; fill.style.width = Math.min(p,90) + '%';
+          if (p >= 90) {
+            clearInterval(t2);
+            document.getElementById('step-2').classList.remove('active');
+            document.getElementById('step-2').classList.add('done');
+            logApi('ok', `  ✓ 201 Created — row id: ${rowId} inserted`);
+
+            // Step 3: done
+            setTimeout(() => {
+              fill.style.width = '100%';
+              document.getElementById('step-3').classList.add('active','done');
+              txt.textContent = '✓ Book saved to library!';
+              txt.classList.add('ok');
+              logApi('ok', `  ✓ Book "${title}" is now live in your library`);
+
+              // Add to data
+              const book = { id: rowId++, title, author, topic, lang, date,
+                url: `https://pub-abc123.r2.dev/books/${encodeURIComponent(title)}.pdf` };
+              books.unshift(book);
+              updateTable(book);
+              updatePreview(book);
+
+              // Reset form
+              setTimeout(() => {
+                btn.disabled = false; btn.textContent = '⬆ Save to Library Database';
+                fill.style.width = '0%';
+                bar.classList.remove('show');
+                txt.classList.remove('ok');
+                txt.textContent = 'Uploading to Cloudflare R2…';
+                document.getElementById('f-title').value = '';
+                document.getElementById('f-author').value = '';
+                document.getElementById('f-date').value = '';
+                inp.value = '';
+              }, 2500);
+            }, 400);
+          }
+        }, 60);
+      }, 600);
+    }
+  }, 60);
+}
+
+// ── Update table ──────────────────────────────────────────────────────────────
+function updateTable(book) {
+  const tbody = document.getElementById('db-body');
+  // Remove placeholder row
+  const placeholder = tbody.querySelector('[colspan]');
+  if (placeholder) placeholder.parentElement.remove();
+
+  const shortUrl = `…r2.dev/${encodeURIComponent(book.title).slice(0,12)}…`;
+  const row = document.createElement('tr');
+  row.className = 'cell-new';
+  row.innerHTML = `
+    <td class="cell-id">${book.id}</td>
+    <td title="${book.title}">${book.title.length>18?book.title.slice(0,18)+'…':book.title}</td>
+    <td title="${book.author}">${book.author.length>14?book.author.slice(0,14)+'…':book.author}</td>
+    <td><span class="cell-topic">${book.topic}</span></td>
+    <td>${book.lang}</td>
+    <td>${book.date}</td>
+    <td class="cell-url" title="${book.url}"><a href="#" style="color:#6ea8d8;text-decoration:none;">${shortUrl}</a></td>
+  `;
+  tbody.insertBefore(row, tbody.firstChild);
+  document.getElementById('row-count').textContent = books.length;
+}
+
+// ── Update preview ────────────────────────────────────────────────────────────
+function updatePreview(book) {
+  document.getElementById('preview-empty').style.display = 'none';
+  const grid = document.getElementById('books-preview');
+  const card = document.createElement('div');
+  card.className = 'book-card book-card-new';
+  card.innerHTML = `
+    <div class="book-card-title">${book.title}</div>
+    <div class="book-card-meta">${book.author} · ${topicLabels[book.topic]||book.topic} · ${book.lang}</div>
+    <button class="book-card-dl" onclick="fakeDownload('${book.title}')">⬇ Download PDF</button>
+  `;
+  grid.insertBefore(card, grid.firstChild);
+}
+
+function fakeDownload(title) {
+  logApi('info', `GET ${title}.pdf → 200 OK — download started`);
+  switchTab('api', document.querySelectorAll('.db-tab')[2]);
+  setTimeout(()=>alert(`In the real system, clicking this would download "${title}.pdf" directly from your Cloudflare R2 server.`), 100);
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  currentTab = name;
+  document.querySelectorAll('.db-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  ['table','preview','api'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none';
+  });
+}
+
+// ── API Logger ────────────────────────────────────────────────────────────────
+function logApi(type, msg) {
+  const console = document.getElementById('api-console');
+  const ts = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const line = document.createElement('div');
+  line.className = 'log-line';
+  line.innerHTML = `<span class="log-ts">[${ts}]</span><span class="log-${type}">${msg}</span>`;
+  console.appendChild(line);
+  console.scrollTop = console.scrollHeight;
+}
+</script>
+</body>
+</html>
