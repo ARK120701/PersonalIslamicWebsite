@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Teacher Biographies —</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1f3c;--navy-mid:#162d52;--navy-light:#1e3d6e;--gold:#c8952a;--gold-light:#e8b84b;--gold-pale:#f5d98a;--gold-dim:#8a6218;--white:#ffffff;--off-white:#f8f7f4;--cream:#f2efe8;--slate:#e8edf5;--text-dark:#0d1f3c;--text-body:#2c3e5a;--text-muted:#5a6a85;--border:#d0d8e8;--shadow-sm:0 2px 8px rgba(13,31,60,.09);--shadow-md:0 6px 24px rgba(13,31,60,.13);--shadow-lg:0 16px 48px rgba(13,31,60,.18);}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.75;color:var(--text-body);background:var(--off-white);}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--slate);}::-webkit-scrollbar-thumb{background:var(--navy-light);}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--navy);border-bottom:3px solid var(--gold);padding:0 3rem;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.nav-brand{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;text-decoration:none;letter-spacing:.02em;}
+.nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;display:flex;align-items:center;gap:.4rem;transition:color .2s;}
+.nav-back:hover{color:var(--gold-light);}
+
+/* HERO */
+.hero{background:linear-gradient(155deg,var(--navy) 0%,var(--navy-mid) 55%,var(--navy-light) 100%);padding:5rem 2rem 4.5rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='.6' fill='%23c8952a' opacity='.15'/%3E%3C/svg%3E");pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;}
+.hero-eyebrow{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:.5rem;}
+.hero-sub{font-size:1rem;color:rgba(255,255,255,.5);font-style:italic;margin-bottom:1.5rem;}
+.hero-rule{width:80px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto;}
+
+/* MAIN */
+main{max-width:900px;margin:0 auto;padding:4rem 2rem 6rem;}
+
+/* TEACHER BIOS */
+.teacher-bio-card{background:var(--white);border-top:4px solid var(--gold);box-shadow:var(--shadow-sm);padding:2.5rem;margin-bottom:2.5rem;transition:box-shadow .2s;}
+.teacher-bio-card:hover{box-shadow:var(--shadow-md);}
+.tb-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1.5rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
+.tb-name-block{}
+.tb-name{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:var(--navy);line-height:1.2;margin-bottom:.2rem;}
+.tb-arabic{font-family:'Noto Naskh Arabic',serif;font-size:1.15rem;color:var(--gold-dim);direction:rtl;margin-bottom:.3rem;}
+.tb-arabic-right{font-family:'Noto Naskh Arabic',serif;font-size:1.15rem;color:var(--gold-dim);direction:rtl;text-align:right;align-self:center;flex-shrink:0;margin-left:auto;padding-left:1rem;}
+.tb-meta{font-size:.82rem;color:var(--text-muted);letter-spacing:.04em;font-style:italic;}
+.tb-del{background:none;border:none;color:var(--border);cursor:pointer;font-size:1.1rem;transition:color .18s;flex-shrink:0;margin-top:.2rem;}
+.tb-del:hover{color:#c0392b;}
+.tb-bio{color:var(--text-body);line-height:1.8;font-size:.97rem;}
+.tb-bio p{margin-bottom:.85rem;}
+.tb-bio p:last-child{margin-bottom:0;}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:5rem 2rem;color:var(--text-muted);}
+.empty-state-icon{font-size:3rem;display:block;margin-bottom:1rem;}
+
+/* ADD FORM (admin) */
+.add-section{margin-bottom:3rem;}
+.add-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.5rem;background:var(--navy);color:var(--gold-light);border:none;font-family:'EB Garamond',serif;font-size:.95rem;cursor:pointer;transition:background .18s;}
+.add-btn:hover{background:var(--navy-light);}
+.add-form{display:none;background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:2rem;box-shadow:var(--shadow-md);margin-top:1rem;}
+.add-form.open{display:block;}
+.fr{margin-bottom:1rem;}
+.fr label{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin-bottom:.35rem;font-weight:700;}
+.fr input,.fr textarea{width:100%;padding:.6rem .9rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:1rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.fr input:focus,.fr textarea:focus{border-color:var(--navy-light);}
+.fr textarea{resize:vertical;min-height:140px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.btn-sub{padding:.75rem 2rem;background:var(--navy);color:var(--gold-light);border:none;cursor:pointer;font-family:'EB Garamond',serif;font-size:1rem;letter-spacing:.06em;transition:background .18s;}
+.btn-sub:hover{background:var(--navy-light);}
+.btn-cancel{padding:.75rem 1.5rem;background:transparent;color:var(--text-muted);border:1px solid var(--border);cursor:pointer;font-family:'EB Garamond',serif;font-size:1rem;margin-left:.5rem;transition:all .18s;}
+.btn-cancel:hover{background:var(--slate);}
+
+/* ADMIN */
+.admin-only{display:none!important;}body.admin-mode .admin-only{display:block!important;}
+body:not(.admin-mode) .tb-del{display:none!important;}
+.admin-badge{display:none;position:fixed;top:70px;right:1rem;background:var(--gold);color:var(--navy);font-family:'EB Garamond',serif;font-size:.72rem;font-weight:700;padding:.3rem .9rem;letter-spacing:.07em;z-index:999;cursor:pointer;box-shadow:var(--shadow-md);text-transform:uppercase;}
+.admin-badge.visible{display:block;}
+
+/* AUTH MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(13,31,60,.94);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(5px);}
+.overlay.open{display:flex;}
+.auth-box{background:var(--white);width:100%;max-width:380px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.5);}
+.auth-head{background:var(--navy);padding:1.4rem 2rem;text-align:center;}
+.auth-seal{width:50px;height:50px;border:2px solid rgba(200,149,42,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .65rem;font-size:1.2rem;}
+.auth-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;}
+.auth-body{padding:1.6rem 2rem 2rem;}
+.auth-error{display:none;color:#c0392b;font-size:.82rem;margin-bottom:.75rem;padding:.45rem .75rem;background:#fff0f0;border-left:3px solid #c0392b;}
+.auth-error.show{display:block;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:2.8rem!important;}
+.pw-eye{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;}
+.auth-hint{font-size:.74rem;color:var(--text-muted);text-align:center;margin-top:.75rem;font-style:italic;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--gold-pale);border-left:3px solid var(--gold);padding:.75rem 1.5rem;font-family:'EB Garamond',serif;font-size:.95rem;z-index:9999;box-shadow:var(--shadow-lg);transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:680px){nav{padding:0 1rem;}.form-grid{grid-template-columns:1fr;}.tb-head{flex-direction:column;gap:.75rem;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">←</a>
+  <span class="nav-brand">Teacher Biographies</span>
+  <button onclick="requireAdmin()" style="background:none;border:none;cursor:pointer;padding:.4rem .6rem;opacity:0;font-size:.7rem;color:rgba(255,255,255,.15);transition:opacity .2s;" onmouseenter="this.style.opacity='.4'" onmouseleave="this.style.opacity='0'">⚙</button>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Silsilat al-ʿIlm</div>
+    <h1>Teacher Biographies</h1>
+    <p class="hero-sub">Those from whom knowledge was received, may Allah preserve them all</p>
+    <div class="hero-rule"></div>
+  </div>
+</div>
+
+<main>
+  <!-- Admin add teacher button -->
+  <div class="add-section admin-only">
+    <button class="add-btn" onclick="toggleForm()">＋ Add Teacher</button>
+    <div class="add-form" id="add-form">
+      <div class="form-grid">
+        <div class="fr"><label>Name (English)</label><input type="text" id="t-name" placeholder="e.g. Mufti Manzoor" /></div>
+        <div class="fr"><label>Name in Arabic</label><input type="text" id="t-arabic" placeholder="e.g. مفتي منظور" dir="rtl" /></div>
+      </div>
+      <div class="fr"><label>Credentials / Meta</label><input type="text" id="t-meta" placeholder="e.g. Senior Mufti · Darul Uloom NY · Specialist in Fiqh" /></div>
+      <div class="fr"><label>Biography</label><textarea id="t-bio" placeholder="Write a detailed biography of this teacher…"></textarea></div>
+      <button class="btn-sub" onclick="saveTeacher()">Save Teacher</button>
+      <button class="btn-cancel" onclick="toggleForm()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Teacher list -->
+  <div id="teachers-list"></div>
+</main>
+
+<div class="overlay" id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-head">
+      <div class="auth-seal">🔐</div>
+      <div class="auth-title">Admin Access</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-error" id="auth-error">Incorrect password.</div>
+      <div class="fr"><label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="auth-pw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')submitLogin()" />
+          <button class="pw-eye" onclick="togglePw()">👁</button>
+        </div>
+      </div>
+      <button class="btn-sub" style="width:100%;" onclick="submitLogin()">Sign In</button>
+      <button class="btn-cancel" style="width:100%;margin-left:0;margin-top:.5rem;" onclick="closeOverlay()">Cancel</button>
+      <p class="auth-hint">Access via <strong>Ctrl+Shift+A</strong></p>
+    </div>
+  </div>
+</div>
+
+<div class="admin-badge" id="admin-badge" onclick="adminLogout()">⚙ Admin — Sign Out</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ADMIN_PASSWORD = 'admin123';
+const S = { get: k => { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } }, set: (k,v) => localStorage.setItem(k,JSON.stringify(v)) };
+
+const DEF_TEACHERS = [
+  { name:"Mufti Mizaanur Rahman", arabic:"مفتي ميزانور رحمن سيد", meta:"Senior Mufti · Senior Muḥaddith", bio:"Mufti Mizaanur Rahman Sayed is a distinguished senior mufti and muḥaddith. He is one of the primary teachers in the post-graduate Takhaṣṣuṣ programme in Islamic Jurisprudence and Iftāʾ. His teaching encompasses precision in legal reasoning, mastery of the Ḥanafī legal tradition, and the proper methodology of issuing fatwā in the contemporary context." },
+  { name:"Mufti Manzoor", arabic:"مفتي منظور", meta:"Senior Mufti · Muḥaddith", bio:"Mufti Manzoor is one of the senior muftis and scholars currently based in the United States. He is among the primary teachers in both the ʿĀlimiyyah programme and the Takhaṣṣuṣ programme in Islamic Jurisprudence and the Issuance of Legal Verdicts (Iftāʾ). His instruction covers the methodology of fatwā issuance, the principles of comparative jurisprudence, and the application of classical legal theory to contemporary questions." },
+  { name:"Mawlana Rafiq Ahmed", arabic:"مولانا رفيق أحمد", meta:"Senior Muḥaddith", bio:"Mawlana Rafiq Ahmed is a senior muḥaddith and scholar of the Islamic sciences. He is among the teachers a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Ahmedul Haqq", arabic:"مولانا أحمد الحق", meta:"Senior Muḥaddith", bio:"Mawlana Ahmedul Haqq is a senior muḥaddith and scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Abdurraheem", arabic:"مولانا عبد الرحيم", meta:"Senior Muḥaddith", bio:"Mawlana Abdurraheem is a senior muḥaddith and scholar a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mufti Abdul Muqtadir", arabic:"مفتي عبد المقتدر", meta:"Senior Muḥaddith", bio:"Mufti Abdul Muqtadir is a senior muḥaddith and scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Suhel", arabic:"مولانا سهيل", meta:"Muḥaddith", bio:"Mawlana Suhel is a muḥaddith and scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Imtiyaz", arabic:"مولانا امتياز", meta:"Muḥaddith", bio:"Mawlana Imtiyaz is a muḥaddith and scholar a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Qari Mujeeb", arabic:"قاري مجيب", meta:"Senior Qirāʾat Teacher · Muḥaddith", bio:"Qari Mujeeb is a distinguished teacher of Qirāʾat and a muḥaddith. He is among the teachers of the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Muhammad Abasoomar", arabic:"مولانا محمد أبو سومر", meta:"Muḥaddith", bio:"Mawlana Muhammad Abasoomar is a muḥaddith and scholar of Ḥadīth sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Osama", arabic:"مولانا أسامة", meta:"Scholar of Islamic Sciences", bio:"Mawlana Osama is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Abdullah Kamal", arabic:"مولانا عبد الله كمال", meta:"Scholar of Islamic Sciences", bio:"Mawlana Abdullah Kamal is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mufti Mahdi Alam", arabic:"مفتي مهدي عالم", meta:"Scholar of Islamic Sciences", bio:"Mufti Mahdi Alam is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Hamoon Rashid", arabic:"مولانا هامون رشيد", meta:"Scholar of Islamic Sciences", bio:"Mawlana Hamoon Rashid is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Yusuf Chowdhury", arabic:"مولانا يوسف چودهري", meta:"Scholar of Islamic Sciences", bio:"Mawlana Yusuf Chowdhury is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Tareque", arabic:"مولانا طارق", meta:"Scholar of Islamic Sciences", bio:"Mawlana Tareque is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Fathi", arabic:"مولانا فتحي", meta:"Scholar of Islamic Sciences", bio:"Mawlana Fathi is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Zafar", arabic:"مولانا ظفر", meta:"Scholar of Islamic Sciences", bio:"Mawlana Zafar is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Azfar", arabic:"مولانا أزفر", meta:"Scholar of Islamic Sciences", bio:"Mawlana Azfar is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Adnan Lunat", arabic:"مولانا عدنان لونات", meta:"Scholar of Islamic Sciences", bio:"Mawlana Adnan Lunat is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Faisal", arabic:"مولانا فيصل", meta:"Scholar of Islamic Sciences", bio:"Mawlana Faisal is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Farzan", arabic:"مولانا فرزان", meta:"Scholar of Islamic Sciences", bio:"Mawlana Farzan is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Mujahid Islaam", arabic:"مولانا مجاهد إسلام", meta:"Scholar of Islamic Sciences", bio:"Mawlana Mujahid Islaam is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mawlana Junayed Ahmed", arabic:"مولانا جنيد أحمد", meta:"Scholar of Islamic Sciences", bio:"Mawlana Junayed Ahmed is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Sheikh Aqib Choudhury", arabic:"الشيخ عاقب چودهري", meta:"Scholar of Islamic Sciences", bio:"Sheikh Aqib Choudhury is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" }
+];
+
+function nameSlug(name) {
+  return name.toLowerCase()
+    .replace(/[^\w\s-]/g,'')
+    .trim()
+    .replace(/\s+/g,'-');
+}
+
+function renderTeachers() {
+  const data = S.get('teachers').length ? S.get('teachers') : DEF_TEACHERS;
+  const list = document.getElementById('teachers-list');
+  if (!data.length) {
+    list.innerHTML = '<div class="empty-state"><span class="empty-state-icon">🎓</span><p>No teacher biographies added yet.</p></div>';
+    return;
+  }
+  list.innerHTML = data.map((t, i) => `
+    <div class="teacher-bio-card" id="tc-${i}" data-slug="${nameSlug(t.name)}">
+      <div class="tb-head">
+        <div class="tb-name-block">
+          <div class="tb-name">${t.name}</div>
+          ${t.meta ? `<div class="tb-meta">${t.meta}</div>` : ''}
+        </div>
+        ${t.arabic ? `<div class="tb-arabic-right">${t.arabic}</div>` : ''}
+        <button class="tb-del" onclick="deleteTeacher(${i})" title="Remove teacher">✕</button>
+      </div>
+      <div class="tb-bio">${(t.bio||'No biography provided.').split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('')}</div>
+    </div>`).join('');
+}
+
+function toggleForm() {
+  const f = document.getElementById('add-form');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) { ['t-name','t-arabic','t-meta','t-bio'].forEach(id => document.getElementById(id).value = ''); }
+}
+
+function saveTeacher() {
+  const name = document.getElementById('t-name').value.trim();
+  if (!name) { toast('Please enter a teacher name.'); return; }
+  const teacher = { name, arabic: document.getElementById('t-arabic').value.trim(), meta: document.getElementById('t-meta').value.trim(), bio: document.getElementById('t-bio').value.trim() };
+  const all = S.get('teachers').length ? S.get('teachers') : [...DEF_TEACHERS];
+  all.push(teacher); S.set('teachers', all);
+  renderTeachers(); toggleForm(); toast(`"${name}" added.`);
+}
+
+function deleteTeacher(i) {
+  if (!isAdmin() || !confirm('Remove this teacher?')) return;
+  const all = S.get('teachers').length ? S.get('teachers') : [...DEF_TEACHERS];
+  all.splice(i, 1); S.set('teachers', all);
+  renderTeachers(); toast('Teacher removed.');
+}
+
+// ADMIN AUTH
+function isAdmin() { return sessionStorage.getItem('__admin') === '1'; }
+function applyAdminState() {
+  document.body.classList.toggle('admin-mode', isAdmin());
+  document.getElementById('admin-badge').classList.toggle('visible', isAdmin());
+}
+function requireAdmin() {
+  if (isAdmin()) return;
+  document.getElementById('auth-pw').value = '';
+  document.getElementById('auth-error').classList.remove('show');
+  document.getElementById('auth-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('auth-pw').focus(), 120);
+}
+function submitLogin() {
+  if (document.getElementById('auth-pw').value === ADMIN_PASSWORD) {
+    sessionStorage.setItem('__admin','1');
+    document.getElementById('auth-overlay').classList.remove('open');
+    applyAdminState(); renderTeachers();
+
+  // Scroll to teacher anchor if hash in URL (e.g. #teacher-mufti-manzoor)
+  function scrollToTeacher() {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const slug = hash.replace('#teacher-', '');
+    // Try to find card by data-slug
+    const card = document.querySelector(`[data-slug="${slug}"]`);
+    if (card) {
+      setTimeout(() => {
+        const offset = card.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: offset, behavior: 'smooth' });
+        card.style.transition = 'box-shadow .4s';
+        card.style.boxShadow = '0 0 0 3px var(--gold)';
+        setTimeout(() => card.style.boxShadow = '', 2000);
+      }, 300);
+    }
+  }
+  scrollToTeacher(); toast('Admin access granted.');
+  } else {
+    document.getElementById('auth-error').classList.add('show');
+    document.getElementById('auth-pw').value = '';
+    document.getElementById('auth-pw').focus();
+  }
+}
+function closeOverlay() { document.getElementById('auth-overlay').classList.remove('open'); }
+function adminLogout() { if(!confirm('Sign out?')) return; sessionStorage.removeItem('__admin'); applyAdminState(); renderTeachers(); toast('Signed out.'); }
+function togglePw() { const i=document.getElementById('auth-pw'); i.type=i.type==='password'?'text':'password'; }
+function toast(msg) { const e=document.getElementById('toast'); e.textContent=msg; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),3000); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  applyAdminState(); renderTeachers();
+
+  // Scroll to teacher anchor if hash in URL (e.g. #teacher-mufti-manzoor)
+  function scrollToTeacher() {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const slug = hash.replace('#teacher-', '');
+    // Try to find card by data-slug
+    const card = document.querySelector(`[data-slug="${slug}"]`);
+    if (card) {
+      setTimeout(() => {
+        const offset = card.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: offset, behavior: 'smooth' });
+        card.style.transition = 'box-shadow .4s';
+        card.style.boxShadow = '0 0 0 3px var(--gold)';
+        setTimeout(() => card.style.boxShadow = '', 2000);
+      }, 300);
+    }
+  }
+  scrollToTeacher();
+  document.getElementById('auth-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeOverlay(); });
+  document.addEventListener('keydown', e => { if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();requireAdmin();} });
+});
+</script>
+</body>
+</html>

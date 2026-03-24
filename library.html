@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Digital Library — Abdurrahman Khan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Noto+Naskh+Arabic:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d1f3c;--navy-mid:#162d52;--navy-light:#1e3d6e;--navy-pale:#2a5298;
+  --gold:#c8952a;--gold-light:#e8b84b;--gold-pale:#f5d98a;--gold-dim:#8a6218;
+  --white:#ffffff;--off-white:#f8f7f4;--cream:#f2efe8;--slate:#e8edf5;
+  --text-dark:#0d1f3c;--text-body:#2c3e5a;--text-muted:#5a6a85;--border:#d0d8e8;
+  --green:#27ae60;--red:#c0392b;
+  --shadow-sm:0 2px 8px rgba(13,31,60,.09);
+  --shadow-md:0 6px 24px rgba(13,31,60,.13);
+  --shadow-lg:0 16px 48px rgba(13,31,60,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.75;color:var(--text-body);background:var(--off-white);}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--slate);}::-webkit-scrollbar-thumb{background:var(--navy-light);}
+nav{position:sticky;top:0;z-index:100;background:var(--navy);border-bottom:3px solid var(--gold);padding:0 3rem;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.nav-brand{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;text-decoration:none;}
+.nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;display:flex;align-items:center;gap:.4rem;transition:color .2s;}
+.nav-back:hover{color:var(--gold-light);}
+.hero{background:linear-gradient(155deg,var(--navy) 0%,var(--navy-mid) 55%,var(--navy-light) 100%);padding:5rem 2rem 4.5rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='.6' fill='%23c8952a' opacity='.15'/%3E%3C/svg%3E");pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;}
+.hero-eyebrow{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:.5rem;}
+.hero-arabic{font-family:'Noto Naskh Arabic',serif;font-size:1.3rem;color:rgba(255,255,255,.35);direction:rtl;margin-bottom:.5rem;}
+.hero-sub{font-size:1rem;color:rgba(255,255,255,.5);font-style:italic;margin-bottom:1.75rem;}
+.hero-rule{width:80px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto;}
+.setup-banner{background:linear-gradient(to right,rgba(200,149,42,.12),rgba(200,149,42,.05));border:1px solid rgba(200,149,42,.3);border-left:4px solid var(--gold);padding:1.25rem 1.5rem;margin-bottom:2rem;display:none;}
+.setup-banner.show{display:block;}
+.setup-banner-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--navy);margin-bottom:.4rem;}
+.setup-banner code{font-family:'JetBrains Mono',monospace;font-size:.75rem;background:var(--cream);padding:.1rem .4rem;color:var(--navy-light);}
+.setup-steps{margin-top:.75rem;font-size:.82rem;color:var(--text-body);line-height:1.8;padding-left:1.2rem;}
+.main-wrap{max-width:1100px;margin:0 auto;padding:3rem 2rem 6rem;}
+.conn-status{display:flex;align-items:center;gap:.6rem;padding:.5rem 1rem;font-size:.78rem;margin-bottom:1.5rem;font-family:'JetBrains Mono',monospace;}
+.conn-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.conn-dot.ok{background:var(--green);}
+.conn-dot.err{background:var(--red);}
+.conn-dot.loading{background:var(--gold);animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.admin-panel{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:2rem;margin-bottom:2.5rem;display:none;}
+body.admin-mode .admin-panel{display:block;}
+.panel-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);}
+.upload-zone{border:2px dashed var(--border);padding:2.5rem;text-align:center;cursor:pointer;background:var(--off-white);margin-bottom:1.5rem;transition:all .2s;position:relative;}
+.upload-zone:hover,.upload-zone.dov{border-color:var(--gold);background:rgba(200,149,42,.04);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.u-icon{font-size:2rem;display:block;margin-bottom:.5rem;}
+.u-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.25rem;}
+.u-hint{font-size:.82rem;color:var(--text-muted);font-style:italic;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+.form-row.three{grid-template-columns:1fr 1fr 1fr;}
+.form-row.full{grid-template-columns:1fr;}
+.fr label{display:block;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.3rem;font-weight:700;}
+.fr input,.fr select,.fr textarea{width:100%;padding:.55rem .85rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.95rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.fr input:focus,.fr select:focus,.fr textarea:focus{border-color:var(--gold);background:var(--white);}
+.fr textarea{resize:vertical;min-height:68px;}
+.upload-progress{display:none;margin-top:1rem;}
+.upload-progress.show{display:block;}
+.prog-label{font-size:.78rem;color:var(--text-muted);margin-bottom:.35rem;font-family:'JetBrains Mono',monospace;}
+.prog-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--gold);width:0%;transition:width .25s;border-radius:2px;}
+.prog-status{margin-top:.4rem;font-size:.75rem;color:var(--text-muted);font-style:italic;}
+.prog-status.ok{color:var(--green);font-style:normal;font-weight:700;}
+.prog-status.err{color:var(--red);font-style:normal;}
+.btn-primary{padding:.7rem 1.8rem;background:var(--gold);color:var(--navy);border:none;font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:background .18s;}
+.btn-primary:hover{background:var(--gold-light);}
+.btn-primary:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;}
+.btn-secondary{padding:.7rem 1.4rem;background:transparent;color:var(--navy);border:1px solid var(--border);font-family:'EB Garamond',serif;font-size:.9rem;cursor:pointer;transition:all .18s;}
+.btn-secondary:hover{background:var(--slate);}
+.search-section{margin-bottom:2.5rem;}
+.search-row{display:flex;gap:.5rem;margin-bottom:1rem;}
+.search-inp{flex:1;padding:.7rem 1.1rem;border:1px solid var(--border);background:var(--white);font-family:'EB Garamond',serif;font-size:1rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.search-inp:focus{border-color:var(--navy-pale);}
+.search-btn{padding:.7rem 1.2rem;background:var(--navy);color:var(--gold-light);border:none;font-family:'EB Garamond',serif;font-size:.9rem;cursor:pointer;transition:background .18s;}
+.search-btn:hover{background:var(--navy-light);}
+.filter-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-right:.3rem;}
+.filter-btn{padding:.28rem .85rem;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.82rem;cursor:pointer;transition:all .18s;}
+.filter-btn:hover{border-color:var(--navy-pale);color:var(--navy);}
+.filter-btn.active{background:var(--navy);color:var(--gold-pale);border-color:var(--navy);}
+.result-count{margin-left:auto;font-size:.78rem;color:var(--text-muted);font-style:italic;}
+.lib-topic{margin-bottom:3rem;}
+.lib-topic-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);}
+.lib-topic-icon{font-size:1.4rem;}
+.lib-topic-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--navy);flex:1;}
+.lib-topic-count{font-size:.78rem;color:var(--text-muted);font-style:italic;}
+.lib-lang-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1rem;}
+.lib-lang-tab{padding:.32rem .85rem;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.82rem;cursor:pointer;transition:all .18s;}
+.lib-lang-tab:hover{border-color:var(--navy-pale);color:var(--navy);}
+.lib-lang-tab.active{background:var(--navy);color:var(--gold-pale);border-color:var(--navy);}
+.tab-count{font-size:.7rem;opacity:.7;margin-left:.25rem;}
+.lib-lang-panel{display:none;}
+.lib-lang-panel.active{display:block;}
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;}
+.lib-item{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--navy-pale);padding:1.1rem .9rem;cursor:pointer;transition:all .18s;position:relative;display:flex;flex-direction:column;}
+.lib-item:hover{border-top-color:var(--gold);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.li-icon{font-size:1.6rem;display:block;margin-bottom:.4rem;text-align:center;}
+.li-name{font-family:'EB Garamond',serif;font-size:.82rem;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:.2rem;flex:1;}
+.li-author{font-size:.7rem;color:var(--text-muted);font-style:italic;margin-bottom:.2rem;}
+.li-meta{font-size:.68rem;color:var(--text-muted);}
+.li-actions{display:flex;gap:.3rem;margin-top:.6rem;}
+.li-btn{flex:1;padding:.28rem 0;font-size:.68rem;border:none;cursor:pointer;font-family:'EB Garamond',serif;transition:all .15s;text-align:center;text-decoration:none;display:inline-block;}
+.li-btn-view{background:var(--navy);color:var(--gold-pale);}
+.li-btn-view:hover{background:var(--navy-light);}
+.li-btn-dl{background:var(--gold);color:var(--navy);font-weight:700;}
+.li-btn-dl:hover{background:var(--gold-light);}
+.li-del{position:absolute;top:.35rem;right:.35rem;width:18px;height:18px;background:#c0392b;color:#fff;border:none;border-radius:50%;font-size:.6rem;cursor:pointer;display:none;align-items:center;justify-content:center;}
+.lib-item:hover .li-del{display:flex;}
+body:not(.admin-mode) .li-del{display:none!important;}
+mark{background:rgba(200,149,42,.28);color:inherit;padding:0 1px;}
+.madhab-group-header{display:flex;align-items:center;gap:.6rem;margin:2.5rem 0 1rem;padding:.55rem 1rem;background:linear-gradient(to right,rgba(13,31,60,.06),transparent);border-left:3px solid var(--gold-dim);}
+.madhab-group-title{font-family:'Playfair Display',serif;font-size:.8rem;font-weight:700;color:var(--navy);letter-spacing:.12em;text-transform:uppercase;}
+.madhab-group-arabic{font-family:'Noto Naskh Arabic',serif;font-size:.9rem;color:var(--text-muted);direction:rtl;}
+.folder-section{margin-bottom:1.5rem;}
+.folder-section-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;padding:.35rem 0;border-bottom:1px dashed var(--border);}
+.folder-section-label{font-family:'Playfair Display',serif;font-size:.82rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;}
+.folder-add-btn{margin-left:auto;padding:.25rem .75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.76rem;cursor:pointer;transition:all .18s;}
+.folder-add-btn:hover{background:var(--slate);color:var(--navy);}
+.folder-item{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--gold-dim);margin-bottom:.85rem;overflow:hidden;transition:box-shadow .18s;}
+.folder-item:hover{box-shadow:var(--shadow-md);}
+.folder-header{display:flex;align-items:center;gap:.75rem;padding:.8rem 1rem;cursor:pointer;user-select:none;}
+.folder-icon{font-size:1.2rem;}
+.folder-name{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--navy);flex:1;}
+.folder-meta{font-size:.72rem;color:var(--text-muted);font-style:italic;}
+.folder-count{font-size:.7rem;color:var(--gold-dim);background:var(--slate);padding:.12rem .5rem;border-radius:10px;margin-right:.4rem;}
+.folder-toggle{font-size:.7rem;color:var(--text-muted);transition:transform .2s;}
+.folder-toggle.open{transform:rotate(90deg);}
+.folder-books{display:none;padding:.6rem 1rem .85rem;border-top:1px solid var(--border);}
+.folder-books.open{display:block;}
+.folder-book-row{display:flex;align-items:center;gap:.6rem;padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.85rem;}
+.folder-book-row:last-child{border-bottom:none;}
+.fb-icon{font-size:.9rem;color:var(--gold-dim);}
+.fb-title{flex:1;font-weight:600;color:var(--navy);}
+.fb-btns{display:flex;gap:.3rem;}
+.fb-btn{padding:.2rem .6rem;font-size:.68rem;border:none;cursor:pointer;font-family:'EB Garamond',serif;text-decoration:none;display:inline-block;}
+.fb-btn-view{background:var(--navy);color:var(--gold-pale);}
+.fb-btn-dl{background:var(--gold);color:var(--navy);font-weight:700;}
+body:not(.admin-mode) .folder-add-btn{display:none;}
+.fld-del-btn{padding:.25rem .6rem;background:transparent;border:1px solid rgba(192,57,43,.3);color:#c0392b;font-family:'EB Garamond',serif;font-size:.7rem;cursor:pointer;margin-left:.3rem;}
+.add-folder-form{display:none;background:var(--cream);border:1px solid var(--gold-dim);padding:.75rem 1rem;margin-bottom:.85rem;}
+.add-folder-form.show{display:block;}
+.aff-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}
+.aff-row input,.aff-row select{flex:1;min-width:140px;padding:.4rem .75rem;border:1px solid var(--border);background:var(--white);font-family:'EB Garamond',serif;font-size:.88rem;outline:none;}
+.aff-save{padding:.4rem 1rem;background:var(--gold);color:var(--navy);border:none;font-family:'EB Garamond',serif;font-size:.85rem;font-weight:700;cursor:pointer;}
+.aff-cancel{padding:.4rem .75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.85rem;cursor:pointer;}
+.empty-st{text-align:center;padding:3rem 2rem;color:var(--text-muted);font-style:italic;}
+.loading-st{text-align:center;padding:3rem 2rem;color:var(--text-muted);}
+.spinner{display:inline-block;width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:.75rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.mbk{display:none;position:fixed;inset:0;background:rgba(13,31,60,.88);z-index:2000;align-items:center;justify-content:center;padding:.5rem;backdrop-filter:blur(3px);}
+.mbk.open{display:flex;}
+.mc{background:var(--white);width:100%;max-width:1400px;height:95vh;display:flex;flex-direction:column;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);}
+.mtb{background:var(--navy);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.m-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:.95rem;font-weight:700;flex:1;}
+.m-dl{padding:.5rem 1.3rem;background:var(--gold);border:none;color:var(--navy);font-family:'EB Garamond',serif;font-size:.88rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .18s;}
+.m-dl:hover{background:var(--gold-light);}
+.m-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;margin-left:.5rem;}
+.m-x:hover{color:#fff;}
+#pdf-frame{flex:1;border:none;min-height:0;width:100%;}
+.m-body{padding:1.5rem;overflow-y:auto;}
+.fr2{margin-bottom:1rem;}
+.fr2 label{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin-bottom:.35rem;font-weight:700;}
+.fr2 input,.fr2 select,.fr2 textarea{width:100%;padding:.6rem .9rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:1rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.fr2 input:focus,.fr2 select:focus,.fr2 textarea:focus{border-color:var(--gold);}
+.fr2 textarea{resize:vertical;min-height:72px;}
+.fab-wrap{position:fixed;bottom:1.75rem;right:1.75rem;z-index:1500;}
+.fab{width:54px;height:54px;background:var(--gold);color:var(--navy);border:none;border-radius:50%;font-size:1.25rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.fab-menu{position:absolute;bottom:64px;right:0;background:var(--navy);box-shadow:var(--shadow-lg);display:none;flex-direction:column;min-width:210px;border-top:2px solid var(--gold);}
+.fab-menu.open{display:flex;}
+.fi{padding:.75rem 1.25rem;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.85);text-align:left;font-family:'EB Garamond',serif;font-size:.9rem;cursor:pointer;transition:background .15s;}
+.fi:hover{background:rgba(255,255,255,.06);}
+body:not(.admin-mode) .fab-wrap{display:none!important;}
+.admin-only{display:none!important;}body.admin-mode .admin-only{display:block!important;}
+.admin-badge{display:none;position:fixed;top:70px;right:1rem;background:var(--gold);color:var(--navy);font-family:'EB Garamond',serif;font-size:.72rem;font-weight:700;padding:.3rem .9rem;letter-spacing:.07em;z-index:999;cursor:pointer;box-shadow:var(--shadow-md);text-transform:uppercase;}
+.admin-badge.visible{display:block;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(13,31,60,.95);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(5px);}
+.overlay.open{display:flex;}
+.auth-box{background:var(--white);width:100%;max-width:380px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);}
+.auth-head{background:var(--navy);padding:1.4rem 2rem;text-align:center;}
+.auth-seal{width:50px;height:50px;border:2px solid rgba(200,149,42,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .65rem;font-size:1.2rem;}
+.auth-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;}
+.auth-body{padding:1.6rem 2rem 2rem;}
+.auth-error{display:none;color:#c0392b;font-size:.82rem;margin-bottom:.75rem;padding:.45rem .75rem;background:#fff0f0;border-left:3px solid #c0392b;}
+.auth-error.show{display:block;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:2.8rem!important;}
+.pw-eye{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;}
+.auth-hint{font-size:.74rem;color:var(--text-muted);text-align:center;margin-top:.75rem;font-style:italic;}
+.btn-sub{width:100%;padding:.8rem;background:var(--navy);color:var(--gold-light);border:none;cursor:pointer;font-family:'EB Garamond',serif;font-size:1rem;letter-spacing:.08em;transition:background .18s;}
+.btn-sub:hover{background:var(--navy-light);}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--gold-pale);border-left:3px solid var(--gold);padding:.75rem 1.5rem;font-family:'EB Garamond',serif;font-size:.95rem;z-index:9999;box-shadow:var(--shadow-lg);transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+footer{background:var(--navy);border-top:3px solid var(--gold-dim);text-align:center;padding:2rem;}
+footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
+@media(max-width:768px){nav{padding:0 1rem;}.lib-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}.form-row{grid-template-columns:1fr;}.form-row.three{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">&#8592; Abdurrahman Khan</a>
+  <span class="nav-brand">Digital Library</span>
+  <button onclick="requireAdmin()" style="background:none;border:none;cursor:pointer;padding:.4rem .6rem;opacity:0;font-size:.7rem;color:rgba(255,255,255,.15);transition:opacity .2s;" onmouseenter="this.style.opacity='.4'" onmouseleave="this.style.opacity='0'">&#9881;</button>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Al-Maktaba al-Raqmiyya</div>
+    <h1>Digital Library</h1>
+    <div class="hero-arabic">&#1575;&#1604;&#1605;&#1603;&#1578;&#1576;&#1577; &#1575;&#1604;&#1585;&#1602;&#1605;&#1610;&#1577;</div>
+    <p class="hero-sub">A curated collection of classical Islamic texts</p>
+    <div class="hero-rule"></div>
+  </div>
+</div>
+
+<div class="main-wrap">
+
+  <div class="setup-banner" id="setup-banner">
+    <div class="setup-banner-title">&#9881; Setup Required &mdash; Add Your Credentials</div>
+    <p style="font-size:.85rem;color:var(--text-body);margin-bottom:.5rem;">Open <code>library.html</code> in a text editor and fill in the 5 values at the top of the script tag:</p>
+    <ol class="setup-steps">
+      <li><code>SUPABASE_URL</code> &mdash; from Supabase &rarr; Project Settings &rarr; API</li>
+      <li><code>SUPABASE_ANON</code> &mdash; anon/public key from Supabase (safe in frontend)</li>
+      <li><code>SUPABASE_SVC</code> &mdash; service_role key (for admin writes only)</li>
+      <li><code>WORKER_URL</code> &mdash; your Cloudflare Worker URL after deploying</li>
+      <li><code>WORKER_SECRET</code> &mdash; must match ADMIN_SECRET set in the Worker</li>
+    </ol>
+  </div>
+
+  <div class="conn-status" id="conn-status">
+    <div class="conn-dot loading" id="conn-dot"></div>
+    <span id="conn-text">Connecting to database&hellip;</span>
+  </div>
+
+  <div class="admin-panel">
+    <div class="panel-title">&#128228; Upload Book to Library</div>
+    <div class="upload-zone" id="lib-zone">
+      <input type="file" id="lib-input" accept=".pdf" />
+      <span class="u-icon">&#128218;</span>
+      <div class="u-title">Drag a PDF here or click to select</div>
+      <p class="u-hint">Uploaded to Cloudflare R2 &middot; Saved to Supabase</p>
+    </div>
+    <div class="form-row">
+      <div class="fr"><label>Book Title *</label><input type="text" id="f-title" placeholder="e.g. Al-Hid&#257;ya Vol. 1" /></div>
+      <div class="fr"><label>Author</label><input type="text" id="f-author" placeholder="e.g. Im&#257;m al-Marg&#299;n&#257;n&#299;" /></div>
+    </div>
+    <div class="form-row three">
+      <div class="fr"><label>Topic *</label>
+        <select id="f-topic">
+          <optgroup label="Fiqh">
+            <option value="fiqh-hanafi">Fiqh &mdash; H&#803;anaf&#299;</option>
+            <option value="fiqh-maliki">Fiqh &mdash; M&#257;lik&#299;</option>
+            <option value="fiqh-shafi">Fiqh &mdash; Sh&#257;fi&#699;&#299;</option>
+            <option value="fiqh-hanbali">Fiqh &mdash; H&#803;anbal&#299;</option>
+            <option value="fiqh-muqaran">Fiqh &mdash; Comparative</option>
+          </optgroup>
+          <option value="usool">Us&#803;&#363;l al-Fiqh</option>
+          <option value="hadith">H&#803;ad&#299;th</option>
+          <option value="tafsir">Tafs&#299;r</option>
+          <option value="quran-sci">Qur&#702;&#257;nic Sciences</option>
+          <option value="tajweed">Tajw&#299;d</option>
+          <option value="qiraat">Qir&#257;&#702;&#257;t</option>
+          <option value="aqeedah">&#699;Aq&#299;dah</option>
+          <option value="seerah">S&#299;rah</option>
+          <option value="arabic">Arabic Language</option>
+          <option value="tasawwuf">T&#803;as&#803;awwuf</option>
+          <option value="mantiq">Mant&#803;iq</option>
+          <option value="other">General / Other</option>
+        </select>
+      </div>
+      <div class="fr"><label>Language *</label>
+        <select id="f-lang">
+          <option value="arabic">Arabic</option>
+          <option value="english">English</option>
+          <option value="urdu">Urdu</option>
+          <option value="persian">Persian</option>
+          <option value="other-lang">Other</option>
+        </select>
+      </div>
+      <div class="fr"><label>Year / Date</label><input type="text" id="f-date" placeholder="e.g. d. 593 AH" /></div>
+    </div>
+    <div class="form-row full">
+      <div class="fr"><label>Description (optional)</label><textarea id="f-desc" placeholder="Brief description&hellip;"></textarea></div>
+    </div>
+    <div style="display:flex;gap:.75rem;align-items:center;margin-top:.5rem;">
+      <button class="btn-primary" id="upload-btn" onclick="uploadBook()">&#8679; Upload &amp; Save to Library</button>
+      <button class="btn-secondary" onclick="clearUploadForm()">Clear</button>
+      <span id="selected-file" style="font-size:.8rem;color:var(--text-muted);font-style:italic;"></span>
+    </div>
+    <div class="upload-progress" id="upload-progress">
+      <div class="prog-label" id="prog-label">Uploading&hellip;</div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-status" id="prog-status"></div>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <div class="search-row">
+      <input class="search-inp" id="lib-search" type="text" placeholder="Search by title, author, or description&hellip;" />
+      <button class="search-btn" onclick="doSearch()">Search</button>
+      <button class="search-btn" style="background:var(--text-muted);" onclick="clearSearch()">Clear</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('fiqh-hanafi',this)">H&#803;anaf&#299; Fiqh</button>
+      <button class="filter-btn" onclick="setFilter('fiqh-maliki',this)">M&#257;lik&#299; Fiqh</button>
+      <button class="filter-btn" onclick="setFilter('fiqh-shafi',this)">Sh&#257;fi&#699;&#299; Fiqh</button>
+      <button class="filter-btn" onclick="setFilter('fiqh-hanbali',this)">H&#803;anbal&#299; Fiqh</button>
+      <button class="filter-btn" onclick="setFilter('usool',this)">Us&#803;&#363;l</button>
+      <button class="filter-btn" onclick="setFilter('hadith',this)">H&#803;ad&#299;th</button>
+      <button class="filter-btn" onclick="setFilter('tafsir',this)">Tafs&#299;r</button>
+      <button class="filter-btn" onclick="setFilter('tajweed',this)">Tajw&#299;d</button>
+      <button class="filter-btn" onclick="setFilter('qiraat',this)">Qir&#257;&#702;&#257;t</button>
+      <button class="filter-btn" onclick="setFilter('aqeedah',this)">&#699;Aq&#299;dah</button>
+      <button class="filter-btn" onclick="setFilter('arabic',this)">Arabic</button>
+      <button class="filter-btn" onclick="setFilter('tasawwuf',this)">T&#803;as&#803;awwuf</button>
+      <button class="filter-btn" onclick="setFilter('other',this)">Other</button>
+      <span class="result-count" id="result-count"></span>
+    </div>
+  </div>
+
+  <div id="lib-topics-container">
+    <div class="loading-st"><div class="spinner"></div><p>Loading library&hellip;</p></div>
+  </div>
+
+</div>
+
+<div class="fab-wrap admin-only">
+  <div class="fab-menu" id="fab-menu">
+    <button class="fi" onclick="scrollToUpload()">&#128228; Upload New Book</button>
+    <button class="fi" onclick="adminLogout()">&#128274; Sign Out</button>
+  </div>
+  <button class="fab" onclick="toggleFab()">+</button>
+</div>
+
+<div class="admin-badge" id="admin-badge" onclick="adminLogout()">&#9881; Admin &mdash; Sign Out</div>
+
+<div class="mbk" id="pdf-modal">
+  <div class="mc">
+    <div class="mtb">
+      <span class="m-title" id="modal-title">Document</span>
+      <a class="m-dl" id="modal-dl" target="_blank" download>&#11015; Download</a>
+      <button class="m-x" onclick="closePdf()">&#10005;</button>
+    </div>
+    <iframe id="pdf-frame" src=""></iframe>
+  </div>
+</div>
+
+<div class="overlay" id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-head">
+      <div class="auth-seal">&#128272;</div>
+      <div class="auth-title">Admin Access</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-error" id="auth-error">Incorrect password.</div>
+      <div class="fr2"><label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="auth-pw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')submitLogin()" />
+          <button class="pw-eye" onclick="togglePw()">&#128065;</button>
+        </div>
+      </div>
+      <button class="btn-sub" onclick="submitLogin()">Sign In</button>
+      <button style="width:100%;padding:.75rem;background:transparent;color:var(--text-muted);border:1px solid var(--border);cursor:pointer;font-family:'EB Garamond',serif;font-size:1rem;margin-top:.5rem;" onclick="closeOverlay()">Cancel</button>
+      <p class="auth-hint">Access via <strong>Ctrl+Shift+A</strong></p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <p>All rights reserved &middot; Personal scholarly archive</p>
+  <p style="margin-top:.5rem;"><a href="index.html" style="color:rgba(200,149,42,.6);font-size:.82rem;text-decoration:none;">&#8592; Return to Main Site</a></p>
+</footer>
+
+<script>
+// ============================================================
+//  FILL IN YOUR CREDENTIALS HERE AFTER SETUP
+// ============================================================
+const SUPABASE_URL   = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON  = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_SVC   = 'YOUR_SUPABASE_SERVICE_KEY';
+const WORKER_URL     = 'YOUR_WORKER_URL';
+const WORKER_SECRET  = 'YOUR_WORKER_SECRET';
+const ADMIN_PASSWORD = 'admin123';
+// ============================================================
+
+const UNCONFIGURED = SUPABASE_URL === 'YOUR_SUPABASE_URL';
+
+const LIB_TOPICS = [
+  {key:'fiqh-hanafi', label:'Fiqh \u2014 H\u0323anaf\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
+  {key:'fiqh-maliki', label:'Fiqh \u2014 M\u0101lik\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
+  {key:'fiqh-shafi',  label:'Fiqh \u2014 Sh\u0101fi\u02BF\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
+  {key:'fiqh-hanbali',label:'Fiqh \u2014 H\u0323anbal\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
+  {key:'fiqh-muqaran',label:'Fiqh \u2014 Comparative', icon:'\u2696\uFE0F', isMadhab:true},
+  {key:'usool',       label:'Us\u0323\u016bl al-Fiqh', icon:'\uD83D\uDCD0'},
+  {key:'hadith',      label:'H\u0323ad\u012bth & Sciences of the Sunnah', icon:'\uD83D\uDCDC'},
+  {key:'tafsir',      label:'Tafs\u012br', icon:'\uD83D\uDCD6'},
+  {key:'quran-sci',   label:'Qur\u02BE\u0101nic Sciences', icon:'\uD83D\uDCD7'},
+  {key:'tajweed',     label:'Tajw\u012bd', icon:'\uD83C\uDFB5'},
+  {key:'qiraat',      label:'Qir\u0101\u02BE\u0101t', icon:'\uD83C\uDFA4'},
+  {key:'aqeedah',     label:'\u02BFAq\u012bdah & Kal\u0101m', icon:'\uD83C\uDF19'},
+  {key:'seerah',      label:'S\u012brah & Islamic History', icon:'\uD83D\uDD4C'},
+  {key:'arabic',      label:'Arabic Language Sciences', icon:'\uD83D\uDD24'},
+  {key:'tasawwuf',    label:'T\u0323as\u0323awwuf & Spirituality', icon:'\u2728'},
+  {key:'mantiq',      label:'Mant\u0323iq & Logic', icon:'\uD83D\uDD2D'},
+  {key:'other',       label:'General & Other Sciences', icon:'\uD83D\uDCDA'},
+];
+const LIB_LANGS = [
+  {key:'arabic',label:'Arabic'},{key:'english',label:'English'},
+  {key:'urdu',label:'Urdu'},{key:'persian',label:'Persian'},{key:'other-lang',label:'Other'}
+];
+const FIQH_MADHABS = ['fiqh-hanafi','fiqh-maliki','fiqh-shafi','fiqh-hanbali','fiqh-muqaran'];
+
+let allBooks = [];
+let activeFilter = 'all';
+let activeSearch = '';
+let selectedFile = null;
+let folders = [];
+try { folders = JSON.parse(localStorage.getItem('lib_folders') || '[]'); } catch(e){}
+
+const sbH = k => ({'apikey':k,'Authorization':'Bearer '+k,'Content-Type':'application/json','Prefer':'return=representation'});
+
+async function sbGet(q='') {
+  const res = await fetch(SUPABASE_URL+'/rest/v1/books?'+q+'&order=created_at.desc',{headers:sbH(SUPABASE_ANON)});
+  if (!res.ok) throw new Error('DB '+res.status);
+  return res.json();
+}
+async function sbInsert(row) {
+  const res = await fetch(SUPABASE_URL+'/rest/v1/books',{method:'POST',headers:sbH(SUPABASE_SVC),body:JSON.stringify(row)});
+  if (!res.ok){const e=await res.text();throw new Error(e);}
+  return res.json();
+}
+async function sbDelete(id) {
+  const res = await fetch(SUPABASE_URL+'/rest/v1/books?id=eq.'+id,{method:'DELETE',headers:sbH(SUPABASE_SVC)});
+  if (!res.ok) throw new Error('Delete failed '+res.status);
+}
+
+async function loadBooks(sq='') {
+  const c = document.getElementById('lib-topics-container');
+  c.innerHTML = '<div class="loading-st"><div class="spinner"></div><p>Loading\u2026</p></div>';
+  try {
+    let q = 'select=*';
+    if (sq) { const enc=encodeURIComponent(sq); q+=`&or=(title.ilike.*${enc}*,author.ilike.*${enc}*,description.ilike.*${enc}*)`; }
+    if (activeFilter!=='all') q+=`&topic=eq.${activeFilter}`;
+    allBooks = await sbGet(q);
+    setConn('ok','Connected \u00B7 '+allBooks.length+' book'+(allBooks.length!==1?'s':'')+' in library');
+    renderLib(allBooks, sq);
+  } catch(err) {
+    if(UNCONFIGURED){
+      setConn('err','Not configured \u2014 add credentials to library.html');
+      document.getElementById('setup-banner').classList.add('show');
+      c.innerHTML='<div class="empty-st">Configure your Supabase and Cloudflare credentials to connect the library.</div>';
+    } else {
+      setConn('err','Could not connect \u2014 check credentials');
+      c.innerHTML='<div class="empty-st">Connection error: '+err.message+'</div>';
+    }
+  }
+}
+
+function renderLib(books, q='') {
+  const c = document.getElementById('lib-topics-container');
+  document.getElementById('result-count').textContent = books.length ? books.length+' result'+(books.length!==1?'s':'') : '';
+  if (!books.length){c.innerHTML=q?`<div class="empty-st">No books found for "${q}".</div>`:'<div class="empty-st">No books in this category yet.</div>';return;}
+  const grouped={};
+  LIB_TOPICS.forEach(t=>{grouped[t.key]={};LIB_LANGS.forEach(l=>grouped[t.key][l.key]=[]);});
+  books.forEach(b=>{
+    const tk=grouped[b.topic]?b.topic:'other';
+    const lk=grouped[tk][b.language]!==undefined?b.language:'other-lang';
+    grouped[tk][lk].push(b);
+  });
+  let html='';let mhi=false;
+  LIB_TOPICS.forEach(topic=>{
+    const total=LIB_LANGS.reduce((n,l)=>n+grouped[topic.key][l.key].length,0);
+    if(!total)return;
+    if(topic.isMadhab&&!mhi){mhi=true;html+=`<div class="madhab-group-header"><span class="madhab-group-title">Fiqh by Madhhab</span><span class="madhab-group-arabic">\u0627\u0644\u0641\u0642\u0647 \u0628\u062D\u0633\u0628 \u0627\u0644\u0645\u0630\u0627\u0647\u0628</span></div>`;}
+    const tf=folders.filter(f=>f.topic===topic.key);
+    html+=`<div class="lib-topic">
+      <div class="lib-topic-header"><span class="lib-topic-icon">${topic.icon}</span><span class="lib-topic-name">${topic.label}</span><span class="lib-topic-count">${total} book${total!==1?'s':''}</span></div>
+      <div class="folder-section">
+        <div class="folder-section-header"><span class="folder-section-label">\uD83D\uDCC1 Multi-Volume Collections</span><button class="folder-add-btn" onclick="showAF('${topic.key}')">\uFF0B New</button></div>
+        <div class="add-folder-form" id="aff-${topic.key}"><div class="aff-row"><input id="afn-${topic.key}" placeholder="Collection name"/><select id="afl-${topic.key}">${LIB_LANGS.map(l=>`<option value="${l.key}">${l.label}</option>`).join('')}</select><button class="aff-save" onclick="saveF('${topic.key}')">Save</button><button class="aff-cancel" onclick="hideAF('${topic.key}')">Cancel</button></div></div>
+        ${tf.map(folder=>{const fb=folder.bookIds.map(bid=>books.find(b=>b.id===bid)).filter(Boolean);return`<div class="folder-item"><div class="folder-header" onclick="toggleF('${folder.id}')"><span class="folder-icon">\uD83D\uDCC1</span><span class="folder-name">${folder.name}</span><span class="folder-meta">${folder.lang||''}</span><span class="folder-count">${fb.length} vol${fb.length!==1?'s':''}</span><span class="folder-toggle" id="ft-${folder.id}">\u25B6</span><button class="fld-del-btn" onclick="event.stopPropagation();delF('${folder.id}')">\u2715</button></div><div class="folder-books" id="fb-${folder.id}">${fb.length?fb.map(b=>`<div class="folder-book-row"><span class="fb-icon">\uD83D\uDCC4</span><span class="fb-title">${b.title}</span><div class="fb-btns">${b.file_url?`<button class="fb-btn fb-btn-view" onclick="openPdf(${b.id})">View</button><a class="fb-btn fb-btn-dl" href="${b.file_url}" target="_blank" download>\u2B07</a>`:''}</div></div>`).join(''):'<p style="font-size:.82rem;color:var(--text-muted);font-style:italic;padding:.4rem 0;">Empty.</p>'}</div></div>`;}).join('')}
+        ${!tf.length?'<p style="font-size:.78rem;color:var(--text-muted);font-style:italic;padding:.15rem 0 .75rem;">No collections yet.</p>':''}
+      </div>
+      <div class="lib-lang-tabs" id="tabs-${topic.key}">${LIB_LANGS.map(lang=>{const cnt=grouped[topic.key][lang.key].length;if(!cnt)return'';return`<button class="lib-lang-tab" onclick="switchTab('${topic.key}','${lang.key}',this)" data-lang="${lang.key}">${lang.label} <span class="tab-count">(${cnt})</span></button>`;}).join('')}</div>
+      ${LIB_LANGS.map(lang=>{const items=grouped[topic.key][lang.key];if(!items.length)return'';
+        return`<div class="lib-lang-panel" id="panel-${topic.key}-${lang.key}"><div class="lib-grid">${items.map(book=>{
+          const esc=s=>s?s.replace(/</g,'&lt;').replace(/>/g,'&gt;'):'';
+          const hi=s=>q?s.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`):s;
+          return`<div class="lib-item"><button class="li-del" onclick="deleteBook(${book.id},'${encodeURIComponent(book.file_key||'')}')">\u2715</button><span class="li-icon">\uD83D\uDCD6</span><div class="li-name">${hi(esc(book.title))}</div>${book.author?`<div class="li-author">${esc(book.author)}</div>`:''}<div class="li-meta">${esc(book.date)||''}</div><div class="li-actions">${book.file_url?`<button class="li-btn li-btn-view" onclick="openPdf(${book.id})">View</button><a class="li-btn li-btn-dl" href="${book.file_url}" target="_blank" download="${esc(book.title)}.pdf">\u2B07 Download</a>`:'<span style="font-size:.65rem;color:var(--text-muted);">No file</span>'}</div></div>`;
+        }).join('')}</div></div>`;}).join('')}
+    </div>`;
+  });
+  c.innerHTML=html;
+  LIB_TOPICS.forEach(topic=>{const el=document.getElementById('tabs-'+topic.key);if(!el)return;const ft=el.querySelector('.lib-lang-tab');if(ft){ft.classList.add('active');const p=document.getElementById(`panel-${topic.key}-${ft.dataset.lang}`);if(p)p.classList.add('active');}});
+}
+
+function doSearch(){activeSearch=document.getElementById('lib-search').value.trim();loadBooks(activeSearch);}
+function clearSearch(){document.getElementById('lib-search').value='';activeSearch='';loadBooks();}
+function setFilter(t,btn){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeFilter=t;loadBooks(activeSearch);}
+function switchTab(tk,lk,btn){document.getElementById('tabs-'+tk).querySelectorAll('.lib-lang-tab').forEach(t=>t.classList.remove('active'));LIB_LANGS.forEach(l=>{const p=document.getElementById(`panel-${tk}-${l.key}`);if(p)p.classList.remove('active');});btn.classList.add('active');const p=document.getElementById(`panel-${tk}-${lk}`);if(p)p.classList.add('active');}
+
+function openPdf(id){const b=allBooks.find(b=>b.id===id);if(!b?.file_url)return toast('No PDF attached.');document.getElementById('modal-title').textContent=b.title;document.getElementById('pdf-frame').src=b.file_url;const dl=document.getElementById('modal-dl');dl.href=b.file_url;dl.download=b.title+'.pdf';document.getElementById('pdf-modal').classList.add('open');}
+function closePdf(){document.getElementById('pdf-modal').classList.remove('open');document.getElementById('pdf-frame').src='';}
+
+const zone=document.getElementById('lib-zone');
+const inp=document.getElementById('lib-input');
+inp.addEventListener('change',e=>{if(e.target.files[0])selectFile(e.target.files[0]);});
+zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('dov');});
+zone.addEventListener('dragleave',()=>zone.classList.remove('dov'));
+zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('dov');const f=e.dataTransfer.files[0];if(f?.name.endsWith('.pdf'))selectFile(f);});
+function selectFile(f){selectedFile=f;document.getElementById('selected-file').textContent='\uD83D\uDCC4 '+f.name+' ('+(f.size/1024/1024).toFixed(1)+' MB)';if(!document.getElementById('f-title').value)document.getElementById('f-title').value=f.name.replace(/\.pdf$/i,'');}
+
+async function uploadBook(){
+  if(!isAdmin())return requireAdmin();
+  if(UNCONFIGURED)return toast('Add your credentials first.');
+  const title=document.getElementById('f-title').value.trim();
+  if(!title)return toast('Please enter a book title.');
+  if(!selectedFile)return toast('Please select a PDF file.');
+  const btn=document.getElementById('upload-btn');btn.disabled=true;
+  const prog=document.getElementById('upload-progress');
+  const fill=document.getElementById('prog-fill');
+  const label=document.getElementById('prog-label');
+  const status=document.getElementById('prog-status');
+  prog.classList.add('show');status.className='prog-status';
+  try {
+    label.textContent='Step 1/2 \u2014 Uploading PDF to Cloudflare R2\u2026';fill.style.width='10%';
+    const fn=title.replace(/[^a-zA-Z0-9\s\-_.]/g,'').replace(/\s+/g,'-')+'.pdf';
+    const upRes=await fetch(`${WORKER_URL}/upload/${encodeURIComponent(fn)}`,{method:'PUT',headers:{'X-Admin-Key':WORKER_SECRET,'Content-Type':'application/pdf'},body:selectedFile});
+    fill.style.width='55%';
+    if(!upRes.ok){const e=await upRes.text();throw new Error('R2: '+e);}
+    const {key,url:fileUrl}=await upRes.json();fill.style.width='65%';
+    label.textContent='Step 2/2 \u2014 Saving to Supabase\u2026';
+    const row={title,author:document.getElementById('f-author').value.trim()||null,topic:document.getElementById('f-topic').value,language:document.getElementById('f-lang').value,date:document.getElementById('f-date').value.trim()||null,description:document.getElementById('f-desc').value.trim()||null,file_url:fileUrl,file_key:key};
+    await sbInsert(row);fill.style.width='100%';
+    status.textContent='\u2713 "'+title+'" saved to library!';status.classList.add('ok');
+    toast('"'+title+'" added to library.');clearUploadForm();await loadBooks(activeSearch);
+  } catch(err){status.textContent='\u2717 Error: '+err.message;status.classList.add('err');toast('Upload failed \u2014 check console.');console.error(err);}
+  finally{btn.disabled=false;setTimeout(()=>{prog.classList.remove('show');fill.style.width='0%';status.className='prog-status';},4000);}
+}
+
+function clearUploadForm(){selectedFile=null;inp.value='';['f-title','f-author','f-date','f-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('selected-file').textContent='';document.getElementById('f-topic').value='fiqh-hanafi';document.getElementById('f-lang').value='arabic';}
+
+async function deleteBook(id,encodedKey){
+  if(!isAdmin()||!confirm('Remove this book?'))return;
+  try{
+    if(encodedKey)await fetch(`${WORKER_URL}/delete/${encodedKey}`,{method:'DELETE',headers:{'X-Admin-Key':WORKER_SECRET}});
+    await sbDelete(id);toast('Book removed.');await loadBooks(activeSearch);
+  }catch(err){toast('Error removing book.');console.error(err);}
+}
+
+function saveFolders(){localStorage.setItem('lib_folders',JSON.stringify(folders));}
+function showAF(tk){document.getElementById('aff-'+tk)?.classList.add('show');}
+function hideAF(tk){document.getElementById('aff-'+tk)?.classList.remove('show');}
+function saveF(tk){const n=document.getElementById('afn-'+tk)?.value.trim();if(!n)return toast('Enter a name.');const lEl=document.getElementById('afl-'+tk);folders.push({id:'fld_'+Date.now(),topic:tk,lang:lEl?.options[lEl.selectedIndex]?.text||'',name:n,bookIds:[]});saveFolders();hideAF(tk);loadBooks(activeSearch);toast(`Collection "${n}" created.`);}
+function delF(id){if(!confirm('Delete?'))return;folders=folders.filter(f=>f.id!==id);saveFolders();loadBooks(activeSearch);}
+function toggleF(id){document.getElementById('fb-'+id)?.classList.toggle('open');document.getElementById('ft-'+id)?.classList.toggle('open');}
+
+function setConn(s,m){document.getElementById('conn-dot').className='conn-dot '+s;document.getElementById('conn-text').textContent=m;}
+function isAdmin(){return sessionStorage.getItem('__admin')==='1';}
+function applyAdminState(){document.body.classList.toggle('admin-mode',isAdmin());document.getElementById('admin-badge').classList.toggle('visible',isAdmin());}
+function requireAdmin(){if(isAdmin())return;document.getElementById('auth-pw').value='';document.getElementById('auth-error').classList.remove('show');document.getElementById('auth-overlay').classList.add('open');setTimeout(()=>document.getElementById('auth-pw').focus(),120);}
+function submitLogin(){if(document.getElementById('auth-pw').value===ADMIN_PASSWORD){sessionStorage.setItem('__admin','1');document.getElementById('auth-overlay').classList.remove('open');applyAdminState();toast('Admin access granted.');}else{document.getElementById('auth-error').classList.add('show');document.getElementById('auth-pw').value='';document.getElementById('auth-pw').focus();}}
+function closeOverlay(){document.getElementById('auth-overlay').classList.remove('open');}
+function adminLogout(){if(!confirm('Sign out?'))return;sessionStorage.removeItem('__admin');applyAdminState();toast('Signed out.');}
+function togglePw(){const i=document.getElementById('auth-pw');i.type=i.type==='password'?'text':'password';}
+function toggleFab(){document.getElementById('fab-menu').classList.toggle('open');}
+function scrollToUpload(){document.getElementById('fab-menu').classList.remove('open');document.querySelector('.admin-panel')?.scrollIntoView({behavior:'smooth',block:'center'});}
+function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3200);}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  applyAdminState();
+  if(UNCONFIGURED){document.getElementById('setup-banner').classList.add('show');setConn('err','Not configured \u2014 add your credentials');}
+  loadBooks();
+  document.getElementById('lib-search').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+  document.getElementById('pdf-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closePdf();});
+  document.getElementById('auth-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOverlay();});
+  document.addEventListener('click',e=>{const fw=document.querySelector('.fab-wrap');if(fw&&!fw.contains(e.target))document.getElementById('fab-menu').classList.remove('open');});
+  document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();requireAdmin();}});
+});
+</script>
+</body>
+</html>
