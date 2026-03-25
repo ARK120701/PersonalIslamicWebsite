@@ -3,27 +3,29 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Digital Library — Abdurrahman Khan</title>
+<title>Digital Library &mdash; Abdurrahman Khan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Noto+Naskh+Arabic:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#0d1f3c;--navy-mid:#162d52;--navy-light:#1e3d6e;--navy-pale:#2a5298;
   --gold:#c8952a;--gold-light:#e8b84b;--gold-pale:#f5d98a;--gold-dim:#8a6218;
-  --white:#ffffff;--off-white:#f8f7f4;--cream:#f2efe8;--slate:#e8edf5;
+  --white:#fff;--off-white:#f8f7f4;--cream:#f2efe8;--slate:#e8edf5;
   --text-dark:#0d1f3c;--text-body:#2c3e5a;--text-muted:#5a6a85;--border:#d0d8e8;
   --green:#27ae60;--red:#c0392b;
-  --shadow-sm:0 2px 8px rgba(13,31,60,.09);
-  --shadow-md:0 6px 24px rgba(13,31,60,.13);
-  --shadow-lg:0 16px 48px rgba(13,31,60,.18);
+  --shadow-sm:0 2px 8px rgba(13,31,60,.09);--shadow-md:0 6px 24px rgba(13,31,60,.13);--shadow-lg:0 16px 48px rgba(13,31,60,.18);
 }
 *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
 body{font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.75;color:var(--text-body);background:var(--off-white);}
 ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--slate);}::-webkit-scrollbar-thumb{background:var(--navy-light);}
+
+/* NAV */
 nav{position:sticky;top:0;z-index:100;background:var(--navy);border-bottom:3px solid var(--gold);padding:0 3rem;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(0,0,0,.3);}
 .nav-brand{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;text-decoration:none;}
-.nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;display:flex;align-items:center;gap:.4rem;transition:color .2s;}
+.nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;transition:color .2s;}
 .nav-back:hover{color:var(--gold-light);}
+
+/* HERO */
 .hero{background:linear-gradient(155deg,var(--navy) 0%,var(--navy-mid) 55%,var(--navy-light) 100%);padding:5rem 2rem 4.5rem;text-align:center;position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='.6' fill='%23c8952a' opacity='.15'/%3E%3C/svg%3E");pointer-events:none;}
 .hero-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;}
@@ -32,127 +34,167 @@ nav{position:sticky;top:0;z-index:100;background:var(--navy);border-bottom:3px s
 .hero-arabic{font-family:'Noto Naskh Arabic',serif;font-size:1.3rem;color:rgba(255,255,255,.35);direction:rtl;margin-bottom:.5rem;}
 .hero-sub{font-size:1rem;color:rgba(255,255,255,.5);font-style:italic;margin-bottom:1.75rem;}
 .hero-rule{width:80px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto;}
-.setup-banner{background:linear-gradient(to right,rgba(200,149,42,.12),rgba(200,149,42,.05));border:1px solid rgba(200,149,42,.3);border-left:4px solid var(--gold);padding:1.25rem 1.5rem;margin-bottom:2rem;display:none;}
-.setup-banner.show{display:block;}
-.setup-banner-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--navy);margin-bottom:.4rem;}
-.setup-banner code{font-family:'JetBrains Mono',monospace;font-size:.75rem;background:var(--cream);padding:.1rem .4rem;color:var(--navy-light);}
-.setup-steps{margin-top:.75rem;font-size:.82rem;color:var(--text-body);line-height:1.8;padding-left:1.2rem;}
+
+/* MAIN */
 .main-wrap{max-width:1100px;margin:0 auto;padding:3rem 2rem 6rem;}
+
+/* CONN */
 .conn-status{display:flex;align-items:center;gap:.6rem;padding:.5rem 1rem;font-size:.78rem;margin-bottom:1.5rem;font-family:'JetBrains Mono',monospace;}
 .conn-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .conn-dot.ok{background:var(--green);}
 .conn-dot.err{background:var(--red);}
 .conn-dot.loading{background:var(--gold);animation:pulse .8s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ADMIN PANEL */
 .admin-panel{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:2rem;margin-bottom:2.5rem;display:none;}
 body.admin-mode .admin-panel{display:block;}
 .panel-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);}
-.upload-zone{border:2px dashed var(--border);padding:2.5rem;text-align:center;cursor:pointer;background:var(--off-white);margin-bottom:1.5rem;transition:all .2s;position:relative;}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--border);padding:2rem;text-align:center;cursor:pointer;background:var(--off-white);margin-bottom:1.5rem;transition:all .2s;position:relative;}
 .upload-zone:hover,.upload-zone.dov{border-color:var(--gold);background:rgba(200,149,42,.04);}
 .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.u-icon{font-size:2rem;display:block;margin-bottom:.5rem;}
-.u-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.25rem;}
-.u-hint{font-size:.82rem;color:var(--text-muted);font-style:italic;}
+.u-icon{font-size:2rem;display:block;margin-bottom:.4rem;}
+.u-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--navy);}
+.u-hint{font-size:.8rem;color:var(--text-muted);font-style:italic;margin-top:.2rem;}
+
+/* FORM */
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
 .form-row.three{grid-template-columns:1fr 1fr 1fr;}
 .form-row.full{grid-template-columns:1fr;}
 .fr label{display:block;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.3rem;font-weight:700;}
-.fr input,.fr select,.fr textarea{width:100%;padding:.55rem .85rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.95rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.fr input,.fr select,.fr textarea{width:100%;padding:.52rem .82rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.95rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
 .fr input:focus,.fr select:focus,.fr textarea:focus{border-color:var(--gold);background:var(--white);}
-.fr textarea{resize:vertical;min-height:68px;}
+.fr textarea{resize:vertical;min-height:60px;}
+
+/* PROGRESS */
 .upload-progress{display:none;margin-top:1rem;}
 .upload-progress.show{display:block;}
-.prog-label{font-size:.78rem;color:var(--text-muted);margin-bottom:.35rem;font-family:'JetBrains Mono',monospace;}
+.prog-label{font-size:.78rem;color:var(--text-muted);margin-bottom:.3rem;font-family:'JetBrains Mono',monospace;}
 .prog-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
-.prog-fill{height:100%;background:var(--gold);width:0%;transition:width .25s;border-radius:2px;}
-.prog-status{margin-top:.4rem;font-size:.75rem;color:var(--text-muted);font-style:italic;}
+.prog-fill{height:100%;background:var(--gold);width:0%;transition:width .25s;}
+.prog-status{margin-top:.35rem;font-size:.75rem;color:var(--text-muted);font-style:italic;}
 .prog-status.ok{color:var(--green);font-style:normal;font-weight:700;}
 .prog-status.err{color:var(--red);font-style:normal;}
-.btn-primary{padding:.7rem 1.8rem;background:var(--gold);color:var(--navy);border:none;font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:background .18s;}
-.btn-primary:hover{background:var(--gold-light);}
-.btn-primary:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;}
-.btn-secondary{padding:.7rem 1.4rem;background:transparent;color:var(--navy);border:1px solid var(--border);font-family:'EB Garamond',serif;font-size:.9rem;cursor:pointer;transition:all .18s;}
-.btn-secondary:hover{background:var(--slate);}
+
+/* BUTTONS */
+.btn-gold{padding:.65rem 1.8rem;background:var(--gold);color:var(--navy);border:none;font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:background .18s;}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-gold:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;}
+.btn-ghost{padding:.65rem 1.2rem;background:transparent;color:var(--navy);border:1px solid var(--border);font-family:'EB Garamond',serif;font-size:.88rem;cursor:pointer;transition:all .18s;}
+.btn-ghost:hover{background:var(--slate);}
+
+/* SEARCH + FILTER */
 .search-section{margin-bottom:2.5rem;}
-.search-row{display:flex;gap:.5rem;margin-bottom:1rem;}
-.search-inp{flex:1;padding:.7rem 1.1rem;border:1px solid var(--border);background:var(--white);font-family:'EB Garamond',serif;font-size:1rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.search-row{display:flex;gap:.5rem;margin-bottom:.9rem;}
+.search-inp{flex:1;padding:.68rem 1.1rem;border:1px solid var(--border);background:var(--white);font-family:'EB Garamond',serif;font-size:1rem;outline:none;transition:border-color .2s;}
 .search-inp:focus{border-color:var(--navy-pale);}
-.search-btn{padding:.7rem 1.2rem;background:var(--navy);color:var(--gold-light);border:none;font-family:'EB Garamond',serif;font-size:.9rem;cursor:pointer;transition:background .18s;}
+.search-btn{padding:.68rem 1.2rem;background:var(--navy);color:var(--gold-light);border:none;font-family:'EB Garamond',serif;font-size:.88rem;cursor:pointer;transition:background .18s;}
 .search-btn:hover{background:var(--navy-light);}
-.filter-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;}
-.filter-label{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-right:.3rem;}
-.filter-btn{padding:.28rem .85rem;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.82rem;cursor:pointer;transition:all .18s;}
-.filter-btn:hover{border-color:var(--navy-pale);color:var(--navy);}
-.filter-btn.active{background:var(--navy);color:var(--gold-pale);border-color:var(--navy);}
+.filter-row{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-right:.25rem;}
+.fbtn{padding:.26rem .8rem;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.8rem;cursor:pointer;transition:all .18s;}
+.fbtn:hover{border-color:var(--navy-pale);color:var(--navy);}
+.fbtn.active{background:var(--navy);color:var(--gold-pale);border-color:var(--navy);}
 .result-count{margin-left:auto;font-size:.78rem;color:var(--text-muted);font-style:italic;}
+
+/* TOPIC SECTIONS */
 .lib-topic{margin-bottom:3rem;}
 .lib-topic-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);}
 .lib-topic-icon{font-size:1.4rem;}
 .lib-topic-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--navy);flex:1;}
 .lib-topic-count{font-size:.78rem;color:var(--text-muted);font-style:italic;}
+
+/* LANG TABS */
 .lib-lang-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1rem;}
-.lib-lang-tab{padding:.32rem .85rem;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.82rem;cursor:pointer;transition:all .18s;}
-.lib-lang-tab:hover{border-color:var(--navy-pale);color:var(--navy);}
+.lib-lang-tab{padding:.3rem .82rem;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.8rem;cursor:pointer;transition:all .18s;}
 .lib-lang-tab.active{background:var(--navy);color:var(--gold-pale);border-color:var(--navy);}
-.tab-count{font-size:.7rem;opacity:.7;margin-left:.25rem;}
+.tab-count{font-size:.7rem;opacity:.7;margin-left:.2rem;}
 .lib-lang-panel{display:none;}
 .lib-lang-panel.active{display:block;}
-.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;}
-.lib-item{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--navy-pale);padding:1.1rem .9rem;cursor:pointer;transition:all .18s;position:relative;display:flex;flex-direction:column;}
+
+/* BOOK GRID */
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:1rem;margin-bottom:1rem;}
+.lib-item{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--navy-pale);padding:1rem .85rem;transition:all .18s;position:relative;display:flex;flex-direction:column;}
 .lib-item:hover{border-top-color:var(--gold);box-shadow:var(--shadow-md);transform:translateY(-2px);}
-.li-icon{font-size:1.6rem;display:block;margin-bottom:.4rem;text-align:center;}
-.li-name{font-family:'EB Garamond',serif;font-size:.82rem;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:.2rem;flex:1;}
-.li-author{font-size:.7rem;color:var(--text-muted);font-style:italic;margin-bottom:.2rem;}
-.li-meta{font-size:.68rem;color:var(--text-muted);}
-.li-actions{display:flex;gap:.3rem;margin-top:.6rem;}
-.li-btn{flex:1;padding:.28rem 0;font-size:.68rem;border:none;cursor:pointer;font-family:'EB Garamond',serif;transition:all .15s;text-align:center;text-decoration:none;display:inline-block;}
+.li-icon{font-size:1.5rem;display:block;margin-bottom:.35rem;text-align:center;}
+.li-name{font-family:'EB Garamond',serif;font-size:.8rem;font-weight:700;color:var(--navy);line-height:1.3;flex:1;margin-bottom:.2rem;}
+.li-author{font-size:.68rem;color:var(--text-muted);font-style:italic;margin-bottom:.15rem;}
+.li-meta{font-size:.66rem;color:var(--text-muted);}
+.li-actions{display:flex;gap:.25rem;margin-top:.55rem;}
+.li-btn{flex:1;padding:.26rem 0;font-size:.66rem;border:none;cursor:pointer;font-family:'EB Garamond',serif;text-align:center;text-decoration:none;display:inline-block;transition:all .15s;}
 .li-btn-view{background:var(--navy);color:var(--gold-pale);}
 .li-btn-view:hover{background:var(--navy-light);}
 .li-btn-dl{background:var(--gold);color:var(--navy);font-weight:700;}
 .li-btn-dl:hover{background:var(--gold-light);}
-.li-del{position:absolute;top:.35rem;right:.35rem;width:18px;height:18px;background:#c0392b;color:#fff;border:none;border-radius:50%;font-size:.6rem;cursor:pointer;display:none;align-items:center;justify-content:center;}
+.li-del{position:absolute;top:.3rem;right:.3rem;width:17px;height:17px;background:#c0392b;color:#fff;border:none;border-radius:50%;font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center;}
 .lib-item:hover .li-del{display:flex;}
 body:not(.admin-mode) .li-del{display:none!important;}
 mark{background:rgba(200,149,42,.28);color:inherit;padding:0 1px;}
-.madhab-group-header{display:flex;align-items:center;gap:.6rem;margin:2.5rem 0 1rem;padding:.55rem 1rem;background:linear-gradient(to right,rgba(13,31,60,.06),transparent);border-left:3px solid var(--gold-dim);}
-.madhab-group-title{font-family:'Playfair Display',serif;font-size:.8rem;font-weight:700;color:var(--navy);letter-spacing:.12em;text-transform:uppercase;}
-.madhab-group-arabic{font-family:'Noto Naskh Arabic',serif;font-size:.9rem;color:var(--text-muted);direction:rtl;}
-.folder-section{margin-bottom:1.5rem;}
-.folder-section-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;padding:.35rem 0;border-bottom:1px dashed var(--border);}
-.folder-section-label{font-family:'Playfair Display',serif;font-size:.82rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;}
-.folder-add-btn{margin-left:auto;padding:.25rem .75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.76rem;cursor:pointer;transition:all .18s;}
-.folder-add-btn:hover{background:var(--slate);color:var(--navy);}
-.folder-item{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--gold-dim);margin-bottom:.85rem;overflow:hidden;transition:box-shadow .18s;}
-.folder-item:hover{box-shadow:var(--shadow-md);}
-.folder-header{display:flex;align-items:center;gap:.75rem;padding:.8rem 1rem;cursor:pointer;user-select:none;}
-.folder-icon{font-size:1.2rem;}
-.folder-name{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--navy);flex:1;}
-.folder-meta{font-size:.72rem;color:var(--text-muted);font-style:italic;}
-.folder-count{font-size:.7rem;color:var(--gold-dim);background:var(--slate);padding:.12rem .5rem;border-radius:10px;margin-right:.4rem;}
-.folder-toggle{font-size:.7rem;color:var(--text-muted);transition:transform .2s;}
-.folder-toggle.open{transform:rotate(90deg);}
-.folder-books{display:none;padding:.6rem 1rem .85rem;border-top:1px solid var(--border);}
-.folder-books.open{display:block;}
-.folder-book-row{display:flex;align-items:center;gap:.6rem;padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.85rem;}
-.folder-book-row:last-child{border-bottom:none;}
-.fb-icon{font-size:.9rem;color:var(--gold-dim);}
-.fb-title{flex:1;font-weight:600;color:var(--navy);}
-.fb-btns{display:flex;gap:.3rem;}
-.fb-btn{padding:.2rem .6rem;font-size:.68rem;border:none;cursor:pointer;font-family:'EB Garamond',serif;text-decoration:none;display:inline-block;}
-.fb-btn-view{background:var(--navy);color:var(--gold-pale);}
-.fb-btn-dl{background:var(--gold);color:var(--navy);font-weight:700;}
-body:not(.admin-mode) .folder-add-btn{display:none;}
-.fld-del-btn{padding:.25rem .6rem;background:transparent;border:1px solid rgba(192,57,43,.3);color:#c0392b;font-family:'EB Garamond',serif;font-size:.7rem;cursor:pointer;margin-left:.3rem;}
-.add-folder-form{display:none;background:var(--cream);border:1px solid var(--gold-dim);padding:.75rem 1rem;margin-bottom:.85rem;}
-.add-folder-form.show{display:block;}
-.aff-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}
-.aff-row input,.aff-row select{flex:1;min-width:140px;padding:.4rem .75rem;border:1px solid var(--border);background:var(--white);font-family:'EB Garamond',serif;font-size:.88rem;outline:none;}
-.aff-save{padding:.4rem 1rem;background:var(--gold);color:var(--navy);border:none;font-family:'EB Garamond',serif;font-size:.85rem;font-weight:700;cursor:pointer;}
-.aff-cancel{padding:.4rem .75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.85rem;cursor:pointer;}
+
+/* MADHAB GROUP */
+.madhab-header{display:flex;align-items:center;gap:.6rem;margin:2.5rem 0 1rem;padding:.5rem 1rem;background:linear-gradient(to right,rgba(13,31,60,.06),transparent);border-left:3px solid var(--gold-dim);}
+.madhab-title{font-family:'Playfair Display',serif;font-size:.78rem;font-weight:700;color:var(--navy);letter-spacing:.12em;text-transform:uppercase;}
+.madhab-arabic{font-family:'Noto Naskh Arabic',serif;font-size:.88rem;color:var(--text-muted);direction:rtl;}
+
+/* ═══════════════════════════════════════════
+   FOLDER / COLLECTION SYSTEM
+   ─────────────────────────────────────────── */
+.coll-section{margin-bottom:1.25rem;}
+.coll-section-bar{display:flex;align-items:center;gap:.5rem;padding:.3rem 0;border-bottom:1px dashed var(--border);margin-bottom:.75rem;}
+.coll-section-label{font-family:'Playfair Display',serif;font-size:.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;}
+.coll-add-btn{margin-left:auto;padding:.22rem .7rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.75rem;cursor:pointer;transition:all .18s;}
+.coll-add-btn:hover{background:var(--slate);color:var(--navy);}
+body:not(.admin-mode) .coll-add-btn{display:none;}
+
+/* Folder item (works for both top-level and nested) */
+.coll-item{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--gold-dim);margin-bottom:.75rem;overflow:hidden;transition:box-shadow .18s;}
+.coll-item:hover{box-shadow:var(--shadow-sm);}
+.coll-item.nested{border-left-color:var(--navy-pale);margin-left:1.5rem;margin-bottom:.5rem;}
+.coll-item.nested .coll-header{background:rgba(13,31,60,.02);}
+
+.coll-header{display:flex;align-items:center;gap:.7rem;padding:.72rem 1rem;cursor:pointer;user-select:none;}
+.coll-icon{font-size:1.1rem;flex-shrink:0;}
+.coll-name{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;color:var(--navy);flex:1;}
+.coll-meta{font-size:.7rem;color:var(--text-muted);font-style:italic;}
+.coll-count{font-size:.68rem;color:var(--gold-dim);background:var(--slate);padding:.1rem .45rem;border-radius:10px;margin-right:.35rem;}
+.coll-chevron{font-size:.68rem;color:var(--text-muted);transition:transform .2s;flex-shrink:0;}
+.coll-chevron.open{transform:rotate(90deg);}
+.coll-del-btn{padding:.2rem .55rem;background:transparent;border:1px solid rgba(192,57,43,.3);color:#c0392b;font-family:'EB Garamond',serif;font-size:.68rem;cursor:pointer;flex-shrink:0;}
+body:not(.admin-mode) .coll-del-btn{display:none;}
+
+.coll-body{display:none;border-top:1px solid var(--border);padding:.7rem 1rem .85rem;}
+.coll-body.open{display:block;}
+
+/* Books inside a folder */
+.coll-book-row{display:flex;align-items:center;gap:.6rem;padding:.32rem 0;border-bottom:1px solid var(--border);font-size:.84rem;}
+.coll-book-row:last-of-type{border-bottom:none;}
+.cbr-icon{font-size:.85rem;color:var(--gold-dim);flex-shrink:0;}
+.cbr-title{flex:1;font-weight:600;color:var(--navy);line-height:1.25;}
+.cbr-author{font-size:.68rem;color:var(--text-muted);font-style:italic;}
+.cbr-btns{display:flex;gap:.25rem;flex-shrink:0;}
+.cbr-btn{padding:.18rem .55rem;font-size:.65rem;border:none;cursor:pointer;font-family:'EB Garamond',serif;text-decoration:none;display:inline-block;}
+.cbr-view{background:var(--navy);color:var(--gold-pale);}
+.cbr-dl{background:var(--gold);color:var(--navy);font-weight:700;}
+.cbr-del{background:#c0392b;color:#fff;border-radius:3px;}
+body:not(.admin-mode) .cbr-del{display:none;}
+
+/* Add collection inline form */
+.coll-add-form{display:none;background:var(--cream);border:1px solid var(--gold-dim);padding:.7rem 1rem;margin-bottom:.75rem;}
+.coll-add-form.show{display:block;}
+.caf-row{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap;}
+.caf-row input,.caf-row select{flex:1;min-width:130px;padding:.38rem .7rem;border:1px solid var(--border);background:var(--white);font-family:'EB Garamond',serif;font-size:.86rem;outline:none;}
+.caf-save{padding:.38rem .9rem;background:var(--gold);color:var(--navy);border:none;font-family:'EB Garamond',serif;font-size:.82rem;font-weight:700;cursor:pointer;}
+.caf-cancel{padding:.38rem .75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.82rem;cursor:pointer;}
+
+/* LOADING / EMPTY */
 .empty-st{text-align:center;padding:3rem 2rem;color:var(--text-muted);font-style:italic;}
 .loading-st{text-align:center;padding:3rem 2rem;color:var(--text-muted);}
-.spinner{display:inline-block;width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:.75rem;}
+.spinner{display:inline-block;width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:.7rem;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* PDF MODAL */
 .mbk{display:none;position:fixed;inset:0;background:rgba(13,31,60,.88);z-index:2000;align-items:center;justify-content:center;padding:.5rem;backdrop-filter:blur(3px);}
 .mbk.open{display:flex;}
 .mc{background:var(--white);width:100%;max-width:1400px;height:95vh;display:flex;flex-direction:column;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);}
@@ -163,27 +205,62 @@ body:not(.admin-mode) .folder-add-btn{display:none;}
 .m-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;margin-left:.5rem;}
 .m-x:hover{color:#fff;}
 #pdf-frame{flex:1;border:none;min-height:0;width:100%;}
+.mc-sm{max-width:540px;height:auto;}
 .m-body{padding:1.5rem;overflow-y:auto;}
-.fr2{margin-bottom:1rem;}
-.fr2 label{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin-bottom:.35rem;font-weight:700;}
-.fr2 input,.fr2 select,.fr2 textarea{width:100%;padding:.6rem .9rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:1rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.fr2{margin-bottom:.9rem;}
+.fr2 label{display:block;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin-bottom:.3rem;font-weight:700;}
+.fr2 input,.fr2 select,.fr2 textarea{width:100%;padding:.55rem .88rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.95rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
 .fr2 input:focus,.fr2 select:focus,.fr2 textarea:focus{border-color:var(--gold);}
-.fr2 textarea{resize:vertical;min-height:72px;}
+.fr2 textarea{resize:vertical;min-height:60px;}
+
+/* EDIT BOOKS BUTTON + MODAL */
+.edit-books-btn{position:fixed;bottom:1.75rem;left:1.75rem;z-index:1500;padding:.58rem 1.25rem;background:var(--navy-mid);color:var(--gold-light);border:1px solid rgba(200,149,42,.3);font-family:'EB Garamond',serif;font-size:.86rem;cursor:pointer;box-shadow:var(--shadow-md);transition:all .18s;display:none;}
+body.admin-mode .edit-books-btn{display:block;}
+.edit-books-btn:hover{background:var(--navy-light);}
+.edit-modal{display:none;position:fixed;inset:0;background:rgba(13,31,60,.92);z-index:2500;align-items:flex-start;justify-content:center;padding:2rem 1rem;backdrop-filter:blur(4px);overflow-y:auto;}
+.edit-modal.open{display:flex;}
+.edit-box{background:var(--white);width:100%;max-width:700px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);margin:auto;}
+.edit-head{background:var(--navy);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.edit-head-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:.95rem;font-weight:700;}
+.edit-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;}
+.edit-body-wrap{padding:1.25rem;max-height:80vh;overflow-y:auto;}
+.edit-search-inp{width:100%;padding:.52rem .85rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.9rem;outline:none;margin-bottom:1rem;}
+.edit-search-inp:focus{border-color:var(--gold);}
+.edit-item{border:1px solid var(--border);margin-bottom:.55rem;background:var(--off-white);}
+.edit-item-bar{display:flex;align-items:center;gap:.55rem;padding:.55rem .85rem;cursor:pointer;}
+.edit-item-bar:hover{background:var(--cream);}
+.edit-item-icon{font-size:.9rem;color:var(--gold-dim);}
+.edit-item-info{flex:1;}
+.edit-item-title{font-size:.86rem;font-weight:700;color:var(--navy);line-height:1.2;}
+.edit-item-meta{font-size:.7rem;color:var(--text-muted);margin-top:.08rem;}
+.edit-open-btn{padding:.25rem .7rem;background:var(--navy);color:var(--gold-pale);border:none;font-family:'EB Garamond',serif;font-size:.7rem;cursor:pointer;flex-shrink:0;}
+.edit-form{display:none;padding:.85rem;border-top:1px solid var(--border);background:var(--white);}
+.edit-form.open{display:block;}
+.ef-row{display:flex;gap:.45rem;margin-bottom:.45rem;flex-wrap:wrap;}
+.ef-row input,.ef-row select{flex:1;min-width:120px;padding:.4rem .68rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.86rem;color:var(--text-dark);outline:none;}
+.ef-row input:focus,.ef-row select:focus{border-color:var(--gold);}
+.ef-save{padding:.36rem .95rem;background:var(--gold);color:var(--navy);border:none;font-family:'EB Garamond',serif;font-size:.8rem;font-weight:700;cursor:pointer;}
+.ef-cancel{padding:.36rem .75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.8rem;cursor:pointer;}
+.edit-empty{text-align:center;padding:2rem;color:var(--text-muted);font-style:italic;}
+
+/* FAB */
 .fab-wrap{position:fixed;bottom:1.75rem;right:1.75rem;z-index:1500;}
-.fab{width:54px;height:54px;background:var(--gold);color:var(--navy);border:none;border-radius:50%;font-size:1.25rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-weight:700;}
-.fab-menu{position:absolute;bottom:64px;right:0;background:var(--navy);box-shadow:var(--shadow-lg);display:none;flex-direction:column;min-width:210px;border-top:2px solid var(--gold);}
+.fab{width:52px;height:52px;background:var(--gold);color:var(--navy);border:none;border-radius:50%;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-weight:700;}
+.fab-menu{position:absolute;bottom:62px;right:0;background:var(--navy);box-shadow:var(--shadow-lg);display:none;flex-direction:column;min-width:200px;border-top:2px solid var(--gold);}
 .fab-menu.open{display:flex;}
-.fi{padding:.75rem 1.25rem;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.85);text-align:left;font-family:'EB Garamond',serif;font-size:.9rem;cursor:pointer;transition:background .15s;}
+.fi{padding:.7rem 1.2rem;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.85);text-align:left;font-family:'EB Garamond',serif;font-size:.88rem;cursor:pointer;transition:background .15s;}
 .fi:hover{background:rgba(255,255,255,.06);}
 body:not(.admin-mode) .fab-wrap{display:none!important;}
 .admin-only{display:none!important;}body.admin-mode .admin-only{display:block!important;}
+
+/* AUTH + ADMIN BADGE */
 .admin-badge{display:none;position:fixed;top:70px;right:1rem;background:var(--gold);color:var(--navy);font-family:'EB Garamond',serif;font-size:.72rem;font-weight:700;padding:.3rem .9rem;letter-spacing:.07em;z-index:999;cursor:pointer;box-shadow:var(--shadow-md);text-transform:uppercase;}
 .admin-badge.visible{display:block;}
 .overlay{display:none;position:fixed;inset:0;background:rgba(13,31,60,.95);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(5px);}
 .overlay.open{display:flex;}
 .auth-box{background:var(--white);width:100%;max-width:380px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);}
 .auth-head{background:var(--navy);padding:1.4rem 2rem;text-align:center;}
-.auth-seal{width:50px;height:50px;border:2px solid rgba(200,149,42,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .65rem;font-size:1.2rem;}
+.auth-seal{width:48px;height:48px;border:2px solid rgba(200,149,42,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .6rem;font-size:1.2rem;}
 .auth-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;}
 .auth-body{padding:1.6rem 2rem 2rem;}
 .auth-error{display:none;color:#c0392b;font-size:.82rem;margin-bottom:.75rem;padding:.45rem .75rem;background:#fff0f0;border-left:3px solid #c0392b;}
@@ -196,44 +273,9 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 .btn-sub:hover{background:var(--navy-light);}
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--gold-pale);border-left:3px solid var(--gold);padding:.75rem 1.5rem;font-family:'EB Garamond',serif;font-size:.95rem;z-index:9999;box-shadow:var(--shadow-lg);transition:transform .3s;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
-
-/* EDIT BOOKS BUTTON */
-.edit-books-btn{position:fixed;bottom:1.75rem;left:1.75rem;z-index:1500;padding:.6rem 1.3rem;background:var(--navy-mid);color:var(--gold-light);border:1px solid rgba(200,149,42,.3);font-family:'EB Garamond',serif;font-size:.88rem;cursor:pointer;box-shadow:var(--shadow-md);transition:all .18s;display:none;}
-body.admin-mode .edit-books-btn{display:block;}
-.edit-books-btn:hover{background:var(--navy-light);}
-
-/* EDIT MODAL */
-.edit-modal{display:none;position:fixed;inset:0;background:rgba(13,31,60,.92);z-index:2500;align-items:flex-start;justify-content:center;padding:2rem 1rem;backdrop-filter:blur(4px);overflow-y:auto;}
-.edit-modal.open{display:flex;}
-.edit-box{background:var(--white);width:100%;max-width:700px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);margin:auto;}
-.edit-head{background:var(--navy);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;}
-.edit-head-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:.95rem;font-weight:700;}
-.edit-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;}
-.edit-x:hover{color:#fff;}
-.edit-body{padding:1.25rem;max-height:80vh;overflow-y:auto;}
-.edit-item{border:1px solid var(--border);margin-bottom:.6rem;background:var(--off-white);}
-.edit-item-head{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;cursor:pointer;}
-.edit-item-head:hover{background:var(--cream);}
-.edit-item-icon{font-size:1rem;color:var(--gold-dim);flex-shrink:0;}
-.edit-item-info{flex:1;}
-.edit-item-title{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.2;}
-.edit-item-meta{font-size:.72rem;color:var(--text-muted);margin-top:.1rem;}
-.edit-item-btn{padding:.28rem .75rem;background:var(--navy);color:var(--gold-pale);border:none;font-family:'EB Garamond',serif;font-size:.72rem;cursor:pointer;flex-shrink:0;}
-.edit-item-btn:hover{background:var(--navy-light);}
-.edit-inline{display:none;padding:.85rem;border-top:1px solid var(--border);background:var(--white);}
-.edit-inline.open{display:block;}
-.ei-row{display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap;}
-.ei-row input,.ei-row select{flex:1;min-width:130px;padding:.42rem .7rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.88rem;color:var(--text-dark);outline:none;}
-.ei-row input:focus,.ei-row select:focus{border-color:var(--gold);}
-.ei-save{padding:.38rem 1rem;background:var(--gold);color:var(--navy);border:none;font-family:'EB Garamond',serif;font-size:.82rem;font-weight:700;cursor:pointer;}
-.ei-cancel{padding:.38rem .8rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.82rem;cursor:pointer;}
-.edit-empty{text-align:center;padding:2rem;color:var(--text-muted);font-style:italic;font-size:.9rem;}
-.edit-search{width:100%;padding:.55rem .85rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.9rem;outline:none;margin-bottom:1rem;}
-.edit-search:focus{border-color:var(--gold);}
-
 footer{background:var(--navy);border-top:3px solid var(--gold-dim);text-align:center;padding:2rem;}
 footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
-@media(max-width:768px){nav{padding:0 1rem;}.lib-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}.form-row{grid-template-columns:1fr;}.form-row.three{grid-template-columns:1fr;}}
+@media(max-width:768px){nav{padding:0 1rem;}.lib-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}.form-row,.form-row.three{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -256,23 +298,12 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
 
 <div class="main-wrap">
 
-  <div class="setup-banner" id="setup-banner">
-    <div class="setup-banner-title">&#9881; Setup Required &mdash; Add Your Credentials</div>
-    <p style="font-size:.85rem;color:var(--text-body);margin-bottom:.5rem;">Open <code>library.html</code> in a text editor and fill in the 5 values at the top of the script tag:</p>
-    <ol class="setup-steps">
-      <li><code>SUPABASE_URL</code> &mdash; from Supabase &rarr; Project Settings &rarr; API</li>
-      <li><code>SUPABASE_ANON</code> &mdash; anon/public key from Supabase (safe in frontend)</li>
-      <li><code>SUPABASE_SVC</code> &mdash; service_role key (for admin writes only)</li>
-      <li><code>WORKER_URL</code> &mdash; your Cloudflare Worker URL after deploying</li>
-      <li><code>WORKER_SECRET</code> &mdash; must match ADMIN_SECRET set in the Worker</li>
-    </ol>
-  </div>
-
   <div class="conn-status" id="conn-status">
     <div class="conn-dot loading" id="conn-dot"></div>
     <span id="conn-text">Connecting to database&hellip;</span>
   </div>
 
+  <!-- ADMIN UPLOAD PANEL -->
   <div class="admin-panel">
     <div class="panel-title">&#128228; Upload Book to Library</div>
     <div class="upload-zone" id="lib-zone">
@@ -321,11 +352,18 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
       <div class="fr"><label>Year / Date</label><input type="text" id="f-date" placeholder="e.g. d. 593 AH" /></div>
     </div>
     <div class="form-row full">
+      <div class="fr"><label>Add to Collection (optional)</label>
+        <select id="f-collection">
+          <option value="">&#8212; No collection / show in grid &#8212;</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row full">
       <div class="fr"><label>Description (optional)</label><textarea id="f-desc" placeholder="Brief description&hellip;"></textarea></div>
     </div>
     <div style="display:flex;gap:.75rem;align-items:center;margin-top:.5rem;">
-      <button class="btn-primary" id="upload-btn" onclick="uploadBook()">&#8679; Upload &amp; Save to Library</button>
-      <button class="btn-secondary" onclick="clearUploadForm()">Clear</button>
+      <button class="btn-gold" id="upload-btn" onclick="uploadBook()">&#8679; Upload &amp; Save</button>
+      <button class="btn-ghost" onclick="clearUploadForm()">Clear</button>
       <span id="selected-file" style="font-size:.8rem;color:var(--text-muted);font-style:italic;"></span>
     </div>
     <div class="upload-progress" id="upload-progress">
@@ -335,28 +373,29 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
     </div>
   </div>
 
+  <!-- SEARCH + FILTER -->
   <div class="search-section">
     <div class="search-row">
-      <input class="search-inp" id="lib-search" type="text" placeholder="Search by title, author, or description&hellip;" />
+      <input class="search-inp" id="lib-search" type="text" placeholder="Search by title or author&hellip;" />
       <button class="search-btn" onclick="doSearch()">Search</button>
       <button class="search-btn" style="background:var(--text-muted);" onclick="clearSearch()">Clear</button>
     </div>
     <div class="filter-row">
       <span class="filter-label">Filter:</span>
-      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
-      <button class="filter-btn" onclick="setFilter('fiqh-hanafi',this)">H&#803;anaf&#299; Fiqh</button>
-      <button class="filter-btn" onclick="setFilter('fiqh-maliki',this)">M&#257;lik&#299; Fiqh</button>
-      <button class="filter-btn" onclick="setFilter('fiqh-shafi',this)">Sh&#257;fi&#699;&#299; Fiqh</button>
-      <button class="filter-btn" onclick="setFilter('fiqh-hanbali',this)">H&#803;anbal&#299; Fiqh</button>
-      <button class="filter-btn" onclick="setFilter('usool',this)">Us&#803;&#363;l</button>
-      <button class="filter-btn" onclick="setFilter('hadith',this)">H&#803;ad&#299;th</button>
-      <button class="filter-btn" onclick="setFilter('tafsir',this)">Tafs&#299;r</button>
-      <button class="filter-btn" onclick="setFilter('tajweed',this)">Tajw&#299;d</button>
-      <button class="filter-btn" onclick="setFilter('qiraat',this)">Qir&#257;&#702;&#257;t</button>
-      <button class="filter-btn" onclick="setFilter('aqeedah',this)">&#699;Aq&#299;dah</button>
-      <button class="filter-btn" onclick="setFilter('arabic',this)">Arabic</button>
-      <button class="filter-btn" onclick="setFilter('tasawwuf',this)">T&#803;as&#803;awwuf</button>
-      <button class="filter-btn" onclick="setFilter('other',this)">Other</button>
+      <button class="fbtn active" onclick="setFilter('all',this)">All</button>
+      <button class="fbtn" onclick="setFilter('fiqh-hanafi',this)">H&#803;anaf&#299;</button>
+      <button class="fbtn" onclick="setFilter('fiqh-maliki',this)">M&#257;lik&#299;</button>
+      <button class="fbtn" onclick="setFilter('fiqh-shafi',this)">Sh&#257;fi&#699;&#299;</button>
+      <button class="fbtn" onclick="setFilter('fiqh-hanbali',this)">H&#803;anbal&#299;</button>
+      <button class="fbtn" onclick="setFilter('usool',this)">Us&#803;&#363;l</button>
+      <button class="fbtn" onclick="setFilter('hadith',this)">H&#803;ad&#299;th</button>
+      <button class="fbtn" onclick="setFilter('tafsir',this)">Tafs&#299;r</button>
+      <button class="fbtn" onclick="setFilter('tajweed',this)">Tajw&#299;d</button>
+      <button class="fbtn" onclick="setFilter('qiraat',this)">Qir&#257;&#702;&#257;t</button>
+      <button class="fbtn" onclick="setFilter('aqeedah',this)">&#699;Aq&#299;dah</button>
+      <button class="fbtn" onclick="setFilter('arabic',this)">Arabic</button>
+      <button class="fbtn" onclick="setFilter('tasawwuf',this)">T&#803;as&#803;awwuf</button>
+      <button class="fbtn" onclick="setFilter('other',this)">Other</button>
       <span class="result-count" id="result-count"></span>
     </div>
   </div>
@@ -367,7 +406,6 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
 
 </div>
 
-
 <!-- EDIT BOOKS BUTTON -->
 <button class="edit-books-btn" onclick="openEditModal()">&#9998; Edit Books</button>
 
@@ -375,19 +413,21 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
 <div class="edit-modal" id="edit-modal">
   <div class="edit-box">
     <div class="edit-head">
-      <span class="edit-head-title">&#9998; Edit Books &amp; Collections</span>
+      <span class="edit-head-title">&#9998; Edit &amp; Organise Books</span>
       <button class="edit-x" onclick="closeEditModal()">&#10005;</button>
     </div>
-    <div class="edit-body">
-      <input class="edit-search" id="edit-search" type="text" placeholder="Search books to edit..." oninput="renderEditList(this.value)" />
-      <div id="edit-list"><p class="edit-empty">Loading...</p></div>
+    <div class="edit-body-wrap">
+      <input class="edit-search-inp" id="edit-search" type="text" placeholder="Search books&hellip;" oninput="renderEditList(this.value)" />
+      <div id="edit-list"><p class="edit-empty">Loading&hellip;</p></div>
     </div>
   </div>
 </div>
 
+<!-- FAB -->
 <div class="fab-wrap admin-only">
   <div class="fab-menu" id="fab-menu">
     <button class="fi" onclick="scrollToUpload()">&#128228; Upload New Book</button>
+    <button class="fi" onclick="openEditModal()">&#9998; Edit Books</button>
     <button class="fi" onclick="adminLogout()">&#128274; Sign Out</button>
   </div>
   <button class="fab" onclick="toggleFab()">+</button>
@@ -395,6 +435,7 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
 
 <div class="admin-badge" id="admin-badge" onclick="adminLogout()">&#9881; Admin &mdash; Sign Out</div>
 
+<!-- PDF VIEWER -->
 <div class="mbk" id="pdf-modal">
   <div class="mc">
     <div class="mtb">
@@ -406,6 +447,7 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
   </div>
 </div>
 
+<!-- AUTH -->
 <div class="overlay" id="auth-overlay">
   <div class="auth-box">
     <div class="auth-head">
@@ -436,8 +478,6 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
 
 <script>
 // ============================================================
-//  FILL IN YOUR CREDENTIALS HERE AFTER SETUP
-// ============================================================
 const SUPABASE_URL   = 'https://bjcqcojkfxvqnsfuklsf.supabase.co';
 const SUPABASE_ANON  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqY3Fjb2prZnh2cW5zZnVrbHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzI4OTEsImV4cCI6MjA5MDA0ODg5MX0.x8p8XHjZ_kgqvpEdb_mvEmQ1hkoZJmbvSJ85nU8X3Lc';
 const SUPABASE_SVC   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqY3Fjb2prZnh2cW5zZnVrbHNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDQ3Mjg5MSwiZXhwIjoyMDkwMDQ4ODkxfQ._vUrqtdxpGMuXMO28Ji5TRPAxYfYL9cDmrexl11rraw';
@@ -446,16 +486,14 @@ const WORKER_SECRET  = 'IslamicLibrary2026!';
 const ADMIN_PASSWORD = 'admin123';
 // ============================================================
 
-const UNCONFIGURED = SUPABASE_URL === 'YOUR_SUPABASE_URL';
-
 const LIB_TOPICS = [
-  {key:'fiqh-hanafi', label:'Fiqh \u2014 H\u0323anaf\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
+  {key:'fiqh-hanafi', label:'Fiqh \u2014 H\u1e24anaf\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
   {key:'fiqh-maliki', label:'Fiqh \u2014 M\u0101lik\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
   {key:'fiqh-shafi',  label:'Fiqh \u2014 Sh\u0101fi\u02BF\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
-  {key:'fiqh-hanbali',label:'Fiqh \u2014 H\u0323anbal\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
+  {key:'fiqh-hanbali',label:'Fiqh \u2014 H\u1e24anbal\u012b Madhhab', icon:'\u2696\uFE0F', isMadhab:true},
   {key:'fiqh-muqaran',label:'Fiqh \u2014 Comparative', icon:'\u2696\uFE0F', isMadhab:true},
-  {key:'usool',       label:'Us\u0323\u016bl al-Fiqh', icon:'\uD83D\uDCD0'},
-  {key:'hadith',      label:'H\u0323ad\u012bth & Sciences of the Sunnah', icon:'\uD83D\uDCDC'},
+  {key:'usool',       label:'Us\u1e63\u016bl al-Fiqh', icon:'\uD83D\uDCD0'},
+  {key:'hadith',      label:'H\u1e24ad\u012bth & Sciences of the Sunnah', icon:'\uD83D\uDCDC'},
   {key:'tafsir',      label:'Tafs\u012br', icon:'\uD83D\uDCD6'},
   {key:'quran-sci',   label:'Qur\u02BE\u0101nic Sciences', icon:'\uD83D\uDCD7'},
   {key:'tajweed',     label:'Tajw\u012bd', icon:'\uD83C\uDFB5'},
@@ -463,8 +501,8 @@ const LIB_TOPICS = [
   {key:'aqeedah',     label:'\u02BFAq\u012bdah & Kal\u0101m', icon:'\uD83C\uDF19'},
   {key:'seerah',      label:'S\u012brah & Islamic History', icon:'\uD83D\uDD4C'},
   {key:'arabic',      label:'Arabic Language Sciences', icon:'\uD83D\uDD24'},
-  {key:'tasawwuf',    label:'T\u0323as\u0323awwuf & Spirituality', icon:'\u2728'},
-  {key:'mantiq',      label:'Mant\u0323iq & Logic', icon:'\uD83D\uDD2D'},
+  {key:'tasawwuf',    label:'T\u1e63as\u1e63awwuf & Spirituality', icon:'\u2728'},
+  {key:'mantiq',      label:'Mant\u1e63iq & Logic', icon:'\uD83D\uDD2D'},
   {key:'other',       label:'General & Other Sciences', icon:'\uD83D\uDCDA'},
 ];
 const LIB_LANGS = [
@@ -473,13 +511,18 @@ const LIB_LANGS = [
 ];
 const FIQH_MADHABS = ['fiqh-hanafi','fiqh-maliki','fiqh-shafi','fiqh-hanbali','fiqh-muqaran'];
 
+// ── STATE ─────────────────────────────────────────────────────────────────────
 let allBooks = [];
 let activeFilter = 'all';
 let activeSearch = '';
 let selectedFile = null;
-let folders = [];
-try { folders = JSON.parse(localStorage.getItem('lib_folders') || '[]'); } catch(e){}
 
+// Folders stored in localStorage with nested support
+// Structure: { id, name, topic, lang, parentId (null = top-level), bookIds[] }
+let folders = [];
+try { folders = JSON.parse(localStorage.getItem('lib_folders_v2') || '[]'); } catch(e) { folders = []; }
+
+// ── SUPABASE ──────────────────────────────────────────────────────────────────
 const sbH = k => ({'apikey':k,'Authorization':'Bearer '+k,'Content-Type':'application/json','Prefer':'return=representation'});
 
 async function sbGet(q='') {
@@ -494,88 +537,310 @@ async function sbInsert(row) {
 }
 async function sbDelete(id) {
   const res = await fetch(SUPABASE_URL+'/rest/v1/books?id=eq.'+id,{method:'DELETE',headers:sbH(SUPABASE_SVC)});
-  if (!res.ok) throw new Error('Delete failed '+res.status);
+  if (!res.ok) throw new Error('Delete failed');
+}
+async function sbPatch(id, data) {
+  const res = await fetch(SUPABASE_URL+'/rest/v1/books?id=eq.'+id,{method:'PATCH',headers:sbH(SUPABASE_SVC),body:JSON.stringify(data)});
+  if (!res.ok) throw new Error('Patch failed');
 }
 
+// ── FOLDER HELPERS ─────────────────────────────────────────────────────────────
+function saveFolders() { localStorage.setItem('lib_folders_v2', JSON.stringify(folders)); }
+
+// Get all books assigned to a folder AND its descendants
+function getBookIdsInFolder(folderId) {
+  const folder = folders.find(f=>f.id===folderId);
+  if (!folder) return [];
+  const childFolderIds = folders.filter(f=>f.parentId===folderId).map(f=>f.id);
+  const childBookIds = childFolderIds.flatMap(cid => getBookIdsInFolder(cid));
+  return [...(folder.bookIds||[]), ...childBookIds];
+}
+
+// Get ALL book IDs that are in ANY folder (to exclude from main grid)
+function getAllFolderedBookIds() {
+  return folders.flatMap(f => f.bookIds || []);
+}
+
+// Get top-level folders for a topic
+function getTopFolders(topicKey) {
+  return folders.filter(f => f.topic === topicKey && !f.parentId);
+}
+
+// Get child folders
+function getChildFolders(parentId) {
+  return folders.filter(f => f.parentId === parentId);
+}
+
+// Flat list of all folders for dropdowns (with indentation)
+function getFolderOptions(excludeId=null) {
+  const topLevel = folders.filter(f=>!f.parentId);
+  const result = [];
+  function addFolder(folder, depth) {
+    if (folder.id === excludeId) return;
+    const prefix = '\u00A0'.repeat(depth*3);
+    const topicLabel = LIB_TOPICS.find(t=>t.key===folder.topic)?.label || folder.topic;
+    result.push({id:folder.id, label: prefix + (depth>0?'\u2514 ':'') + folder.name + ' ('+topicLabel+')'});
+    folders.filter(f=>f.parentId===folder.id).forEach(child => addFolder(child, depth+1));
+  }
+  topLevel.forEach(f => addFolder(f, 0));
+  return result;
+}
+
+function populateCollectionDropdown() {
+  const sel = document.getElementById('f-collection');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">\u2014 No collection / show in grid \u2014</option>';
+  getFolderOptions().forEach(opt => {
+    const o = document.createElement('option');
+    o.value = opt.id; o.textContent = opt.label;
+    if (opt.id === current) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+// ── LOAD & RENDER ─────────────────────────────────────────────────────────────
 async function loadBooks(sq='') {
-  const c = document.getElementById('lib-topics-container');
-  c.innerHTML = '<div class="loading-st"><div class="spinner"></div><p>Loading\u2026</p></div>';
+  const container = document.getElementById('lib-topics-container');
+  container.innerHTML = '<div class="loading-st"><div class="spinner"></div><p>Loading\u2026</p></div>';
   try {
     let q = 'select=*';
-    if (sq) { const enc=encodeURIComponent(sq); q+=`&or=(title.ilike.*${enc}*,author.ilike.*${enc}*,description.ilike.*${enc}*)`; }
+    if (sq) { const enc=encodeURIComponent(sq); q+=`&or=(title.ilike.*${enc}*,author.ilike.*${enc}*)`; }
     if (activeFilter!=='all') q+=`&topic=eq.${activeFilter}`;
     allBooks = await sbGet(q);
-    setConn('ok','Connected \u00B7 '+allBooks.length+' book'+(allBooks.length!==1?'s':'')+' in library');
+    setConn('ok', 'Connected \u00B7 '+allBooks.length+' book'+(allBooks.length!==1?'s':'')+' in library');
+    populateCollectionDropdown();
     renderLib(allBooks, sq);
   } catch(err) {
-    if(UNCONFIGURED){
-      setConn('err','Not configured \u2014 add credentials to library.html');
-      document.getElementById('setup-banner').classList.add('show');
-      c.innerHTML='<div class="empty-st">Configure your Supabase and Cloudflare credentials to connect the library.</div>';
-    } else {
-      setConn('err','Could not connect \u2014 check credentials');
-      c.innerHTML='<div class="empty-st">Connection error: '+err.message+'</div>';
-    }
+    setConn('err','Could not connect \u2014 check credentials');
+    container.innerHTML='<div class="empty-st">Connection error: '+err.message+'</div>';
+    console.error(err);
   }
 }
 
 function renderLib(books, q='') {
-  const c = document.getElementById('lib-topics-container');
+  const container = document.getElementById('lib-topics-container');
   document.getElementById('result-count').textContent = books.length ? books.length+' result'+(books.length!==1?'s':'') : '';
-  if (!books.length){c.innerHTML=q?`<div class="empty-st">No books found for "${q}".</div>`:'<div class="empty-st">No books in this category yet.</div>';return;}
+  if (!books.length){container.innerHTML=q?`<div class="empty-st">No books found for "${q}".</div>`:'<div class="empty-st">No books yet.</div>';return;}
+
+  // Books assigned to any folder will NOT show in the main grid
+  const folderedIds = new Set(getAllFolderedBookIds());
+
   const grouped={};
   LIB_TOPICS.forEach(t=>{grouped[t.key]={};LIB_LANGS.forEach(l=>grouped[t.key][l.key]=[]);});
-  books.forEach(b=>{
+
+  // Only non-foldered books go into the language grid
+  books.filter(b=>!folderedIds.has(b.id)).forEach(b=>{
     const tk=grouped[b.topic]?b.topic:'other';
     const lk=grouped[tk][b.language]!==undefined?b.language:'other-lang';
     grouped[tk][lk].push(b);
   });
-  let html='';let mhi=false;
+
+  // Total count per topic = foldered + non-foldered
+  const topicTotals = {};
+  LIB_TOPICS.forEach(t=>{
+    const nonFoldered = LIB_LANGS.reduce((n,l)=>n+grouped[t.key][l.key].length,0);
+    const folderCount = folders.filter(f=>f.topic===t.key&&!f.parentId).length;
+    topicTotals[t.key] = nonFoldered + folderCount;
+  });
+
+  let html = '';
+  let mhi = false;
+
   LIB_TOPICS.forEach(topic=>{
-    const total=LIB_LANGS.reduce((n,l)=>n+grouped[topic.key][l.key].length,0);
-    if(!total)return;
-    if(topic.isMadhab&&!mhi){mhi=true;html+=`<div class="madhab-group-header"><span class="madhab-group-title">Fiqh by Madhhab</span><span class="madhab-group-arabic">\u0627\u0644\u0641\u0642\u0647 \u0628\u062D\u0633\u0628 \u0627\u0644\u0645\u0630\u0627\u0647\u0628</span></div>`;}
-    const tf=folders.filter(f=>f.topic===topic.key);
-    html+=`<div class="lib-topic">
-      <div class="lib-topic-header"><span class="lib-topic-icon">${topic.icon}</span><span class="lib-topic-name">${topic.label}</span><span class="lib-topic-count">${total} book${total!==1?'s':''}</span></div>
-      <div class="folder-section">
-        <div class="folder-section-header"><span class="folder-section-label">\uD83D\uDCC1 Multi-Volume Collections</span><button class="folder-add-btn" onclick="showAF('${topic.key}')">\uFF0B New</button></div>
-        <div class="add-folder-form" id="aff-${topic.key}"><div class="aff-row"><input id="afn-${topic.key}" placeholder="Collection name"/><select id="afl-${topic.key}">${LIB_LANGS.map(l=>`<option value="${l.key}">${l.label}</option>`).join('')}</select><button class="aff-save" onclick="saveF('${topic.key}')">Save</button><button class="aff-cancel" onclick="hideAF('${topic.key}')">Cancel</button></div></div>
-        ${tf.map(folder=>{const fb=folder.bookIds.map(bid=>books.find(b=>b.id===bid)).filter(Boolean);return`<div class="folder-item"><div class="folder-header" onclick="toggleF('${folder.id}')"><span class="folder-icon">\uD83D\uDCC1</span><span class="folder-name">${folder.name}</span><span class="folder-meta">${folder.lang||''}</span><span class="folder-count">${fb.length} vol${fb.length!==1?'s':''}</span><span class="folder-toggle" id="ft-${folder.id}">\u25B6</span><button class="fld-del-btn" onclick="event.stopPropagation();delF('${folder.id}')">\u2715</button></div><div class="folder-books" id="fb-${folder.id}">${fb.length?fb.map(b=>`<div class="folder-book-row"><span class="fb-icon">\uD83D\uDCC4</span><span class="fb-title">${b.title}</span><div class="fb-btns">${b.file_url?`<button class="fb-btn fb-btn-view" onclick="openPdf(${b.id})">View</button><a class="fb-btn fb-btn-dl" href="${b.file_url}" target="_blank" download>\u2B07</a>`:''}</div></div>`).join(''):'<p style="font-size:.82rem;color:var(--text-muted);font-style:italic;padding:.4rem 0;">Empty.</p>'}</div></div>`;}).join('')}
-        ${!tf.length?'<p style="font-size:.78rem;color:var(--text-muted);font-style:italic;padding:.15rem 0 .75rem;">No collections yet.</p>':''}
+    const total = topicTotals[topic.key];
+    const hasGridBooks = LIB_LANGS.reduce((n,l)=>n+grouped[topic.key][l.key].length,0) > 0;
+    const topFolders = getTopFolders(topic.key);
+    if(!total && !topFolders.length && !isAdmin()) return;
+
+    if(topic.isMadhab&&!mhi){mhi=true;html+=`<div class="madhab-header"><span class="madhab-title">Fiqh by Madhhab</span><span class="madhab-arabic">\u0627\u0644\u0641\u0642\u0647 \u0628\u062d\u0633\u0628 \u0627\u0644\u0645\u0630\u0627\u0647\u0628</span></div>`;}
+
+    html += `<div class="lib-topic">
+      <div class="lib-topic-header">
+        <span class="lib-topic-icon">${topic.icon}</span>
+        <span class="lib-topic-name">${topic.label}</span>
+        <span class="lib-topic-count">${total} item${total!==1?'s':''}</span>
       </div>
-      <div class="lib-lang-tabs" id="tabs-${topic.key}">${LIB_LANGS.map(lang=>{const cnt=grouped[topic.key][lang.key].length;if(!cnt)return'';return`<button class="lib-lang-tab" onclick="switchTab('${topic.key}','${lang.key}',this)" data-lang="${lang.key}">${lang.label} <span class="tab-count">(${cnt})</span></button>`;}).join('')}</div>
+
+      <div class="coll-section">
+        <div class="coll-section-bar">
+          <span class="coll-section-label">&#128193; Collections</span>
+          <button class="coll-add-btn" onclick="showAddColl('${topic.key}',null)">&#xFF0B; New Collection</button>
+        </div>
+        <div class="coll-add-form" id="caf-${topic.key}-root">
+          <div class="caf-row">
+            <input id="cafn-${topic.key}-root" placeholder="Collection name (e.g. Al-Qud\u016br\u012b &amp; Commentaries)" />
+            <select id="cafl-${topic.key}-root">${LIB_LANGS.map(l=>`<option value="${l.key}">${l.label}</option>`).join('')}</select>
+            <button class="caf-save" onclick="saveNewColl('${topic.key}',null)">Save</button>
+            <button class="caf-cancel" onclick="hideAddColl('${topic.key}',null)">Cancel</button>
+          </div>
+        </div>
+        ${topFolders.map(folder=>renderFolder(folder, books, 0)).join('')}
+      </div>
+
+      ${hasGridBooks ? `
+      <div class="lib-lang-tabs" id="tabs-${topic.key}">
+        ${LIB_LANGS.map(lang=>{const cnt=grouped[topic.key][lang.key].length;if(!cnt)return'';return`<button class="lib-lang-tab" onclick="switchTab('${topic.key}','${lang.key}',this)" data-lang="${lang.key}">${lang.label} <span class="tab-count">(${cnt})</span></button>`;}).join('')}
+      </div>
       ${LIB_LANGS.map(lang=>{const items=grouped[topic.key][lang.key];if(!items.length)return'';
-        return`<div class="lib-lang-panel" id="panel-${topic.key}-${lang.key}"><div class="lib-grid">${items.map(book=>{
-          const esc=s=>s?s.replace(/</g,'&lt;').replace(/>/g,'&gt;'):'';
-          const hi=s=>q?s.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`):s;
-          return`<div class="lib-item"><button class="li-del" onclick="deleteBook(${book.id},'${encodeURIComponent(book.file_key||'')}')">\u2715</button><span class="li-icon">\uD83D\uDCD6</span><div class="li-name">${hi(esc(book.title))}</div>${book.author?`<div class="li-author">${esc(book.author)}</div>`:''}<div class="li-meta">${esc(book.date)||''}</div><div class="li-actions">${book.file_url?`<button class="li-btn li-btn-view" onclick="openPdf(${book.id})">View</button><a class="li-btn li-btn-dl" href="${book.file_url}" target="_blank" download="${esc(book.title)}.pdf">\u2B07 Download</a>`:'<span style="font-size:.65rem;color:var(--text-muted);">No file</span>'}</div></div>`;
-        }).join('')}</div></div>`;}).join('')}
+        return`<div class="lib-lang-panel" id="panel-${topic.key}-${lang.key}"><div class="lib-grid">${items.map(book=>renderBookCard(book,q)).join('')}</div></div>`;
+      }).join('')}` : ''}
     </div>`;
   });
-  c.innerHTML=html;
-  LIB_TOPICS.forEach(topic=>{const el=document.getElementById('tabs-'+topic.key);if(!el)return;const ft=el.querySelector('.lib-lang-tab');if(ft){ft.classList.add('active');const p=document.getElementById(`panel-${topic.key}-${ft.dataset.lang}`);if(p)p.classList.add('active');}});
+
+  container.innerHTML = html;
+
+  // Activate first tab per topic
+  LIB_TOPICS.forEach(topic=>{
+    const el=document.getElementById('tabs-'+topic.key);if(!el)return;
+    const ft=el.querySelector('.lib-lang-tab');if(ft){ft.classList.add('active');const p=document.getElementById(`panel-${topic.key}-${ft.dataset.lang}`);if(p)p.classList.add('active');}
+  });
 }
 
+function renderFolder(folder, books, depth) {
+  const childFolders = getChildFolders(folder.id);
+  const folderBooks = (folder.bookIds||[]).map(bid=>books.find(b=>b.id===bid)).filter(Boolean);
+  const totalItems = folderBooks.length + childFolders.length;
+  const indent = depth > 0 ? ' nested' : '';
+  const safeId = folder.id.replace(/[^a-zA-Z0-9_-]/g,'_');
+
+  return `<div class="coll-item${indent}" id="coll-${safeId}">
+    <div class="coll-header" onclick="toggleColl('${safeId}')">
+      <span class="coll-icon">&#128193;</span>
+      <span class="coll-name">${folder.name}</span>
+      <span class="coll-meta">${folder.lang||''}</span>
+      <span class="coll-count">${totalItems} item${totalItems!==1?'s':''}</span>
+      <span class="coll-chevron" id="chev-${safeId}">&#9658;</span>
+      <button class="coll-add-btn" style="margin-left:.5rem;" onclick="event.stopPropagation();showAddColl('${folder.topic}','${folder.id}')">&#xFF0B; Sub-collection</button>
+      <button class="coll-del-btn" onclick="event.stopPropagation();deleteColl('${folder.id}')">&#10005;</button>
+    </div>
+    <div class="coll-body" id="collbody-${safeId}">
+      <div class="coll-add-form" id="caf-${folder.topic}-${folder.id}">
+        <div class="caf-row">
+          <input id="cafn-${folder.topic}-${folder.id}" placeholder="Sub-collection name" />
+          <select id="cafl-${folder.topic}-${folder.id}">${LIB_LANGS.map(l=>`<option value="${l.key}">${l.label}</option>`).join('')}</select>
+          <button class="caf-save" onclick="saveNewColl('${folder.topic}','${folder.id}')">Save</button>
+          <button class="caf-cancel" onclick="hideAddColl('${folder.topic}','${folder.id}')">Cancel</button>
+        </div>
+      </div>
+      ${childFolders.map(cf=>renderFolder(cf, books, depth+1)).join('')}
+      ${folderBooks.map(book=>`
+        <div class="coll-book-row">
+          <span class="cbr-icon">&#128214;</span>
+          <div style="flex:1;">
+            <div class="cbr-title">${book.title}</div>
+            ${book.author?`<div class="cbr-author">${book.author}</div>`:''}
+          </div>
+          <div class="cbr-btns">
+            ${book.file_url?`<button class="cbr-btn cbr-view" onclick="openPdf(${book.id})">View</button><a class="cbr-btn cbr-dl" href="${book.file_url}" target="_blank" download="${book.title}.pdf">&#11015; Download</a>`:''}
+            <button class="cbr-btn cbr-del" onclick="deleteBook(${book.id},'${encodeURIComponent(book.file_key||'')}')">&#10005;</button>
+          </div>
+        </div>`).join('')}
+      ${!folderBooks.length && !childFolders.length ? '<p style="font-size:.82rem;color:var(--text-muted);font-style:italic;padding:.35rem 0;">Empty \u2014 use \u2728 Edit Books to add books here.</p>' : ''}
+    </div>
+  </div>`;
+}
+
+function renderBookCard(book, q='') {
+  const esc=s=>s?s.replace(/</g,'&lt;').replace(/>/g,'&gt;'):'';
+  const hi=s=>q?s.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<mark>${m}</mark>`):s;
+  return`<div class="lib-item">
+    <button class="li-del" onclick="deleteBook(${book.id},'${encodeURIComponent(book.file_key||'')}')">&#10005;</button>
+    <span class="li-icon">&#128214;</span>
+    <div class="li-name">${hi(esc(book.title))}</div>
+    ${book.author?`<div class="li-author">${esc(book.author)}</div>`:''}
+    <div class="li-meta">${esc(book.date)||''}</div>
+    <div class="li-actions">
+      ${book.file_url?`<button class="li-btn li-btn-view" onclick="openPdf(${book.id})">View</button><a class="li-btn li-btn-dl" href="${book.file_url}" target="_blank" download="${esc(book.title)}.pdf">&#11015; Download</a>`:'<span style="font-size:.65rem;color:var(--text-muted);">No file</span>'}
+    </div>
+  </div>`;
+}
+
+// ── COLLECTION FUNCTIONS ──────────────────────────────────────────────────────
+function toggleColl(safeId) {
+  document.getElementById('collbody-'+safeId)?.classList.toggle('open');
+  document.getElementById('chev-'+safeId)?.classList.toggle('open');
+}
+function showAddColl(topicKey, parentId) {
+  const key = topicKey+'-'+(parentId||'root');
+  document.getElementById('caf-'+key)?.classList.add('show');
+}
+function hideAddColl(topicKey, parentId) {
+  const key = topicKey+'-'+(parentId||'root');
+  document.getElementById('caf-'+key)?.classList.remove('show');
+}
+function saveNewColl(topicKey, parentId) {
+  const key = topicKey+'-'+(parentId||'root');
+  const nameEl = document.getElementById('cafn-'+key);
+  const langEl = document.getElementById('cafl-'+key);
+  const name = nameEl?.value.trim();
+  if (!name) return toast('Please enter a collection name.');
+  folders.push({
+    id: 'fld_'+Date.now(),
+    name,
+    topic: topicKey,
+    lang: langEl?.options[langEl.selectedIndex]?.text || '',
+    parentId: parentId || null,
+    bookIds: []
+  });
+  saveFolders();
+  hideAddColl(topicKey, parentId);
+  populateCollectionDropdown();
+  renderLib(allBooks, activeSearch);
+  toast(`Collection "${name}" created.`);
+}
+function deleteColl(folderId) {
+  if (!confirm('Delete this collection? Books inside will NOT be deleted, just removed from the collection.')) return;
+  // Recursively remove child folders too
+  function removeFolder(id) {
+    folders.filter(f=>f.parentId===id).forEach(f=>removeFolder(f.id));
+    folders = folders.filter(f=>f.id!==id);
+  }
+  removeFolder(folderId);
+  saveFolders();
+  populateCollectionDropdown();
+  renderLib(allBooks, activeSearch);
+  toast('Collection deleted.');
+}
+
+// ── SEARCH & FILTER ───────────────────────────────────────────────────────────
 function doSearch(){activeSearch=document.getElementById('lib-search').value.trim();loadBooks(activeSearch);}
 function clearSearch(){document.getElementById('lib-search').value='';activeSearch='';loadBooks();}
-function setFilter(t,btn){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeFilter=t;loadBooks(activeSearch);}
-function switchTab(tk,lk,btn){document.getElementById('tabs-'+tk).querySelectorAll('.lib-lang-tab').forEach(t=>t.classList.remove('active'));LIB_LANGS.forEach(l=>{const p=document.getElementById(`panel-${tk}-${l.key}`);if(p)p.classList.remove('active');});btn.classList.add('active');const p=document.getElementById(`panel-${tk}-${lk}`);if(p)p.classList.add('active');}
+function setFilter(t,btn){document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeFilter=t;loadBooks(activeSearch);}
 
-function openPdf(id){const b=allBooks.find(b=>b.id===id);if(!b?.file_url)return toast('No PDF attached.');document.getElementById('modal-title').textContent=b.title;document.getElementById('pdf-frame').src=b.file_url;const dl=document.getElementById('modal-dl');dl.href=b.file_url;dl.download=b.title+'.pdf';document.getElementById('pdf-modal').classList.add('open');}
+function switchTab(tk,lk,btn){
+  document.getElementById('tabs-'+tk)?.querySelectorAll('.lib-lang-tab').forEach(t=>t.classList.remove('active'));
+  LIB_LANGS.forEach(l=>{const p=document.getElementById(`panel-${tk}-${l.key}`);if(p)p.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById(`panel-${tk}-${lk}`)?.classList.add('active');
+}
+
+// ── PDF VIEWER ────────────────────────────────────────────────────────────────
+function openPdf(id){
+  const b=allBooks.find(b=>b.id===id);if(!b?.file_url)return toast('No PDF attached.');
+  document.getElementById('modal-title').textContent=b.title;
+  document.getElementById('pdf-frame').src=b.file_url;
+  const dl=document.getElementById('modal-dl');dl.href=b.file_url;dl.download=b.title+'.pdf';
+  document.getElementById('pdf-modal').classList.add('open');
+}
 function closePdf(){document.getElementById('pdf-modal').classList.remove('open');document.getElementById('pdf-frame').src='';}
 
+// ── UPLOAD ────────────────────────────────────────────────────────────────────
 const zone=document.getElementById('lib-zone');
 const inp=document.getElementById('lib-input');
 inp.addEventListener('change',e=>{if(e.target.files[0])selectFile(e.target.files[0]);});
 zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('dov');});
 zone.addEventListener('dragleave',()=>zone.classList.remove('dov'));
 zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('dov');const f=e.dataTransfer.files[0];if(f?.name.endsWith('.pdf'))selectFile(f);});
-function selectFile(f){selectedFile=f;document.getElementById('selected-file').textContent='\uD83D\uDCC4 '+f.name+' ('+(f.size/1024/1024).toFixed(1)+' MB)';if(!document.getElementById('f-title').value)document.getElementById('f-title').value=f.name.replace(/\.pdf$/i,'');}
+
+function selectFile(f){
+  selectedFile=f;
+  document.getElementById('selected-file').textContent='\uD83D\uDCC4 '+f.name+' ('+(f.size/1024/1024).toFixed(1)+' MB)';
+  if(!document.getElementById('f-title').value) document.getElementById('f-title').value=f.name.replace(/\.pdf$/i,'');
+}
 
 async function uploadBook(){
   if(!isAdmin())return requireAdmin();
-  if(UNCONFIGURED)return toast('Add your credentials first.');
   const title=document.getElementById('f-title').value.trim();
   if(!title)return toast('Please enter a book title.');
   if(!selectedFile)return toast('Please select a PDF file.');
@@ -592,32 +857,120 @@ async function uploadBook(){
     fill.style.width='55%';
     if(!upRes.ok){const e=await upRes.text();throw new Error('R2: '+e);}
     const {key,url:fileUrl}=await upRes.json();fill.style.width='65%';
-    label.textContent='Step 2/2 \u2014 Saving to Supabase\u2026';
+    label.textContent='Step 2/2 \u2014 Saving to database\u2026';
     const row={title,author:document.getElementById('f-author').value.trim()||null,topic:document.getElementById('f-topic').value,language:document.getElementById('f-lang').value,date:document.getElementById('f-date').value.trim()||null,description:document.getElementById('f-desc').value.trim()||null,file_url:fileUrl,file_key:key};
-    await sbInsert(row);fill.style.width='100%';
-    status.textContent='\u2713 "'+title+'" saved to library!';status.classList.add('ok');
+    const inserted = await sbInsert(row);
+    fill.style.width='100%';
+
+    // Assign to collection if selected
+    const collId = document.getElementById('f-collection').value;
+    if (collId && inserted && inserted[0]) {
+      const bookId = inserted[0].id;
+      const folder = folders.find(f=>f.id===collId);
+      if (folder && !folder.bookIds.includes(bookId)) {
+        folder.bookIds.push(bookId);
+        saveFolders();
+      }
+    }
+
+    status.textContent='\u2713 "'+title+'" saved!';status.classList.add('ok');
     toast('"'+title+'" added to library.');clearUploadForm();await loadBooks(activeSearch);
-  } catch(err){status.textContent='\u2717 Error: '+err.message;status.classList.add('err');toast('Upload failed \u2014 check console.');console.error(err);}
+  } catch(err){status.textContent='\u2717 Error: '+err.message;status.classList.add('err');toast('Upload failed.');console.error(err);}
   finally{btn.disabled=false;setTimeout(()=>{prog.classList.remove('show');fill.style.width='0%';status.className='prog-status';},4000);}
 }
 
-function clearUploadForm(){selectedFile=null;inp.value='';['f-title','f-author','f-date','f-desc'].forEach(id=>document.getElementById(id).value='');document.getElementById('selected-file').textContent='';document.getElementById('f-topic').value='fiqh-hanafi';document.getElementById('f-lang').value='arabic';}
+function clearUploadForm(){
+  selectedFile=null;inp.value='';
+  ['f-title','f-author','f-date','f-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('selected-file').textContent='';
+  document.getElementById('f-topic').value='fiqh-hanafi';
+  document.getElementById('f-lang').value='arabic';
+  document.getElementById('f-collection').value='';
+}
 
+// ── DELETE ────────────────────────────────────────────────────────────────────
 async function deleteBook(id,encodedKey){
-  if(!isAdmin()||!confirm('Remove this book?'))return;
+  if(!isAdmin()||!confirm('Remove this book from the library?'))return;
   try{
     if(encodedKey)await fetch(`${WORKER_URL}/delete/${encodedKey}`,{method:'DELETE',headers:{'X-Admin-Key':WORKER_SECRET}});
-    await sbDelete(id);toast('Book removed.');await loadBooks(activeSearch);
+    await sbDelete(id);
+    // Remove from all folders
+    folders.forEach(f=>{f.bookIds=(f.bookIds||[]).filter(b=>b!==id);});
+    saveFolders();
+    toast('Book removed.');await loadBooks(activeSearch);
   }catch(err){toast('Error removing book.');console.error(err);}
 }
 
-function saveFolders(){localStorage.setItem('lib_folders',JSON.stringify(folders));}
-function showAF(tk){document.getElementById('aff-'+tk)?.classList.add('show');}
-function hideAF(tk){document.getElementById('aff-'+tk)?.classList.remove('show');}
-function saveF(tk){const n=document.getElementById('afn-'+tk)?.value.trim();if(!n)return toast('Enter a name.');const lEl=document.getElementById('afl-'+tk);folders.push({id:'fld_'+Date.now(),topic:tk,lang:lEl?.options[lEl.selectedIndex]?.text||'',name:n,bookIds:[]});saveFolders();hideAF(tk);loadBooks(activeSearch);toast(`Collection "${n}" created.`);}
-function delF(id){if(!confirm('Delete?'))return;folders=folders.filter(f=>f.id!==id);saveFolders();loadBooks(activeSearch);}
-function toggleF(id){document.getElementById('fb-'+id)?.classList.toggle('open');document.getElementById('ft-'+id)?.classList.toggle('open');}
+// ── EDIT MODAL ────────────────────────────────────────────────────────────────
+function openEditModal(){if(!isAdmin())return requireAdmin();document.getElementById('edit-modal').classList.add('open');document.getElementById('edit-search').value='';renderEditList('');}
+function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');}
 
+function renderEditList(q=''){
+  const list=document.getElementById('edit-list');
+  if(!allBooks.length){list.innerHTML='<p class="edit-empty">No books yet.</p>';return;}
+  const filtered=q?allBooks.filter(b=>b.title.toLowerCase().includes(q.toLowerCase())||(b.author||'').toLowerCase().includes(q.toLowerCase())):allBooks;
+  if(!filtered.length){list.innerHTML='<p class="edit-empty">No books match.</p>';return;}
+  const collOpts = getFolderOptions();
+  list.innerHTML=filtered.map(book=>{
+    const topicLabel=LIB_TOPICS.find(t=>t.key===book.topic)?.label||book.topic||'\u2014';
+    const currentFolder=folders.find(f=>(f.bookIds||[]).includes(book.id));
+    return`<div class="edit-item" id="ei-${book.id}">
+      <div class="edit-item-bar" onclick="toggleEditForm(${book.id})">
+        <span class="edit-item-icon">&#128214;</span>
+        <div class="edit-item-info">
+          <div class="edit-item-title">${book.title}</div>
+          <div class="edit-item-meta">${book.author||'\u2014'} &middot; ${topicLabel} &middot; Collection: ${currentFolder?'\uD83D\uDCC1 '+currentFolder.name:'None'}</div>
+        </div>
+        <button class="edit-open-btn">&#9998; Edit</button>
+      </div>
+      <div class="edit-form" id="ef-${book.id}">
+        <div class="ef-row">
+          <input type="text" id="ef-title-${book.id}" value="${(book.title||'').replace(/"/g,'&quot;')}" placeholder="Title" />
+          <input type="text" id="ef-author-${book.id}" value="${(book.author||'').replace(/"/g,'&quot;')}" placeholder="Author" />
+        </div>
+        <div class="ef-row">
+          <input type="text" id="ef-date-${book.id}" value="${book.date||''}" placeholder="Year" />
+          <select id="ef-topic-${book.id}">${LIB_TOPICS.map(t=>`<option value="${t.key}"${book.topic===t.key?' selected':''}>${t.label}</option>`).join('')}</select>
+          <select id="ef-lang-${book.id}">${LIB_LANGS.map(l=>`<option value="${l.key}"${book.language===l.key?' selected':''}>${l.label}</option>`).join('')}</select>
+        </div>
+        <div class="ef-row">
+          <select id="ef-coll-${book.id}" style="flex:1;">
+            <option value="">\u2014 No collection \u2014</option>
+            ${collOpts.map(opt=>`<option value="${opt.id}"${currentFolder?.id===opt.id?' selected':''}>${opt.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="ef-row" style="margin-top:.2rem;">
+          <button class="ef-save" onclick="saveBookEdit(${book.id})">Save Changes</button>
+          <button class="ef-cancel" onclick="toggleEditForm(${book.id})">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEditForm(id){document.getElementById('ef-'+id)?.classList.toggle('open');}
+
+async function saveBookEdit(id){
+  const book=allBooks.find(b=>b.id===id);if(!book)return;
+  const title=document.getElementById('ef-title-'+id)?.value.trim()||book.title;
+  const author=document.getElementById('ef-author-'+id)?.value.trim()||null;
+  const date=document.getElementById('ef-date-'+id)?.value.trim()||null;
+  const topic=document.getElementById('ef-topic-'+id)?.value;
+  const lang=document.getElementById('ef-lang-'+id)?.value;
+  const newCollId=document.getElementById('ef-coll-'+id)?.value;
+  try{
+    await sbPatch(id,{title,author,date,topic,language:lang});
+    // Update folder assignment
+    folders.forEach(f=>{f.bookIds=(f.bookIds||[]).filter(b=>b!==id);});
+    if(newCollId){const t=folders.find(f=>f.id===newCollId);if(t&&!(t.bookIds||[]).includes(id)){t.bookIds=t.bookIds||[];t.bookIds.push(id);}}
+    saveFolders();
+    toast('"'+title+'" updated.');
+    await loadBooks(activeSearch);
+    renderEditList(document.getElementById('edit-search')?.value||'');
+  }catch(err){toast('Error saving.');console.error(err);}
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
 function setConn(s,m){document.getElementById('conn-dot').className='conn-dot '+s;document.getElementById('conn-text').textContent=m;}
 function isAdmin(){return sessionStorage.getItem('__admin')==='1';}
 function applyAdminState(){document.body.classList.toggle('admin-mode',isAdmin());document.getElementById('admin-badge').classList.toggle('visible',isAdmin());}
@@ -630,105 +983,8 @@ function toggleFab(){document.getElementById('fab-menu').classList.toggle('open'
 function scrollToUpload(){document.getElementById('fab-menu').classList.remove('open');document.querySelector('.admin-panel')?.scrollIntoView({behavior:'smooth',block:'center'});}
 function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3200);}
 
-
-// ── EDIT MODAL ────────────────────────────────────────────────────────────────
-function openEditModal(){
-  if(!isAdmin())return requireAdmin();
-  document.getElementById('edit-modal').classList.add('open');
-  document.getElementById('edit-search').value='';
-  renderEditList('');
-}
-function closeEditModal(){ document.getElementById('edit-modal').classList.remove('open'); }
-
-function renderEditList(q=''){
-  const list = document.getElementById('edit-list');
-  if(!allBooks.length){list.innerHTML='<p class="edit-empty">No books in library yet.</p>';return;}
-  const filtered = q ? allBooks.filter(b=>b.title.toLowerCase().includes(q.toLowerCase())||( b.author||'').toLowerCase().includes(q.toLowerCase())) : allBooks;
-  if(!filtered.length){list.innerHTML='<p class="edit-empty">No books match your search.</p>';return;}
-
-  list.innerHTML = filtered.map(book => {
-    const folder = folders.find(f=>f.bookIds.includes(book.id));
-    const topicLabel = LIB_TOPICS.find(t=>t.key===book.topic)?.label || book.topic || '—';
-    return `<div class="edit-item" id="ei-${book.id}">
-      <div class="edit-item-head" onclick="toggleEditInline(${book.id})">
-        <span class="edit-item-icon">&#128214;</span>
-        <div class="edit-item-info">
-          <div class="edit-item-title">${book.title}</div>
-          <div class="edit-item-meta">${book.author||'—'} &middot; ${topicLabel} &middot; ${book.language||'—'} &middot; Collection: ${folder?'&#128193; '+folder.name:'None'}</div>
-        </div>
-        <button class="edit-item-btn">&#9998; Edit</button>
-      </div>
-      <div class="edit-inline" id="ei-form-${book.id}">
-        <div class="ei-row">
-          <input type="text" id="ei-title-${book.id}" value="${(book.title||'').replace(/"/g,'&quot;')}" placeholder="Title" />
-          <input type="text" id="ei-author-${book.id}" value="${(book.author||'').replace(/"/g,'&quot;')}" placeholder="Author" />
-        </div>
-        <div class="ei-row">
-          <input type="text" id="ei-date-${book.id}" value="${book.date||''}" placeholder="Year / Date" />
-          <select id="ei-topic-${book.id}">
-            ${LIB_TOPICS.map(t=>`<option value="${t.key}"${book.topic===t.key?' selected':''}>${t.label}</option>`).join('')}
-          </select>
-          <select id="ei-lang-${book.id}">
-            ${LIB_LANGS.map(l=>`<option value="${l.key}"${book.language===l.key?' selected':''}>${l.label}</option>`).join('')}
-          </select>
-        </div>
-        <div class="ei-row">
-          <select id="ei-folder-${book.id}" style="flex:1;">
-            <option value="">&#8212; No collection &#8212;</option>
-            ${folders.map(f=>`<option value="${f.id}"${f.bookIds.includes(book.id)?` selected`:''}>${f.name} (${LIB_TOPICS.find(t=>t.key===f.topic)?.label||f.topic})</option>`).join('')}
-          </select>
-        </div>
-        <div class="ei-row" style="margin-top:.25rem;">
-          <button class="ei-save" onclick="saveEditBook(${book.id})">Save Changes</button>
-          <button class="ei-cancel" onclick="toggleEditInline(${book.id})">Cancel</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function toggleEditInline(id){
-  document.getElementById('ei-form-'+id)?.classList.toggle('open');
-}
-
-async function saveEditBook(id){
-  const book = allBooks.find(b=>b.id===id);
-  if(!book) return;
-
-  const title  = document.getElementById('ei-title-'+id)?.value.trim() || book.title;
-  const author = document.getElementById('ei-author-'+id)?.value.trim() || null;
-  const date   = document.getElementById('ei-date-'+id)?.value.trim() || null;
-  const topic  = document.getElementById('ei-topic-'+id)?.value;
-  const lang   = document.getElementById('ei-lang-'+id)?.value;
-  const newFid = document.getElementById('ei-folder-'+id)?.value;
-
-  try {
-    // Update in Supabase
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/books?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: {...sbH(SUPABASE_SVC), 'Content-Type':'application/json'},
-      body: JSON.stringify({ title, author, date, topic, language: lang })
-    });
-    if(!res.ok) throw new Error('Update failed');
-
-    // Update folder assignment in localStorage
-    folders.forEach(f=>{ f.bookIds = f.bookIds.filter(b=>b!==id); });
-    if(newFid){ const t=folders.find(f=>f.id===newFid); if(t&&!t.bookIds.includes(id)) t.bookIds.push(id); }
-    saveFolders();
-
-    toast('"'+title+'" updated.');
-    await loadBooks(activeSearch);
-    renderEditList(document.getElementById('edit-search')?.value||'');
-  } catch(err){
-    toast('Error saving — check console.');
-    console.error(err);
-  }
-}
-
 document.addEventListener('DOMContentLoaded',()=>{
-  applyAdminState();
-  if(UNCONFIGURED){document.getElementById('setup-banner').classList.add('show');setConn('err','Not configured \u2014 add your credentials');}
-  loadBooks();
+  applyAdminState();loadBooks();populateCollectionDropdown();
   document.getElementById('lib-search').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
   document.getElementById('pdf-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closePdf();});
   document.getElementById('auth-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOverlay();});
