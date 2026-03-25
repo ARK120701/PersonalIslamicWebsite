@@ -196,6 +196,41 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 .btn-sub:hover{background:var(--navy-light);}
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--gold-pale);border-left:3px solid var(--gold);padding:.75rem 1.5rem;font-family:'EB Garamond',serif;font-size:.95rem;z-index:9999;box-shadow:var(--shadow-lg);transition:transform .3s;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
+
+/* EDIT BOOKS BUTTON */
+.edit-books-btn{position:fixed;bottom:1.75rem;left:1.75rem;z-index:1500;padding:.6rem 1.3rem;background:var(--navy-mid);color:var(--gold-light);border:1px solid rgba(200,149,42,.3);font-family:'EB Garamond',serif;font-size:.88rem;cursor:pointer;box-shadow:var(--shadow-md);transition:all .18s;display:none;}
+body.admin-mode .edit-books-btn{display:block;}
+.edit-books-btn:hover{background:var(--navy-light);}
+
+/* EDIT MODAL */
+.edit-modal{display:none;position:fixed;inset:0;background:rgba(13,31,60,.92);z-index:2500;align-items:flex-start;justify-content:center;padding:2rem 1rem;backdrop-filter:blur(4px);overflow-y:auto;}
+.edit-modal.open{display:flex;}
+.edit-box{background:var(--white);width:100%;max-width:700px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);margin:auto;}
+.edit-head{background:var(--navy);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;}
+.edit-head-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:.95rem;font-weight:700;}
+.edit-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;}
+.edit-x:hover{color:#fff;}
+.edit-body{padding:1.25rem;max-height:80vh;overflow-y:auto;}
+.edit-item{border:1px solid var(--border);margin-bottom:.6rem;background:var(--off-white);}
+.edit-item-head{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;cursor:pointer;}
+.edit-item-head:hover{background:var(--cream);}
+.edit-item-icon{font-size:1rem;color:var(--gold-dim);flex-shrink:0;}
+.edit-item-info{flex:1;}
+.edit-item-title{font-size:.88rem;font-weight:700;color:var(--navy);line-height:1.2;}
+.edit-item-meta{font-size:.72rem;color:var(--text-muted);margin-top:.1rem;}
+.edit-item-btn{padding:.28rem .75rem;background:var(--navy);color:var(--gold-pale);border:none;font-family:'EB Garamond',serif;font-size:.72rem;cursor:pointer;flex-shrink:0;}
+.edit-item-btn:hover{background:var(--navy-light);}
+.edit-inline{display:none;padding:.85rem;border-top:1px solid var(--border);background:var(--white);}
+.edit-inline.open{display:block;}
+.ei-row{display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap;}
+.ei-row input,.ei-row select{flex:1;min-width:130px;padding:.42rem .7rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.88rem;color:var(--text-dark);outline:none;}
+.ei-row input:focus,.ei-row select:focus{border-color:var(--gold);}
+.ei-save{padding:.38rem 1rem;background:var(--gold);color:var(--navy);border:none;font-family:'EB Garamond',serif;font-size:.82rem;font-weight:700;cursor:pointer;}
+.ei-cancel{padding:.38rem .8rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.82rem;cursor:pointer;}
+.edit-empty{text-align:center;padding:2rem;color:var(--text-muted);font-style:italic;font-size:.9rem;}
+.edit-search{width:100%;padding:.55rem .85rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:.9rem;outline:none;margin-bottom:1rem;}
+.edit-search:focus{border-color:var(--gold);}
+
 footer{background:var(--navy);border-top:3px solid var(--gold-dim);text-align:center;padding:2rem;}
 footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
 @media(max-width:768px){nav{padding:0 1rem;}.lib-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}.form-row{grid-template-columns:1fr;}.form-row.three{grid-template-columns:1fr;}}
@@ -330,6 +365,24 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
     <div class="loading-st"><div class="spinner"></div><p>Loading library&hellip;</p></div>
   </div>
 
+</div>
+
+
+<!-- EDIT BOOKS BUTTON -->
+<button class="edit-books-btn" onclick="openEditModal()">&#9998; Edit Books</button>
+
+<!-- EDIT MODAL -->
+<div class="edit-modal" id="edit-modal">
+  <div class="edit-box">
+    <div class="edit-head">
+      <span class="edit-head-title">&#9998; Edit Books &amp; Collections</span>
+      <button class="edit-x" onclick="closeEditModal()">&#10005;</button>
+    </div>
+    <div class="edit-body">
+      <input class="edit-search" id="edit-search" type="text" placeholder="Search books to edit..." oninput="renderEditList(this.value)" />
+      <div id="edit-list"><p class="edit-empty">Loading...</p></div>
+    </div>
+  </div>
 </div>
 
 <div class="fab-wrap admin-only">
@@ -577,6 +630,101 @@ function toggleFab(){document.getElementById('fab-menu').classList.toggle('open'
 function scrollToUpload(){document.getElementById('fab-menu').classList.remove('open');document.querySelector('.admin-panel')?.scrollIntoView({behavior:'smooth',block:'center'});}
 function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3200);}
 
+
+// ── EDIT MODAL ────────────────────────────────────────────────────────────────
+function openEditModal(){
+  if(!isAdmin())return requireAdmin();
+  document.getElementById('edit-modal').classList.add('open');
+  document.getElementById('edit-search').value='';
+  renderEditList('');
+}
+function closeEditModal(){ document.getElementById('edit-modal').classList.remove('open'); }
+
+function renderEditList(q=''){
+  const list = document.getElementById('edit-list');
+  if(!allBooks.length){list.innerHTML='<p class="edit-empty">No books in library yet.</p>';return;}
+  const filtered = q ? allBooks.filter(b=>b.title.toLowerCase().includes(q.toLowerCase())||( b.author||'').toLowerCase().includes(q.toLowerCase())) : allBooks;
+  if(!filtered.length){list.innerHTML='<p class="edit-empty">No books match your search.</p>';return;}
+
+  list.innerHTML = filtered.map(book => {
+    const folder = folders.find(f=>f.bookIds.includes(book.id));
+    const topicLabel = LIB_TOPICS.find(t=>t.key===book.topic)?.label || book.topic || '—';
+    return `<div class="edit-item" id="ei-${book.id}">
+      <div class="edit-item-head" onclick="toggleEditInline(${book.id})">
+        <span class="edit-item-icon">&#128214;</span>
+        <div class="edit-item-info">
+          <div class="edit-item-title">${book.title}</div>
+          <div class="edit-item-meta">${book.author||'—'} &middot; ${topicLabel} &middot; ${book.language||'—'} &middot; Collection: ${folder?'&#128193; '+folder.name:'None'}</div>
+        </div>
+        <button class="edit-item-btn">&#9998; Edit</button>
+      </div>
+      <div class="edit-inline" id="ei-form-${book.id}">
+        <div class="ei-row">
+          <input type="text" id="ei-title-${book.id}" value="${(book.title||'').replace(/"/g,'&quot;')}" placeholder="Title" />
+          <input type="text" id="ei-author-${book.id}" value="${(book.author||'').replace(/"/g,'&quot;')}" placeholder="Author" />
+        </div>
+        <div class="ei-row">
+          <input type="text" id="ei-date-${book.id}" value="${book.date||''}" placeholder="Year / Date" />
+          <select id="ei-topic-${book.id}">
+            ${LIB_TOPICS.map(t=>`<option value="${t.key}"${book.topic===t.key?' selected':''}>${t.label}</option>`).join('')}
+          </select>
+          <select id="ei-lang-${book.id}">
+            ${LIB_LANGS.map(l=>`<option value="${l.key}"${book.language===l.key?' selected':''}>${l.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="ei-row">
+          <select id="ei-folder-${book.id}" style="flex:1;">
+            <option value="">&#8212; No collection &#8212;</option>
+            ${folders.map(f=>`<option value="${f.id}"${f.bookIds.includes(book.id)?` selected`:''}>${f.name} (${LIB_TOPICS.find(t=>t.key===f.topic)?.label||f.topic})</option>`).join('')}
+          </select>
+        </div>
+        <div class="ei-row" style="margin-top:.25rem;">
+          <button class="ei-save" onclick="saveEditBook(${book.id})">Save Changes</button>
+          <button class="ei-cancel" onclick="toggleEditInline(${book.id})">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEditInline(id){
+  document.getElementById('ei-form-'+id)?.classList.toggle('open');
+}
+
+async function saveEditBook(id){
+  const book = allBooks.find(b=>b.id===id);
+  if(!book) return;
+
+  const title  = document.getElementById('ei-title-'+id)?.value.trim() || book.title;
+  const author = document.getElementById('ei-author-'+id)?.value.trim() || null;
+  const date   = document.getElementById('ei-date-'+id)?.value.trim() || null;
+  const topic  = document.getElementById('ei-topic-'+id)?.value;
+  const lang   = document.getElementById('ei-lang-'+id)?.value;
+  const newFid = document.getElementById('ei-folder-'+id)?.value;
+
+  try {
+    // Update in Supabase
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/books?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {...sbH(SUPABASE_SVC), 'Content-Type':'application/json'},
+      body: JSON.stringify({ title, author, date, topic, language: lang })
+    });
+    if(!res.ok) throw new Error('Update failed');
+
+    // Update folder assignment in localStorage
+    folders.forEach(f=>{ f.bookIds = f.bookIds.filter(b=>b!==id); });
+    if(newFid){ const t=folders.find(f=>f.id===newFid); if(t&&!t.bookIds.includes(id)) t.bookIds.push(id); }
+    saveFolders();
+
+    toast('"'+title+'" updated.');
+    await loadBooks(activeSearch);
+    renderEditList(document.getElementById('edit-search')?.value||'');
+  } catch(err){
+    toast('Error saving — check console.');
+    console.error(err);
+  }
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   applyAdminState();
   if(UNCONFIGURED){document.getElementById('setup-banner').classList.add('show');setConn('err','Not configured \u2014 add your credentials');}
@@ -584,6 +732,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('lib-search').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
   document.getElementById('pdf-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closePdf();});
   document.getElementById('auth-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOverlay();});
+  document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEditModal();});
   document.addEventListener('click',e=>{const fw=document.querySelector('.fab-wrap');if(fw&&!fw.contains(e.target))document.getElementById('fab-menu').classList.remove('open');});
   document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();requireAdmin();}});
 });
