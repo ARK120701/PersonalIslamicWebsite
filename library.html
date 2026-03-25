@@ -517,10 +517,8 @@ let activeFilter = 'all';
 let activeSearch = '';
 let selectedFile = null;
 
-// Folders stored in localStorage with nested support
-// Structure: { id, name, topic, lang, parentId (null = top-level), bookIds[] }
+// Folders stored in Supabase (syncs across all devices)
 let folders = [];
-try { folders = JSON.parse(localStorage.getItem('lib_folders_v2') || '[]'); } catch(e) { folders = []; }
 
 // ── SUPABASE ──────────────────────────────────────────────────────────────────
 const sbH = k => ({'apikey':k,'Authorization':'Bearer '+k,'Content-Type':'application/json','Prefer':'return=representation'});
@@ -545,7 +543,66 @@ async function sbPatch(id, data) {
 }
 
 // ── FOLDER HELPERS ─────────────────────────────────────────────────────────────
-function saveFolders() { localStorage.setItem('lib_folders_v2', JSON.stringify(folders)); }
+// ── FOLDER SUPABASE SYNC ─────────────────────────────────────────────────────
+async function loadFolders() {
+  try {
+    const res = await fetch(SUPABASE_URL+'/rest/v1/folders?select=*&order=created_at.asc', {headers:sbH(SUPABASE_ANON)});
+    if (!res.ok) throw new Error('Folders fetch failed');
+    const rows = await res.json();
+    // Convert snake_case from DB to camelCase
+    folders = rows.map(r => ({
+      id: r.id,
+      name: r.name,
+      topic: r.topic,
+      lang: r.lang,
+      parentId: r.parent_id || null,
+      bookIds: r.book_ids || []
+    }));
+  } catch(err) {
+    console.warn('Could not load folders:', err);
+    folders = [];
+  }
+}
+
+async function saveFolderToDB(folder) {
+  const res = await fetch(SUPABASE_URL+'/rest/v1/folders', {
+    method: 'POST',
+    headers: {...sbH(SUPABASE_SVC), 'Prefer':'return=representation'},
+    body: JSON.stringify({
+      id: folder.id,
+      name: folder.name,
+      topic: folder.topic,
+      lang: folder.lang,
+      parent_id: folder.parentId || null,
+      book_ids: folder.bookIds || []
+    })
+  });
+  if (!res.ok) { const e=await res.text(); throw new Error(e); }
+  return res.json();
+}
+
+async function updateFolderInDB(folder) {
+  const res = await fetch(SUPABASE_URL+'/rest/v1/folders?id=eq.'+folder.id, {
+    method: 'PATCH',
+    headers: {...sbH(SUPABASE_SVC), 'Content-Type':'application/json'},
+    body: JSON.stringify({
+      name: folder.name,
+      book_ids: folder.bookIds || []
+    })
+  });
+  if (!res.ok) throw new Error('Folder update failed');
+}
+
+async function deleteFolderFromDB(folderId) {
+  const res = await fetch(SUPABASE_URL+'/rest/v1/folders?id=eq.'+folderId, {
+    method: 'DELETE',
+    headers: sbH(SUPABASE_SVC)
+  });
+  if (!res.ok) throw new Error('Folder delete failed');
+}
+
+// Legacy — kept for internal array sync only (no longer writes to localStorage)
+function saveFolders() { /* folders now saved to Supabase via saveFolderToDB/updateFolderInDB */ }
 
 // Get all books assigned to a folder AND its descendants
 function getBookIdsInFolder(folderId) {
@@ -769,38 +826,50 @@ function hideAddColl(topicKey, parentId) {
   const key = topicKey+'-'+(parentId||'root');
   document.getElementById('caf-'+key)?.classList.remove('show');
 }
-function saveNewColl(topicKey, parentId) {
+async function saveNewColl(topicKey, parentId) {
   const key = topicKey+'-'+(parentId||'root');
   const nameEl = document.getElementById('cafn-'+key);
   const langEl = document.getElementById('cafl-'+key);
   const name = nameEl?.value.trim();
   if (!name) return toast('Please enter a collection name.');
-  folders.push({
+  const newFolder = {
     id: 'fld_'+Date.now(),
     name,
     topic: topicKey,
     lang: langEl?.options[langEl.selectedIndex]?.text || '',
     parentId: parentId || null,
     bookIds: []
-  });
-  saveFolders();
-  hideAddColl(topicKey, parentId);
-  populateCollectionDropdown();
-  renderLib(allBooks, activeSearch);
-  toast(`Collection "${name}" created.`);
-}
-function deleteColl(folderId) {
-  if (!confirm('Delete this collection? Books inside will NOT be deleted, just removed from the collection.')) return;
-  // Recursively remove child folders too
-  function removeFolder(id) {
-    folders.filter(f=>f.parentId===id).forEach(f=>removeFolder(f.id));
-    folders = folders.filter(f=>f.id!==id);
+  };
+  try {
+    await saveFolderToDB(newFolder);
+    folders.push(newFolder);
+    hideAddColl(topicKey, parentId);
+    populateCollectionDropdown();
+    renderLib(allBooks, activeSearch);
+    toast(`Collection "${name}" created.`);
+  } catch(err) {
+    toast('Error creating collection.');
+    console.error(err);
   }
-  removeFolder(folderId);
-  saveFolders();
-  populateCollectionDropdown();
-  renderLib(allBooks, activeSearch);
-  toast('Collection deleted.');
+}
+async function deleteColl(folderId) {
+  if (!confirm('Delete this collection? Books inside will NOT be deleted, just removed from the collection.')) return;
+  try {
+    // Supabase cascade deletes child folders automatically (ON DELETE CASCADE)
+    await deleteFolderFromDB(folderId);
+    // Remove from local array
+    function removeLocal(id) {
+      folders.filter(f=>f.parentId===id).forEach(f=>removeLocal(f.id));
+      folders = folders.filter(f=>f.id!==id);
+    }
+    removeLocal(folderId);
+    populateCollectionDropdown();
+    renderLib(allBooks, activeSearch);
+    toast('Collection deleted.');
+  } catch(err) {
+    toast('Error deleting collection.');
+    console.error(err);
+  }
 }
 
 // ── SEARCH & FILTER ───────────────────────────────────────────────────────────
@@ -869,7 +938,7 @@ async function uploadBook(){
       const folder = folders.find(f=>f.id===collId);
       if (folder && !folder.bookIds.includes(bookId)) {
         folder.bookIds.push(bookId);
-        saveFolders();
+        await updateFolderInDB(folder);
       }
     }
 
@@ -894,9 +963,10 @@ async function deleteBook(id,encodedKey){
   try{
     if(encodedKey)await fetch(`${WORKER_URL}/delete/${encodedKey}`,{method:'DELETE',headers:{'X-Admin-Key':WORKER_SECRET}});
     await sbDelete(id);
-    // Remove from all folders
-    folders.forEach(f=>{f.bookIds=(f.bookIds||[]).filter(b=>b!==id);});
-    saveFolders();
+    // Remove from all folders in Supabase
+    const affectedFolders = folders.filter(f=>(f.bookIds||[]).includes(id));
+    affectedFolders.forEach(f=>{f.bookIds=(f.bookIds||[]).filter(b=>b!==id);});
+    await Promise.all(affectedFolders.map(f=>updateFolderInDB(f)));
     toast('Book removed.');await loadBooks(activeSearch);
   }catch(err){toast('Error removing book.');console.error(err);}
 }
@@ -960,10 +1030,18 @@ async function saveBookEdit(id){
   const newCollId=document.getElementById('ef-coll-'+id)?.value;
   try{
     await sbPatch(id,{title,author,date,topic,language:lang});
-    // Update folder assignment
-    folders.forEach(f=>{f.bookIds=(f.bookIds||[]).filter(b=>b!==id);});
-    if(newCollId){const t=folders.find(f=>f.id===newCollId);if(t&&!(t.bookIds||[]).includes(id)){t.bookIds=t.bookIds||[];t.bookIds.push(id);}}
-    saveFolders();
+    // Update folder assignment in Supabase
+    const foldersToUpdate = [];
+    folders.forEach(f=>{
+      const before = (f.bookIds||[]).includes(id);
+      f.bookIds=(f.bookIds||[]).filter(b=>b!==id);
+      if(before) foldersToUpdate.push(f);
+    });
+    if(newCollId){
+      const t=folders.find(f=>f.id===newCollId);
+      if(t){t.bookIds=t.bookIds||[];if(!t.bookIds.includes(id)){t.bookIds.push(id);foldersToUpdate.push(t);}}
+    }
+    await Promise.all(foldersToUpdate.map(f=>updateFolderInDB(f)));
     toast('"'+title+'" updated.');
     await loadBooks(activeSearch);
     renderEditList(document.getElementById('edit-search')?.value||'');
@@ -984,7 +1062,8 @@ function scrollToUpload(){document.getElementById('fab-menu').classList.remove('
 function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3200);}
 
 document.addEventListener('DOMContentLoaded',()=>{
-  applyAdminState();loadBooks();populateCollectionDropdown();
+  applyAdminState();
+  loadFolders().then(()=>{ loadBooks(); populateCollectionDropdown(); });
   document.getElementById('lib-search').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
   document.getElementById('pdf-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closePdf();});
   document.getElementById('auth-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOverlay();});
