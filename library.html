@@ -276,6 +276,20 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 footer{background:var(--navy);border-top:3px solid var(--gold-dim);text-align:center;padding:2rem;}
 footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
 @media(max-width:768px){nav{padding:0 1rem;}.lib-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}.form-row,.form-row.three{grid-template-columns:1fr;}}
+/* UPLOAD TABS */
+.panel-tabs{display:flex;gap:0;margin-bottom:1.25rem;border-bottom:2px solid var(--border);}
+.panel-tab{background:none;border:none;padding:.55rem 1.2rem;font-family:'EB Garamond',serif;font-size:.92rem;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;}
+.panel-tab.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:700;}
+.panel-tab:hover:not(.active){color:var(--navy);}
+/* FOLDER FILE LIST */
+.folder-file-list{margin:.75rem 0 .25rem;display:flex;flex-direction:column;gap:.3rem;max-height:240px;overflow-y:auto;}
+.folder-file-item{display:flex;align-items:center;gap:.6rem;padding:.4rem .6rem;background:var(--cream);border:1px solid var(--border);border-radius:4px;font-size:.85rem;}
+.ffi-name{flex:1;color:var(--text-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ffi-size{color:var(--text-muted);white-space:nowrap;font-size:.78rem;}
+.ffi-status{white-space:nowrap;font-size:.75rem;padding:.15rem .45rem;border-radius:3px;background:var(--slate);color:var(--text-muted);}
+.ffi-status.uploading{background:#fff3cd;color:#856404;}
+.ffi-status.done{background:#d4edda;color:#155724;}
+.ffi-status.failed{background:#f8d7da;color:#721c24;}
 </style>
 </head>
 <body>
@@ -305,71 +319,142 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
 
   <!-- ADMIN UPLOAD PANEL -->
   <div class="admin-panel">
-    <div class="panel-title">&#128228; Upload Book to Library</div>
-    <div class="upload-zone" id="lib-zone">
-      <input type="file" id="lib-input" accept=".pdf" />
-      <span class="u-icon">&#128218;</span>
-      <div class="u-title">Drag a PDF here or click to select</div>
-      <p class="u-hint">Uploaded to Cloudflare R2 &middot; Saved to Supabase</p>
+    <div class="panel-title">&#128228; Upload to Library</div>
+    <div class="panel-tabs">
+      <button class="panel-tab active" id="tab-single" onclick="switchUploadTab('single')">&#128196; Single Book</button>
+      <button class="panel-tab" id="tab-folder" onclick="switchUploadTab('folder')">&#128193; Upload Folder</button>
     </div>
-    <div class="form-row">
-      <div class="fr"><label>Book Title *</label><input type="text" id="f-title" placeholder="e.g. Al-Hid&#257;ya Vol. 1" /></div>
-      <div class="fr"><label>Author</label><input type="text" id="f-author" placeholder="e.g. Im&#257;m al-Marg&#299;n&#257;n&#299;" /></div>
-    </div>
-    <div class="form-row three">
-      <div class="fr"><label>Topic *</label>
-        <select id="f-topic">
-          <optgroup label="Fiqh">
-            <option value="fiqh-hanafi">Fiqh &mdash; H&#803;anaf&#299;</option>
-            <option value="fiqh-maliki">Fiqh &mdash; M&#257;lik&#299;</option>
-            <option value="fiqh-shafi">Fiqh &mdash; Sh&#257;fi&#699;&#299;</option>
-            <option value="fiqh-hanbali">Fiqh &mdash; H&#803;anbal&#299;</option>
-            <option value="fiqh-muqaran">Fiqh &mdash; Comparative</option>
-          </optgroup>
-          <option value="usool">Us&#803;&#363;l al-Fiqh</option>
-          <option value="hadith">H&#803;ad&#299;th</option>
-          <option value="tafsir">Tafs&#299;r</option>
-          <option value="quran-sci">Qur&#702;&#257;nic Sciences</option>
-          <option value="tajweed">Tajw&#299;d</option>
-          <option value="qiraat">Qir&#257;&#702;&#257;t</option>
-          <option value="aqeedah">&#699;Aq&#299;dah</option>
-          <option value="seerah">S&#299;rah</option>
-          <option value="arabic">Arabic Language</option>
-          <option value="tasawwuf">T&#803;as&#803;awwuf</option>
-          <option value="mantiq">Mant&#803;iq</option>
-          <option value="other">General / Other</option>
-        </select>
+
+    <!-- SINGLE BOOK PANEL -->
+    <div id="single-panel">
+      <div class="upload-zone" id="lib-zone">
+        <input type="file" id="lib-input" accept=".pdf" />
+        <span class="u-icon">&#128218;</span>
+        <div class="u-title">Drag a PDF here or click to select</div>
+        <p class="u-hint">Uploaded to Cloudflare R2 &middot; Saved to Supabase</p>
       </div>
-      <div class="fr"><label>Language *</label>
-        <select id="f-lang">
-          <option value="arabic">Arabic</option>
-          <option value="english">English</option>
-          <option value="urdu">Urdu</option>
-          <option value="persian">Persian</option>
-          <option value="other-lang">Other</option>
-        </select>
+      <div class="form-row">
+        <div class="fr"><label>Book Title *</label><input type="text" id="f-title" placeholder="e.g. Al-Hid&#257;ya Vol. 1" /></div>
+        <div class="fr"><label>Author</label><input type="text" id="f-author" placeholder="e.g. Im&#257;m al-Marg&#299;n&#257;n&#299;" /></div>
       </div>
-      <div class="fr"><label>Year / Date</label><input type="text" id="f-date" placeholder="e.g. d. 593 AH" /></div>
-    </div>
-    <div class="form-row full">
-      <div class="fr"><label>Add to Collection (optional)</label>
-        <select id="f-collection">
-          <option value="">&#8212; No collection / show in grid &#8212;</option>
-        </select>
+      <div class="form-row three">
+        <div class="fr"><label>Topic *</label>
+          <select id="f-topic">
+            <optgroup label="Fiqh">
+              <option value="fiqh-hanafi">Fiqh &mdash; H&#803;anaf&#299;</option>
+              <option value="fiqh-maliki">Fiqh &mdash; M&#257;lik&#299;</option>
+              <option value="fiqh-shafi">Fiqh &mdash; Sh&#257;fi&#699;&#299;</option>
+              <option value="fiqh-hanbali">Fiqh &mdash; H&#803;anbal&#299;</option>
+              <option value="fiqh-muqaran">Fiqh &mdash; Comparative</option>
+            </optgroup>
+            <option value="usool">Us&#803;&#363;l al-Fiqh</option>
+            <option value="hadith">H&#803;ad&#299;th</option>
+            <option value="tafsir">Tafs&#299;r</option>
+            <option value="quran-sci">Qur&#702;&#257;nic Sciences</option>
+            <option value="tajweed">Tajw&#299;d</option>
+            <option value="qiraat">Qir&#257;&#702;&#257;t</option>
+            <option value="aqeedah">&#699;Aq&#299;dah</option>
+            <option value="seerah">S&#299;rah</option>
+            <option value="arabic">Arabic Language</option>
+            <option value="tasawwuf">T&#803;as&#803;awwuf</option>
+            <option value="mantiq">Mant&#803;iq</option>
+            <option value="other">General / Other</option>
+          </select>
+        </div>
+        <div class="fr"><label>Language *</label>
+          <select id="f-lang">
+            <option value="arabic">Arabic</option>
+            <option value="english">English</option>
+            <option value="urdu">Urdu</option>
+            <option value="persian">Persian</option>
+            <option value="other-lang">Other</option>
+          </select>
+        </div>
+        <div class="fr"><label>Year / Date</label><input type="text" id="f-date" placeholder="e.g. d. 593 AH" /></div>
+      </div>
+      <div class="form-row full">
+        <div class="fr"><label>Add to Collection (optional)</label>
+          <select id="f-collection">
+            <option value="">&#8212; No collection / show in grid &#8212;</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="fr"><label>Description (optional)</label><textarea id="f-desc" placeholder="Brief description&hellip;"></textarea></div>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:center;margin-top:.5rem;">
+        <button class="btn-gold" id="upload-btn" onclick="uploadBook()">&#8679; Upload &amp; Save</button>
+        <button class="btn-ghost" onclick="clearUploadForm()">Clear</button>
+        <span id="selected-file" style="font-size:.8rem;color:var(--text-muted);font-style:italic;"></span>
+      </div>
+      <div class="upload-progress" id="upload-progress">
+        <div class="prog-label" id="prog-label">Uploading&hellip;</div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+        <div class="prog-status" id="prog-status"></div>
       </div>
     </div>
-    <div class="form-row full">
-      <div class="fr"><label>Description (optional)</label><textarea id="f-desc" placeholder="Brief description&hellip;"></textarea></div>
-    </div>
-    <div style="display:flex;gap:.75rem;align-items:center;margin-top:.5rem;">
-      <button class="btn-gold" id="upload-btn" onclick="uploadBook()">&#8679; Upload &amp; Save</button>
-      <button class="btn-ghost" onclick="clearUploadForm()">Clear</button>
-      <span id="selected-file" style="font-size:.8rem;color:var(--text-muted);font-style:italic;"></span>
-    </div>
-    <div class="upload-progress" id="upload-progress">
-      <div class="prog-label" id="prog-label">Uploading&hellip;</div>
-      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
-      <div class="prog-status" id="prog-status"></div>
+
+    <!-- FOLDER UPLOAD PANEL -->
+    <div id="folder-panel" style="display:none;">
+      <div class="upload-zone" id="folder-zone">
+        <input type="file" id="folder-input" webkitdirectory multiple />
+        <span class="u-icon">&#128193;</span>
+        <div class="u-title">Click to select a folder, or drag &amp; drop one here</div>
+        <p class="u-hint">All PDFs inside the folder will be queued for upload</p>
+      </div>
+      <div id="folder-meta-row" style="display:none;">
+        <div class="form-row three" style="margin-top:.75rem;">
+          <div class="fr"><label>Topic (applied to all) *</label>
+            <select id="folder-topic">
+              <optgroup label="Fiqh">
+                <option value="fiqh-hanafi">Fiqh &mdash; H&#803;anaf&#299;</option>
+                <option value="fiqh-maliki">Fiqh &mdash; M&#257;lik&#299;</option>
+                <option value="fiqh-shafi">Fiqh &mdash; Sh&#257;fi&#699;&#299;</option>
+                <option value="fiqh-hanbali">Fiqh &mdash; H&#803;anbal&#299;</option>
+                <option value="fiqh-muqaran">Fiqh &mdash; Comparative</option>
+              </optgroup>
+              <option value="usool">Us&#803;&#363;l al-Fiqh</option>
+              <option value="hadith">H&#803;ad&#299;th</option>
+              <option value="tafsir">Tafs&#299;r</option>
+              <option value="quran-sci">Qur&#702;&#257;nic Sciences</option>
+              <option value="tajweed">Tajw&#299;d</option>
+              <option value="qiraat">Qir&#257;&#702;&#257;t</option>
+              <option value="aqeedah">&#699;Aq&#299;dah</option>
+              <option value="seerah">S&#299;rah</option>
+              <option value="arabic">Arabic Language</option>
+              <option value="tasawwuf">T&#803;as&#803;awwuf</option>
+              <option value="mantiq">Mant&#803;iq</option>
+              <option value="other">General / Other</option>
+            </select>
+          </div>
+          <div class="fr"><label>Language (applied to all) *</label>
+            <select id="folder-lang">
+              <option value="arabic">Arabic</option>
+              <option value="english">English</option>
+              <option value="urdu">Urdu</option>
+              <option value="persian">Persian</option>
+              <option value="other-lang">Other</option>
+            </select>
+          </div>
+          <div class="fr" style="display:flex;align-items:flex-end;padding-bottom:.4rem;">
+            <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.9rem;">
+              <input type="checkbox" id="folder-create-coll" checked style="width:auto;" />
+              Create collection from folder name
+            </label>
+          </div>
+        </div>
+        <div id="folder-file-list"></div>
+        <div style="display:flex;gap:.75rem;align-items:center;margin-top:.5rem;">
+          <button class="btn-gold" id="folder-upload-btn" onclick="uploadFolderFiles()">&#8679; Upload All</button>
+          <button class="btn-ghost" onclick="clearFolderUpload()">Clear</button>
+          <span id="folder-summary" style="font-size:.8rem;color:var(--text-muted);font-style:italic;"></span>
+        </div>
+      </div>
+      <div class="upload-progress" id="folder-progress">
+        <div class="prog-label" id="folder-prog-label">Uploading&hellip;</div>
+        <div class="prog-track"><div class="prog-fill" id="folder-prog-fill"></div></div>
+        <div class="prog-status" id="folder-prog-status"></div>
+      </div>
     </div>
   </div>
 
@@ -957,6 +1042,107 @@ function clearUploadForm(){
   document.getElementById('f-collection').value='';
 }
 
+// ── UPLOAD TAB SWITCH ─────────────────────────────────────────────────────────
+function switchUploadTab(tab){
+  const isSingle = tab==='single';
+  document.getElementById('single-panel').style.display = isSingle?'':'none';
+  document.getElementById('folder-panel').style.display = isSingle?'none':'';
+  document.getElementById('tab-single').classList.toggle('active', isSingle);
+  document.getElementById('tab-folder').classList.toggle('active', !isSingle);
+}
+
+// ── FOLDER UPLOAD ─────────────────────────────────────────────────────────────
+let selectedFolderFiles = [];
+
+function processFolderFiles(files){
+  const pdfs = files.filter(f=>f.name.toLowerCase().endsWith('.pdf'));
+  if(!pdfs.length){toast('No PDF files found in the selected folder.');return;}
+  selectedFolderFiles = pdfs;
+  const folderName = pdfs[0].webkitRelativePath ? pdfs[0].webkitRelativePath.split('/')[0] : '';
+  document.getElementById('folder-summary').textContent = `\uD83D\uDCC4 ${pdfs.length} PDF${pdfs.length!==1?'s':''} found${folderName?' in \u201C'+folderName+'\u201D':''}`;
+  document.getElementById('folder-meta-row').style.display='';
+  const list = document.getElementById('folder-file-list');
+  list.innerHTML = `<div class="folder-file-list">${pdfs.map((f,i)=>`
+    <div class="folder-file-item" id="ffi-${i}">
+      <span>&#128196;</span>
+      <span class="ffi-name">${f.name}</span>
+      <span class="ffi-size">${(f.size/1024/1024).toFixed(1)} MB</span>
+      <span class="ffi-status" id="ffi-status-${i}">Queued</span>
+    </div>`).join('')}</div>`;
+}
+
+async function uploadFolderFiles(){
+  if(!isAdmin())return requireAdmin();
+  if(!selectedFolderFiles.length)return toast('No files selected.');
+  const topic=document.getElementById('folder-topic').value;
+  const lang=document.getElementById('folder-lang').value;
+  const createColl=document.getElementById('folder-create-coll').checked;
+  const btn=document.getElementById('folder-upload-btn');
+  btn.disabled=true;
+  const prog=document.getElementById('folder-progress');
+  const fill=document.getElementById('folder-prog-fill');
+  const label=document.getElementById('folder-prog-label');
+  const status=document.getElementById('folder-prog-status');
+  prog.classList.add('show');status.className='prog-status';
+
+  // Optionally create a collection named after the folder
+  let collId=null;
+  if(createColl){
+    const folderName=selectedFolderFiles[0].webkitRelativePath?selectedFolderFiles[0].webkitRelativePath.split('/')[0]:'Uploaded Folder';
+    const newFolder={id:'fld_'+Date.now(),name:folderName,topic,lang,parentId:null,bookIds:[]};
+    await saveFolderToDB(newFolder);
+    folders.push(newFolder);
+    collId=newFolder.id;
+    populateCollectionDropdown();
+  }
+
+  let successCount=0;
+  const total=selectedFolderFiles.length;
+  for(let i=0;i<total;i++){
+    const file=selectedFolderFiles[i];
+    const statusEl=document.getElementById('ffi-status-'+i);
+    statusEl.textContent='Uploading\u2026';statusEl.className='ffi-status uploading';
+    label.textContent=`Uploading ${i+1} of ${total}\u2014 ${file.name}`;
+    fill.style.width=Math.round((i/total)*100)+'%';
+    try{
+      const title=file.name.replace(/\.pdf$/i,'');
+      const fn=title.replace(/[^a-zA-Z0-9\s\-_.]/g,'').replace(/\s+/g,'-')+'.pdf';
+      const upRes=await fetch(`${WORKER_URL}/upload/${encodeURIComponent(fn)}`,{method:'PUT',headers:{'X-Admin-Key':WORKER_SECRET,'Content-Type':'application/pdf'},body:file});
+      if(!upRes.ok){const e=await upRes.text();throw new Error('R2: '+e);}
+      const {key,url:fileUrl}=await upRes.json();
+      const row={title,author:null,topic,language:lang,date:null,description:null,file_url:fileUrl,file_key:key};
+      const inserted=await sbInsert(row);
+      if(collId&&inserted&&inserted[0]){
+        const folder=folders.find(f=>f.id===collId);
+        if(folder){folder.bookIds.push(inserted[0].id);await updateFolderInDB(folder);}
+      }
+      statusEl.textContent='\u2713 Done';statusEl.className='ffi-status done';
+      successCount++;
+    }catch(err){
+      statusEl.textContent='\u2717 Failed';statusEl.className='ffi-status failed';
+      console.error(err);
+    }
+  }
+  fill.style.width='100%';
+  status.textContent=`\u2713 ${successCount} of ${total} uploaded successfully.`;
+  status.classList.add('ok');
+  toast(`${successCount} book${successCount!==1?'s':''} added to library.`);
+  await loadBooks(activeSearch);
+  btn.disabled=false;
+  setTimeout(()=>{prog.classList.remove('show');fill.style.width='0%';status.className='prog-status';},5000);
+}
+
+function clearFolderUpload(){
+  selectedFolderFiles=[];
+  document.getElementById('folder-input').value='';
+  document.getElementById('folder-file-list').innerHTML='';
+  document.getElementById('folder-meta-row').style.display='none';
+  document.getElementById('folder-summary').textContent='';
+  document.getElementById('folder-progress').classList.remove('show');
+  document.getElementById('folder-prog-fill').style.width='0%';
+  document.getElementById('folder-prog-status').className='prog-status';
+}
+
 // ── DELETE ────────────────────────────────────────────────────────────────────
 async function deleteBook(id,encodedKey){
   if(!isAdmin()||!confirm('Remove this book from the library?'))return;
@@ -1064,6 +1250,31 @@ function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e
 document.addEventListener('DOMContentLoaded',()=>{
   applyAdminState();
   loadFolders().then(()=>{ loadBooks(); populateCollectionDropdown(); });
+
+  // Folder upload input
+  const folderInp=document.getElementById('folder-input');
+  const folderZone=document.getElementById('folder-zone');
+  folderInp.addEventListener('change',e=>{if(e.target.files.length)processFolderFiles(Array.from(e.target.files));});
+  folderZone.addEventListener('dragover',e=>{e.preventDefault();folderZone.classList.add('dov');});
+  folderZone.addEventListener('dragleave',()=>folderZone.classList.remove('dov'));
+  folderZone.addEventListener('drop',async e=>{
+    e.preventDefault();folderZone.classList.remove('dov');
+    const files=[];
+    async function readDir(entry){
+      return new Promise(res=>{entry.createReader().readEntries(async entries=>{
+        for(const en of entries){
+          if(en.isFile&&en.name.toLowerCase().endsWith('.pdf')) await new Promise(r=>en.file(f=>{files.push(f);r();}));
+          else if(en.isDirectory) await readDir(en);
+        }res();});});}
+    for(const item of e.dataTransfer.items){
+      const entry=item.webkitGetAsEntry&&item.webkitGetAsEntry();
+      if(!entry)continue;
+      if(entry.isDirectory) await readDir(entry);
+      else if(entry.isFile&&entry.name.toLowerCase().endsWith('.pdf')) await new Promise(r=>entry.file(f=>{files.push(f);r();}));
+    }
+    if(files.length)processFolderFiles(files);
+    else toast('No PDFs found in the dropped folder.');
+  });
   document.getElementById('lib-search').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
   document.getElementById('pdf-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closePdf();});
   document.getElementById('auth-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOverlay();});
