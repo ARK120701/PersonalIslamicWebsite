@@ -538,7 +538,8 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
       <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0;">
         <div class="pdf-controls" id="pdf-controls">
           <button class="pdf-ctrl-btn" id="pdf-prev" onclick="pdfPrevPage()">&#8592;</button>
-          <span id="pdf-page-info" style="color:rgba(255,255,255,.7);font-size:.8rem;white-space:nowrap;min-width:80px;text-align:center;">—</span>
+          <input id="pdf-page-input" type="number" min="1" style="width:46px;padding:.25rem .3rem;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:'EB Garamond',serif;font-size:.82rem;text-align:center;border-radius:2px;" onkeydown="if(event.key==='Enter')pdfGoToPage(this.value)" onblur="pdfGoToPage(this.value)" />
+          <span id="pdf-page-info" style="color:rgba(255,255,255,.55);font-size:.8rem;white-space:nowrap;">—</span>
           <button class="pdf-ctrl-btn" id="pdf-next" onclick="pdfNextPage()">&#8594;</button>
           <select id="pdf-zoom" class="pdf-ctrl-select" onchange="pdfSetZoom(this.value)">
             <option value="0.5">50%</option>
@@ -1005,6 +1006,7 @@ function openPdf(id){
   const dl=document.getElementById('modal-dl');dl.href=b.file_url;dl.download=b.title+'.pdf';
   document.getElementById('modal-new-tab').href=b.file_url;
   document.getElementById('pdf-zoom').value='1';
+  document.getElementById('pdf-page-input').value='';
   document.getElementById('pdf-page-info').textContent='Loading\u2026';
   document.getElementById('pdf-modal').classList.add('open');
   pdfScale=1;pdfPageNum=1;pdfDoc=null;pdfRendering=false;
@@ -1041,7 +1043,9 @@ function renderPdfPage(num){
     page.render({canvasContext:canvas.getContext('2d'),viewport}).promise.then(()=>{
       pdfRendering=false;
       pdfPageNum=num;
-      document.getElementById('pdf-page-info').textContent=`Page ${num} of ${pdfDoc.numPages}`;
+      document.getElementById('pdf-page-info').textContent=`of ${pdfDoc.numPages}`;
+      document.getElementById('pdf-page-input').value=num;
+      document.getElementById('pdf-page-input').max=pdfDoc.numPages;
       document.getElementById('pdf-prev').disabled=num<=1;
       document.getElementById('pdf-next').disabled=num>=pdfDoc.numPages;
       wrap.scrollTop=0;
@@ -1051,6 +1055,7 @@ function renderPdfPage(num){
 
 function pdfPrevPage(){if(!pdfDoc||pdfRendering||pdfPageNum<=1)return;renderPdfPage(pdfPageNum-1);}
 function pdfNextPage(){if(!pdfDoc||pdfRendering||pdfPageNum>=pdfDoc.numPages)return;renderPdfPage(pdfPageNum+1);}
+function pdfGoToPage(v){if(!pdfDoc)return;const n=parseInt(v);if(isNaN(n))return;const p=Math.max(1,Math.min(n,pdfDoc.numPages));renderPdfPage(p);}
 function pdfSetZoom(v){if(!pdfDoc)return;pdfScale=parseFloat(v);pdfRendering=false;renderPdfPage(pdfPageNum);}
 function closePdf(){document.getElementById('pdf-modal').classList.remove('open');pdfDoc=null;pdfRendering=false;document.getElementById('pdf-canvas-wrap').innerHTML='';}
 
