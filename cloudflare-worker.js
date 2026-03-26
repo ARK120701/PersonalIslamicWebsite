@@ -69,6 +69,31 @@ export default {
       }
     }
 
+    // POST /import-gdrive — fetch a PDF from Google Drive and store in R2
+    if (request.method === 'POST' && path === '/import-gdrive') {
+      try {
+        const { fileId, filename } = await request.json();
+        if (!fileId || !filename) return json({ error: 'Missing fileId or filename' }, 400);
+
+        const gdUrl = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=t`;
+        const gdRes = await fetch(gdUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+        if (!gdRes.ok) throw new Error(`Google Drive returned ${gdRes.status}`);
+
+        const key = `books/${Date.now()}-${filename}`;
+        await env.MY_BUCKET.put(key, gdRes.body, {
+          httpMetadata: {
+            contentType: 'application/pdf',
+            contentDisposition: `inline; filename="${filename}"`,
+          },
+        });
+
+        const publicUrl = `${env.PUBLIC_BUCKET_URL}/${key}`;
+        return json({ success: true, key, url: publicUrl });
+      } catch (err) {
+        return json({ error: err.message }, 500);
+      }
+    }
+
     // DELETE /delete/:key — remove a PDF
     if (request.method === 'DELETE' && path.startsWith('/delete/')) {
       try {

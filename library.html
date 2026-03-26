@@ -333,6 +333,7 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
     <div class="panel-tabs">
       <button class="panel-tab active" id="tab-single" onclick="switchUploadTab('single')">&#128196; Single Book</button>
       <button class="panel-tab" id="tab-folder" onclick="switchUploadTab('folder')">&#128193; Upload Folder</button>
+      <button class="panel-tab" id="tab-gdrive" onclick="switchUploadTab('gdrive')">&#128229; Google Drive</button>
     </div>
 
     <!-- SINGLE BOOK PANEL -->
@@ -464,6 +465,72 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
         <div class="prog-label" id="folder-prog-label">Uploading&hellip;</div>
         <div class="prog-track"><div class="prog-fill" id="folder-prog-fill"></div></div>
         <div class="prog-status" id="folder-prog-status"></div>
+      </div>
+    </div>
+
+    <!-- GOOGLE DRIVE IMPORT PANEL -->
+    <div id="gdrive-panel" style="display:none;">
+      <div class="form-row">
+        <div class="fr">
+          <label>Google Drive Folder URL</label>
+          <input type="text" id="gd-url" placeholder="https://drive.google.com/drive/folders/..." />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fr">
+          <label>Google API Key &mdash; <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="font-size:.75rem;color:var(--gold-dim);">Get one here &nearr;</a></label>
+          <input type="text" id="gd-apikey" placeholder="AIzaSy..." />
+        </div>
+      </div>
+      <div class="form-row three">
+        <div class="fr"><label>Topic (applied to all) *</label>
+          <select id="gd-topic">
+            <optgroup label="Fiqh">
+              <option value="fiqh-hanafi">Fiqh &mdash; H&#803;anaf&#299;</option>
+              <option value="fiqh-maliki">Fiqh &mdash; M&#257;lik&#299;</option>
+              <option value="fiqh-shafi">Fiqh &mdash; Sh&#257;fi&#699;&#299;</option>
+              <option value="fiqh-hanbali">Fiqh &mdash; H&#803;anbal&#299;</option>
+              <option value="fiqh-muqaran">Fiqh &mdash; Comparative</option>
+            </optgroup>
+            <option value="usool">Us&#803;&#363;l al-Fiqh</option>
+            <option value="hadith">H&#803;ad&#299;th</option>
+            <option value="tafsir">Tafs&#299;r</option>
+            <option value="quran-sci">Qur&#702;&#257;nic Sciences</option>
+            <option value="tajweed">Tajw&#299;d</option>
+            <option value="qiraat">Qir&#257;&#702;&#257;t</option>
+            <option value="aqeedah">&#699;Aq&#299;dah</option>
+            <option value="seerah">S&#299;rah</option>
+            <option value="arabic">Arabic Language</option>
+            <option value="tasawwuf">T&#803;as&#803;awwuf</option>
+            <option value="mantiq">Mant&#803;iq</option>
+            <option value="other">General / Other</option>
+          </select>
+        </div>
+        <div class="fr"><label>Language (applied to all) *</label>
+          <select id="gd-lang">
+            <option value="arabic">Arabic</option>
+            <option value="english">English</option>
+            <option value="urdu">Urdu</option>
+            <option value="persian">Persian</option>
+            <option value="other-lang">Other</option>
+          </select>
+        </div>
+        <div class="fr" style="display:flex;align-items:flex-end;padding-bottom:.25rem;">
+          <button class="btn-gold" onclick="fetchGDriveStructure()" style="width:100%;">&#128269; Fetch Files</button>
+        </div>
+      </div>
+      <div id="gd-tree"></div>
+      <div id="gd-actions" style="display:none;margin-top:.75rem;display:none;">
+        <div style="display:flex;gap:.75rem;align-items:center;">
+          <button class="btn-gold" id="gd-import-btn" onclick="importGDriveFiles()">&#8679; Import All</button>
+          <button class="btn-ghost" onclick="clearGDrive()">Clear</button>
+          <span id="gd-summary" style="font-size:.8rem;color:var(--text-muted);font-style:italic;"></span>
+        </div>
+      </div>
+      <div class="upload-progress" id="gd-progress">
+        <div class="prog-label" id="gd-prog-label">Importing&hellip;</div>
+        <div class="prog-track"><div class="prog-fill" id="gd-prog-fill"></div></div>
+        <div class="prog-status" id="gd-prog-status"></div>
       </div>
     </div>
   </div>
@@ -1124,11 +1191,10 @@ function clearUploadForm(){
 
 // ── UPLOAD TAB SWITCH ─────────────────────────────────────────────────────────
 function switchUploadTab(tab){
-  const isSingle = tab==='single';
-  document.getElementById('single-panel').style.display = isSingle?'':'none';
-  document.getElementById('folder-panel').style.display = isSingle?'none':'';
-  document.getElementById('tab-single').classList.toggle('active', isSingle);
-  document.getElementById('tab-folder').classList.toggle('active', !isSingle);
+  ['single','folder','gdrive'].forEach(t=>{
+    document.getElementById(t+'-panel').style.display = tab===t?'':'none';
+    document.getElementById('tab-'+t).classList.toggle('active', tab===t);
+  });
 }
 
 // ── FOLDER UPLOAD ─────────────────────────────────────────────────────────────
@@ -1210,6 +1276,168 @@ async function uploadFolderFiles(){
   await loadBooks(activeSearch);
   btn.disabled=false;
   setTimeout(()=>{prog.classList.remove('show');fill.style.width='0%';status.className='prog-status';},5000);
+}
+
+// ── GOOGLE DRIVE IMPORT ───────────────────────────────────────────────────────
+let gdStructure = null;
+let gdFiles = [];
+let gdFolderCounter = 0;
+
+function gdFolderId(url){
+  const m = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : null;
+}
+
+async function gdApiGet(path, apiKey){
+  const res = await fetch('https://www.googleapis.com/drive/v3/' + path + (path.includes('?')?'&':'?') + 'key=' + encodeURIComponent(apiKey));
+  const data = await res.json();
+  if(data.error) throw new Error(data.error.message);
+  return data;
+}
+
+async function buildGDTree(folderId, folderName, apiKey, depth){
+  const data = await gdApiGet(`files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,size)&pageSize=1000`, apiKey);
+  const items = data.files || [];
+  const pdfs = items.filter(f=>f.mimeType==='application/pdf'||f.name.toLowerCase().endsWith('.pdf'));
+  const subfolders = items.filter(f=>f.mimeType==='application/vnd.google-apps.folder');
+  const node = {id:folderId, name:folderName, depth, pdfs, children:[], libFolderId:null};
+  pdfs.forEach(f=>gdFiles.push({id:f.id, name:f.name, size:f.size, node}));
+  for(const sf of subfolders){
+    const child = await buildGDTree(sf.id, sf.name, apiKey, depth+1);
+    child.parent = node;
+    node.children.push(child);
+  }
+  return node;
+}
+
+function renderGDTree(node, html=''){
+  const indent = node.depth * 16;
+  const pdfCount = node.pdfs.length;
+  const sfCount = node.children.length;
+  html += `<div class="folder-file-item" style="padding-left:${indent+8}px;background:${node.depth===0?'var(--slate)':'var(--cream)'};">
+    <span>${node.depth===0?'\uD83D\uDCC1':'\uD83D\uDCC2'}</span>
+    <span class="ffi-name" style="font-weight:${node.depth<=1?700:400}">${node.name}</span>
+    <span class="ffi-size">${pdfCount} PDF${pdfCount!==1?'s':''}${sfCount?' + '+sfCount+' subfolder'+(sfCount!==1?'s':''):''}</span>
+    <span class="ffi-status">Queued</span>
+  </div>`;
+  node.pdfs.forEach(f=>{
+    html+=`<div class="folder-file-item" style="padding-left:${indent+28}px;">
+      <span>&#128196;</span>
+      <span class="ffi-name">${f.name}</span>
+      <span class="ffi-size">${f.size?(f.size/1024/1024).toFixed(1)+' MB':''}</span>
+      <span class="ffi-status" id="gdfi-${f.id}">Queued</span>
+    </div>`;
+  });
+  node.children.forEach(c=>{html=renderGDTree(c,html);});
+  return html;
+}
+
+async function fetchGDriveStructure(){
+  const url = document.getElementById('gd-url').value.trim();
+  const apiKey = document.getElementById('gd-apikey').value.trim();
+  if(!url) return toast('Please enter a Google Drive folder URL.');
+  if(!apiKey) return toast('Please enter your Google API key.');
+  const fid = gdFolderId(url);
+  if(!fid) return toast('Could not find folder ID in the URL.');
+  localStorage.setItem('gd_apikey', apiKey);
+  const tree = document.getElementById('gd-tree');
+  tree.innerHTML='<div style="padding:.5rem;color:var(--text-muted);">Fetching folder structure\u2026</div>';
+  document.getElementById('gd-actions').style.display='none';
+  gdFiles=[];gdStructure=null;
+  try{
+    const info = await gdApiGet('files/'+fid+'?fields=name', apiKey);
+    gdStructure = await buildGDTree(fid, info.name||'Google Drive Import', apiKey, 0);
+    if(!gdFiles.length){tree.innerHTML='<div style="padding:.5rem;color:var(--text-muted);">No PDFs found in this folder.</div>';return;}
+    tree.innerHTML='<div class="folder-file-list" style="max-height:320px;">'+renderGDTree(gdStructure)+'</div>';
+    document.getElementById('gd-actions').style.display='';
+    document.getElementById('gd-summary').textContent=`${gdFiles.length} PDF${gdFiles.length!==1?'s':''} found`;
+  }catch(err){
+    tree.innerHTML='<div style="color:var(--red);padding:.5rem;">Error: '+err.message+'</div>';
+    console.error(err);
+  }
+}
+
+async function createLibFolderTree(node, parentLibId, topic, lang){
+  if(!node.pdfs.length&&!node.children.length) return;
+  gdFolderCounter++;
+  const newFolder={id:'fld_gd_'+Date.now()+'_'+gdFolderCounter, name:node.name, topic, lang, parentId:parentLibId||null, bookIds:[]};
+  await saveFolderToDB(newFolder);
+  folders.push(newFolder);
+  node.libFolderId = newFolder.id;
+  populateCollectionDropdown();
+  for(const child of node.children) await createLibFolderTree(child, newFolder.id, topic, lang);
+}
+
+async function importGDriveFiles(){
+  if(!isAdmin()) return requireAdmin();
+  if(!gdFiles.length) return toast('No files to import.');
+  const topic=document.getElementById('gd-topic').value;
+  const lang=document.getElementById('gd-lang').value;
+  const btn=document.getElementById('gd-import-btn');btn.disabled=true;
+  const prog=document.getElementById('gd-progress');
+  const fill=document.getElementById('gd-prog-fill');
+  const label=document.getElementById('gd-prog-label');
+  const status=document.getElementById('gd-prog-status');
+  prog.classList.add('show');status.className='prog-status';
+
+  // Step 1: Create library folder structure mirroring Google Drive
+  label.textContent='Creating collections\u2026';fill.style.width='5%';
+  await createLibFolderTree(gdStructure, null, topic, lang);
+
+  // Step 2: Import each PDF
+  let successCount=0;
+  const total=gdFiles.length;
+  const folderBookMap={};
+
+  for(let i=0;i<total;i++){
+    const file=gdFiles[i];
+    const statusEl=document.getElementById('gdfi-'+file.id);
+    if(statusEl){statusEl.textContent='Importing\u2026';statusEl.className='ffi-status uploading';}
+    label.textContent=`Importing ${i+1} of ${total} \u2014 ${file.name}`;
+    fill.style.width=Math.round(5+(i/total)*90)+'%';
+    try{
+      const filename=file.name.replace(/\.pdf$/i,'').replace(/[^a-zA-Z0-9\s\-_.]/g,'').replace(/\s+/g,'-')+'.pdf';
+      const impRes=await fetch(`${WORKER_URL}/import-gdrive`,{method:'POST',headers:{'X-Admin-Key':WORKER_SECRET,'Content-Type':'application/json'},body:JSON.stringify({fileId:file.id,filename})});
+      if(!impRes.ok) throw new Error(await impRes.text());
+      const {key,url:fileUrl}=await impRes.json();
+      const title=file.name.replace(/\.pdf$/i,'');
+      const inserted=await sbInsert({title,author:null,topic,language:lang,date:null,description:null,file_url:fileUrl,file_key:key});
+      if(file.node.libFolderId&&inserted&&inserted[0]){
+        if(!folderBookMap[file.node.libFolderId]) folderBookMap[file.node.libFolderId]=[];
+        folderBookMap[file.node.libFolderId].push(inserted[0].id);
+      }
+      if(statusEl){statusEl.textContent='\u2713 Done';statusEl.className='ffi-status done';}
+      successCount++;
+    }catch(err){
+      if(statusEl){statusEl.textContent='\u2717 Failed';statusEl.className='ffi-status failed';}
+      console.error(err);
+    }
+  }
+
+  // Step 3: Batch update all folder bookIds
+  label.textContent='Saving collections\u2026';
+  await Promise.all(Object.entries(folderBookMap).map(([fid,ids])=>{
+    const f=folders.find(x=>x.id===fid);
+    if(f){f.bookIds=[...(f.bookIds||[]),...ids];return updateFolderInDB(f);}
+  }));
+
+  fill.style.width='100%';
+  status.textContent=`\u2713 ${successCount} of ${total} imported successfully.`;
+  status.classList.add('ok');
+  toast(`${successCount} book${successCount!==1?'s':''} imported from Google Drive.`);
+  await loadBooks(activeSearch);
+  btn.disabled=false;
+  setTimeout(()=>{prog.classList.remove('show');fill.style.width='0%';status.className='prog-status';},5000);
+}
+
+function clearGDrive(){
+  gdFiles=[];gdStructure=null;
+  document.getElementById('gd-tree').innerHTML='';
+  document.getElementById('gd-actions').style.display='none';
+  document.getElementById('gd-summary').textContent='';
+  document.getElementById('gd-progress').classList.remove('show');
+  document.getElementById('gd-prog-fill').style.width='0%';
+  document.getElementById('gd-prog-status').className='prog-status';
 }
 
 function clearFolderUpload(){
@@ -1330,6 +1558,8 @@ function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e
 document.addEventListener('DOMContentLoaded',()=>{
   applyAdminState();
   loadFolders().then(()=>{ loadBooks(); populateCollectionDropdown(); });
+  const savedKey = localStorage.getItem('gd_apikey');
+  if(savedKey) document.getElementById('gd-apikey').value = savedKey;
 
   // Folder upload input
   const folderInp=document.getElementById('folder-input');
