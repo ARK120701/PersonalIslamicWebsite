@@ -297,12 +297,11 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 <nav>
   <a href="#home" class="nav-brand">Abdurrahman Khan</a>
   <ul class="nav-links">
-    <li><a href="#about">Biography</a></li>
+    <li><a href="biography.html">Biography</a></li>
     <li><a href="#education">Education</a></li>
     <li><a href="#work-experience">Experience</a></li>
     <li><a href="books.html">Books Studied Under Teachers</a></li>
     <li><a href="teachers.html">Teacher Biographies</a></li>
-    <li><a href="#works">Works</a></li>
     <li><a href="fatawa.html">Fatawa</a></li>
     <li><a href="library.html">Library</a></li>
     <li><a href="projects.html">CS Projects</a></li>
@@ -323,15 +322,13 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 
 <section id="home" class="hero">
   <div class="hero-inner">
-    <div class="hero-seal"><span class="hero-seal-ch">ع</span></div>
     <div class="hero-eyebrow">Student of the Traditional Islamic Sciences</div>
     <h1>Abdurrahman Khan</h1>
     <div class="hero-sub">Traditional Islamic Sciences</div>
     <div class="hero-arabic">عبد الرحمن خان</div>
     <div class="hero-rule"></div>
-    <p class="hero-desc">A student of the traditional Islamic sciences, dedicated to learning, preserving, and transmitting classical knowledge. This site serves as a personal archive of written works, fatawa, and a curated digital library for students and researchers.</p>
+    <p class="hero-desc">A student of the traditional Islamic sciences, dedicated to learning, preserving, and transmitting classical knowledge. This site serves as a personal archive of fatawa, articles, and a curated digital library for students and researchers.</p>
     <div class="hero-ctas">
-      <a href="#works" class="cta-p">View Written Works</a>
       <a href="library.html" class="cta-o">Browse Library</a>
       <a href="fatawa.html" class="cta-o">Fatawa Collection</a>
     </div>
@@ -342,11 +339,15 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 <section id="about" class="bg-white">
   <div class="si">
     <div class="sh"><span class="s-tag">Personal History</span><h2 class="s-title">Biography</h2><p class="s-lead">A life devoted to the pursuit of knowledge and service to the Ummah</p></div>
-    <div class="about-text" style="max-width:780px;margin:0 auto;">
-      <p>Abdurrahman Khan was raised in Flushing, New York, where he received his early education at Flushing Muslim Center from kindergarten through third grade. He subsequently enrolled at Darul Uloom New York, where he completed his Nāẓirah and then dedicated himself to the memorisation of the Holy Qurʾān. He formally completed his Ḥifẓ in 2014 after approximately two and a half years of memorisation, followed by an additional year and a half of intensive revision (Daur), concluding his time at Darul Uloom New York in 2015.</p>
-      <p>He thereafter attended Al-Mamoor School for the eighth and ninth grades, graduating as Valedictorian of his eighth-grade class. He subsequently completed grades ten through twelve at New Hyde Park Memorial High School in two years, pursuing advanced-level coursework and graduating with a weighted GPA of 95 and academic honours.</p>
-      <p>Following high school, Abdurrahman Khan enrolled in the ʿĀlimiyyah programme at Jamia Qurania Academy, simultaneously pursuing a Bachelor of Arts in Computer Science at CUNY Queens College. After three years, he transferred to Darul Uloom New York to complete the final three years of the ʿĀlimiyyah programme under senior Muḥaddithīn and scholars based in the United States. He graduated from Darul Uloom New York in August 2025 and was concurrently awarded a Master's degree in Islamic Sciences from Jamia Binoria. His undergraduate studies in Computer Science — encompassing coursework in Linear Algebra, Calculus II, Data Structures, Operating Systems, Programming Languages, and Post-Quantum Cryptography — were completed in January 2026, with a cumulative GPA of 3.67, graduating Cum Laude with honours from Queens College.</p>
-      <p>Following his graduation, Abdurrahman Khan commenced the Takhaṣṣuṣ programme in Islamic Jurisprudence and the Issuance of Legal Verdicts (Iftāʾ) under Mufti Manzoor and Mufti Mizaanur Rahman, two senior scholars in the field. He remains committed to the integration of traditional Islamic learning and modern intellectual inquiry.</p>
+    <div class="portal-card-wrap">
+      <div class="portal-card">
+        <div class="portal-card-icon">📖</div>
+        <div class="portal-card-text">
+          <div class="portal-card-title">Full Biography</div>
+          <p class="portal-card-desc">Read the full biography of Abdurrahman Khan — his upbringing, Islamic education, academic formation, and scholarly journey from New York to the traditional sciences.</p>
+        </div>
+        <a href="biography.html" class="portal-card-btn">Read Biography →</a>
+      </div>
     </div>
   </div>
 </section>
@@ -518,31 +519,16 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
   </div>
 </section>
 
-<section id="works" class="bg-white">
-  <div class="si">
-    <div class="sh"><span class="s-tag">Scholarly Output</span><h2 class="s-title">Articles &amp; Written Works</h2><p class="s-lead">Research papers, books, and academic contributions</p></div>
-    <div class="admin-only" id="works-zone-wrap">
-      <div class="upload-zone" id="works-zone"><input type="file" id="works-input" accept=".pdf" multiple /><span class="u-icon">📄</span><div class="u-title">Upload Works — Click or Drag PDFs Here</div><p class="u-hint">Accepts PDF files · Multiple files supported</p></div>
-    </div>
-    <div class="filter-bar">
-      <button class="fb active" onclick="filterP('works','all',this)">All</button>
-      <button class="fb" onclick="filterP('works','book',this)">Books</button>
-      <button class="fb" onclick="filterP('works','article',this)">Articles</button>
-      <button class="fb" onclick="filterP('works','research',this)">Research Papers</button>
-    </div>
-    <div class="pub-grid" id="works-grid"></div>
-  </div>
-</section>
 
 <section id="fatawa-portal" class="bg-slate">
   <div class="si">
-    <div class="sh"><span class="s-tag">Legal Opinions</span><h2 class="s-title">Fatawa &amp; Written Works</h2><p class="s-lead">Formal Islamic legal opinions and scholarly notes available for reading and download</p></div>
+    <div class="sh"><span class="s-tag">Legal Opinions</span><h2 class="s-title">Fatawa &amp; Articles</h2><p class="s-lead">Formal Islamic legal opinions and scholarly notes available for reading and download</p></div>
     <div class="portal-card-wrap">
       <div class="portal-card">
         <div class="portal-card-icon">🕌</div>
         <div class="portal-card-text">
           <div class="portal-card-title">Fatawa Collection & Notes</div>
-          <p class="portal-card-desc">Browse the complete collection of fatawa across the categories of ʿIbādah, Muʿāmalāt, Family Law, and Contemporary issues — alongside scholarly notes, essays, and uploaded written works.</p>
+          <p class="portal-card-desc">Browse the complete collection of fatawa across the categories of ʿIbādah, Muʿāmalāt, Family Law, and Contemporary issues — alongside articles, essays, and scholarly works.</p>
         </div>
         <a href="fatawa.html" class="portal-card-btn">Visit Fatawa Site →</a>
       </div>
@@ -670,7 +656,6 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 <!-- FAB -->
 <div class="fab-wrap">
   <div class="fab-menu" id="fab-menu">
-    <button class="fi" onclick="scrollTo2('works-zone')">＋ Add Article / Work</button>
   </div>
   <button class="fab" onclick="toggleFab()">⚙</button>
 </div>

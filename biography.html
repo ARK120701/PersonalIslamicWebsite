@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Biography — Abdurrahman Khan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d1f3c;--navy-mid:#162d52;--navy-light:#1e3d6e;--navy-pale:#2a5298;
+  --gold:#c8952a;--gold-light:#e8b84b;--gold-pale:#f5d98a;--gold-dim:#8a6218;
+  --white:#ffffff;--off-white:#f8f7f4;--cream:#f2efe8;--slate:#e8edf5;
+  --text-dark:#0d1f3c;--text-body:#2c3e5a;--text-muted:#5a6a85;--border:#d0d8e8;
+  --shadow-sm:0 2px 8px rgba(13,31,60,.09);--shadow-md:0 6px 24px rgba(13,31,60,.13);
+}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'EB Garamond',Georgia,serif;font-size:19px;line-height:1.85;color:var(--text-body);background:var(--off-white);}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--slate);}::-webkit-scrollbar-thumb{background:var(--navy-light);}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--navy);border-bottom:3px solid var(--gold);padding:0 3rem;height:62px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.nav-brand{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;font-weight:700;text-decoration:none;}
+.nav-back{color:rgba(255,255,255,.7);text-decoration:none;font-size:.88rem;display:flex;align-items:center;gap:.4rem;transition:color .2s;}
+.nav-back:hover{color:var(--gold-light);}
+
+/* HERO */
+.hero{background:linear-gradient(155deg,var(--navy) 0%,var(--navy-mid) 55%,var(--navy-light) 100%);padding:5.5rem 2rem 5rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='.6' fill='%23c8952a' opacity='.15'/%3E%3C/svg%3E");pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;}
+.hero-eyebrow{font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;line-height:1.08;margin-bottom:.4rem;}
+.hero-arabic{font-family:'Noto Naskh Arabic',serif;font-size:1.4rem;color:rgba(255,255,255,.4);direction:rtl;margin-bottom:.5rem;}
+.hero-sub{font-size:1rem;color:rgba(232,184,75,.8);font-style:italic;margin-bottom:1.75rem;}
+.hero-rule{width:80px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto;}
+
+/* MAIN */
+.bio-wrap{max-width:780px;margin:0 auto;padding:5rem 2rem 7rem;}
+
+/* SECTION HEADERS */
+.bio-section{margin-bottom:3.5rem;}
+.bio-section-tag{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-dim);font-weight:700;margin-bottom:.4rem;display:block;}
+.bio-section-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:.75rem;}
+.bio-section-title::before{content:'';display:inline-block;width:4px;height:1.4rem;background:var(--gold);flex-shrink:0;}
+
+/* PROSE */
+.bio-prose p{margin-bottom:1.1rem;color:var(--text-body);font-size:1rem;line-height:1.9;}
+.bio-prose p:last-child{margin-bottom:0;}
+.bio-prose strong{color:var(--navy);font-weight:700;}
+
+/* PULL QUOTE */
+.bio-quote{border-left:3px solid var(--gold);margin:2rem 0;padding:.75rem 0 .75rem 1.5rem;font-style:italic;font-size:1.05rem;color:var(--navy-light);}
+.bio-quote cite{display:block;font-size:.78rem;font-style:normal;color:var(--text-muted);margin-top:.5rem;letter-spacing:.05em;}
+
+/* CREDENTIALS TABLE */
+.cred-table{width:100%;border-collapse:collapse;margin:1.5rem 0;}
+.cred-table tr{border-bottom:1px solid var(--border);}
+.cred-table tr:last-child{border-bottom:none;}
+.cred-table td{padding:.75rem .5rem;vertical-align:top;font-size:.92rem;}
+.cred-table td:first-child{font-weight:700;color:var(--navy);white-space:nowrap;padding-right:1.5rem;width:30%;}
+.cred-table td:last-child{color:var(--text-body);}
+
+/* DIVIDER */
+.bio-divider{display:flex;align-items:center;gap:1rem;margin:3rem 0;}
+.bio-divider::before,.bio-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.bio-divider-ornament{font-family:'Noto Naskh Arabic',serif;font-size:1.1rem;color:var(--gold-dim);}
+
+footer{background:var(--navy);border-top:3px solid var(--gold-dim);text-align:center;padding:2rem;}
+footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
+
+@media(max-width:680px){nav{padding:0 1rem;}.bio-wrap{padding:3rem 1.25rem 5rem;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">← Abdurrahman Khan</a>
+  <span class="nav-brand">Biography</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Sīrat al-ʿĀlim</div>
+    <h1>Abdurrahman Khan</h1>
+    <div class="hero-arabic">عبد الرحمن خان</div>
+    <p class="hero-sub">Student of the Traditional Islamic Sciences · New York</p>
+    <div class="hero-rule"></div>
+  </div>
+</div>
+
+<div class="bio-wrap">
+
+  <!-- EARLY LIFE -->
+  <div class="bio-section" id="early-life">
+    <span class="bio-section-tag">Origins &amp; Early Formation</span>
+    <h2 class="bio-section-title">Early Life &amp; Education</h2>
+    <div class="bio-prose">
+      <p>Abdurrahman Khan was born and raised in Flushing, New York — a neighbourhood in the borough of Queens, and home to one of the most diverse Muslim communities in the United States. He received his earliest formal education at <strong>Flushing Muslim Center</strong>, where he attended from kindergarten through the third grade, establishing a foundation in both Islamic and general studies from an early age.</p>
+
+      <p>In 2009, at the age of seven, he enrolled at <strong>Darul Uloom New York</strong>, where he embarked on the path of Ḥifẓ — the complete memorisation of the Holy Qurʾān. After one year of Nāẓirah (recitation and proper reading), he committed himself fully to the memorisation, completing the entire Qurʾān in approximately two and a half years. He formally completed his Ḥifẓ in <strong>2014</strong>, and remained for an additional year and a half of Daur — an intensive programme of structured revision designed to consolidate and strengthen the memorisation. He concluded his time at Darul Uloom New York in 2015.</p>
+
+      <p>He thereafter attended <strong>Al-Mamoor School</strong> in New York for the eighth and ninth grades, where he demonstrated exceptional academic ability, graduating as <strong>Valedictorian of his eighth-grade class</strong> in 2016. He subsequently completed grades ten through twelve at <strong>New Hyde Park Memorial High School</strong> in just two years — pursuing advanced-level coursework throughout — and graduated with a weighted GPA of 95 and academic honours.</p>
+    </div>
+  </div>
+
+  <div class="bio-divider"><span class="bio-divider-ornament">❧</span></div>
+
+  <!-- ISLAMIC EDUCATION -->
+  <div class="bio-section" id="islamic-education">
+    <span class="bio-section-tag">Traditional Islamic Formation</span>
+    <h2 class="bio-section-title">ʿĀlimiyyah &amp; Islamic Sciences</h2>
+    <div class="bio-prose">
+      <p>Following high school, Abdurrahman Khan enrolled in the traditional six-year <strong>ʿĀlimiyyah programme</strong> — the classical curriculum of Islamic seminary education — at <strong>Jamia Qurania Academy</strong> in New York in 2019. The ʿĀlimiyyah curriculum encompasses the full range of the traditional Islamic sciences, including Arabic grammar (Naḥw) and morphology (Ṣarf), rhetoric (Balāgha), Islamic jurisprudence (Fiqh), the principles of jurisprudence (Uṣūl al-Fiqh), Qurʾānic exegesis (Tafsīr), the sciences of Ḥadīth, theology (ʿAqīdah), and logic (Manṭiq).</p>
+
+      <p>After completing the first three years of the programme at Jamia Qurania Academy, he transferred in 2022 to <strong>Darul Uloom New York</strong> to complete the final three years under senior Muḥaddithīn and scholars of the highest calibre based in the United States. The advanced years of the ʿĀlimiyyah at Darul Uloom New York encompassed the study of the major works of Ḥadīth — including the six canonical collections — alongside advanced texts in Fiqh, Tafsīr, and Uṣūl al-Fiqh.</p>
+
+      <p>He <strong>graduated from the ʿĀlimiyyah programme in August 2025</strong>, receiving the traditional Dastarbandi (turban-tying ceremony) in recognition of the completion of his Islamic seminary studies. Upon graduation, he was concurrently awarded a <strong>Master's degree in Islamic Sciences</strong> from <strong>Jamia Binoria</strong> — a globally recognised institution of Islamic scholarship — in recognition of the advanced level of study undertaken over the course of the ʿĀlimiyyah programme.</p>
+    </div>
+  </div>
+
+  <div class="bio-divider"><span class="bio-divider-ornament">❧</span></div>
+
+  <!-- ACADEMIC EDUCATION -->
+  <div class="bio-section" id="academic-education">
+    <span class="bio-section-tag">Secular Academic Formation</span>
+    <h2 class="bio-section-title">Bachelor of Arts — Computer Science</h2>
+    <div class="bio-prose">
+      <p>Pursuing his commitment to the integration of traditional Islamic learning and modern intellectual inquiry, Abdurrahman Khan enrolled simultaneously in the <strong>Bachelor of Arts in Computer Science programme</strong> at <strong>CUNY Queens College</strong> in Flushing, New York — beginning his undergraduate studies in 2019 concurrently with the ʿĀlimiyyah programme.</p>
+
+      <p>Over the course of seven years of parallel study — balancing the full-time demands of Islamic seminary education with a rigorous undergraduate curriculum — he completed coursework in <strong>Linear Algebra, Calculus II, Data Structures, Operating Systems, Principles of Programming Languages, and Post-Quantum Cryptography</strong>, among other subjects.</p>
+
+      <p>He formally completed his undergraduate studies in <strong>January 2026</strong>, graduating <strong>Cum Laude</strong> with a cumulative GPA of <strong>3.67</strong> and academic honours — a distinction awarded to students demonstrating outstanding academic achievement.</p>
+    </div>
+  </div>
+
+  <div class="bio-divider"><span class="bio-divider-ornament">❧</span></div>
+
+  <!-- TAKHASSUS -->
+  <div class="bio-section" id="takhassus">
+    <span class="bio-section-tag">Post-Graduate Specialisation</span>
+    <h2 class="bio-section-title">Takhaṣṣuṣ fil-Fiqh wal-Iftāʾ</h2>
+    <div class="bio-prose">
+      <p>Following the completion of the ʿĀlimiyyah programme, Abdurrahman Khan enrolled in the post-graduate <strong>Takhaṣṣuṣ programme in Islamic Jurisprudence and the Issuance of Legal Verdicts (Iftāʾ)</strong> at <strong>Darul Uloom New York</strong> — a two-year programme of intensive specialisation designed to train qualified Islamic jurists capable of issuing fatwā.</p>
+
+      <p>The Takhaṣṣuṣ programme is considered the highest level of formal Islamic legal education, training students in the methodology of fatwā issuance (Uṣūl al-Iftāʾ), applied comparative jurisprudence across the four Sunni schools of law, and the application of classical legal frameworks to contemporary legal questions.</p>
+
+      <p>He is currently studying under <strong>Mufti Manzoor</strong> and <strong>Mufti Mizaanur Rahman Sayed</strong> — two of the senior muftis and scholars in the United States — both of whom hold significant academic lineages tracing back to the major institutions of Islamic learning in South Asia.</p>
+
+      <blockquote class="bio-quote">
+        The Takhaṣṣuṣ represents the culmination of over fifteen years of formal Islamic study — from the memorisation of the Qurʾān to the methodology of legal interpretation and fatwā issuance.
+      </blockquote>
+    </div>
+  </div>
+
+  <div class="bio-divider"><span class="bio-divider-ornament">❧</span></div>
+
+  <!-- CREDENTIALS SUMMARY -->
+  <div class="bio-section" id="credentials">
+    <span class="bio-section-tag">Academic Summary</span>
+    <h2 class="bio-section-title">Qualifications &amp; Credentials</h2>
+    <table class="cred-table">
+      <tr>
+        <td>Ḥifẓ al-Qurʾān</td>
+        <td>Darul Uloom New York · Completed 2014</td>
+      </tr>
+      <tr>
+        <td>ʿĀlim (ʿĀlimiyyah)</td>
+        <td>Darul Uloom New York · Graduated August 2025</td>
+      </tr>
+      <tr>
+        <td>M.A. Islamic Sciences</td>
+        <td>Jamia Binoria · 2025</td>
+      </tr>
+      <tr>
+        <td>B.A. Computer Science (Cum Laude)</td>
+        <td>CUNY Queens College · GPA 3.67 · January 2026</td>
+      </tr>
+      <tr>
+        <td>Takhaṣṣuṣ fil-Fiqh wal-Iftāʾ</td>
+        <td>Darul Uloom New York · 2025 – Present</td>
+      </tr>
+      <tr>
+        <td>CPE Internship</td>
+        <td>North Shore University Hospital · Summer 2026</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  <p>All rights reserved · Personal scholarly archive</p>
+  <p style="margin-top:.5rem;"><a href="index.html" style="color:rgba(200,149,42,.6);font-size:.82rem;text-decoration:none;">← Return to Main Site</a></p>
+</footer>
+
+</body>
+</html>
