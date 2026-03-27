@@ -23,7 +23,7 @@
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Key',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Key, X-R2-Key',
 };
 
 export default {
@@ -136,15 +136,14 @@ export default {
       }
     }
 
-    // PUT /multipart-part/:uploadId/:partNumber — upload one chunk
-    // Requires X-R2-Key header with the object key from multipart-init
-    if (request.method === 'PUT' && path.startsWith('/multipart-part/')) {
+    // PUT /multipart-part?partNumber=N — upload one chunk
+    // Requires X-R2-Key header (object key) and X-Admin-Key header (uploadId passed via query)
+    if (request.method === 'PUT' && path === '/multipart-part') {
       try {
-        const segments = path.replace('/multipart-part/', '').split('/');
-        const uploadId = decodeURIComponent(segments[0]);
-        const partNumber = parseInt(segments[1]);
+        const partNumber = parseInt(url.searchParams.get('partNumber'));
+        const uploadId = url.searchParams.get('uploadId');
         const key = request.headers.get('X-R2-Key');
-        if (!key) return json({ error: 'Missing X-R2-Key header' }, 400);
+        if (!key || !uploadId || !partNumber) return json({ error: 'Missing key, uploadId or partNumber' }, 400);
         const mpu = env.MY_BUCKET.resumeMultipartUpload(key, uploadId);
         const part = await mpu.uploadPart(partNumber, request.body);
         return json({ partNumber, etag: part.etag });

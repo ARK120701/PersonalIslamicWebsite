@@ -1255,7 +1255,7 @@ async function uploadToR2(file, filename, onProgress) {
   for (let i = 0; i < totalParts; i++) {
     const start = i * CHUNK_SIZE;
     const chunk = file.slice(start, start + CHUNK_SIZE);
-    const partRes = await fetch(`${WORKER_URL}/multipart-part/${encodeURIComponent(uploadId)}/${i + 1}`, {
+    const partRes = await fetch(`${WORKER_URL}/multipart-part?uploadId=${encodeURIComponent(uploadId)}&partNumber=${i + 1}`, {
       method: 'PUT',
       headers: { 'X-Admin-Key': WORKER_SECRET, 'X-R2-Key': key },
       body: chunk,
