@@ -1541,7 +1541,7 @@ async function importGDriveFiles(){
       const inserted=await sbInsert({title,author:null,topic,language:lang,date:null,description:null,file_url:fileUrl,file_key:key});
       if(file.node.libFolderId&&inserted&&inserted[0]){
         if(!folderBookMap[file.node.libFolderId]) folderBookMap[file.node.libFolderId]=[];
-        folderBookMap[file.node.libFolderId].push(inserted[0].id);
+        folderBookMap[file.node.libFolderId].push(parseInt(inserted[0].id));
       }
       if(statusEl){statusEl.textContent='\u2713 Done';statusEl.className='ffi-status done';}
       successCount++;
@@ -1553,10 +1553,13 @@ async function importGDriveFiles(){
 
   // Step 3: Batch update all folder bookIds
   label.textContent='Saving collections\u2026';
-  await Promise.all(Object.entries(folderBookMap).map(([fid,ids])=>{
+  for(const [fid,ids] of Object.entries(folderBookMap)){
     const f=folders.find(x=>x.id===fid);
-    if(f){f.bookIds=[...(f.bookIds||[]),...ids];return updateFolderInDB(f);}
-  }));
+    if(f){
+      f.bookIds=[...(f.bookIds||[]).map(x=>parseInt(x)),...ids];
+      try{ await updateFolderInDB(f); }catch(e){ console.error('Folder update failed:',fid,e); }
+    }
+  }
 
   fill.style.width='100%';
   status.textContent=`\u2713 ${successCount} of ${total} imported successfully.`;
