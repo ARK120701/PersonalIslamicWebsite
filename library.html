@@ -671,12 +671,24 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
   </div>
 </div>
 
+<!-- R2 DUPLICATES MODAL -->
+<div class="dup-modal" id="r2dup-modal">
+  <div class="dup-box">
+    <div class="dup-head">
+      <span class="dup-head-title">&#9749; R2 Duplicate Files</span>
+      <button class="dup-x" onclick="closeR2DupModal()">&#10005;</button>
+    </div>
+    <div class="dup-body" id="r2dup-body"><p class="edit-empty">Scanning R2&hellip;</p></div>
+  </div>
+</div>
+
 <!-- FAB -->
 <div class="fab-wrap admin-only">
   <div class="fab-menu" id="fab-menu">
     <button class="fi" onclick="scrollToUpload()">&#128228; Upload New Book</button>
     <button class="fi" onclick="openEditModal()">&#9998; Edit Books</button>
-    <button class="fi" onclick="openDupModal()">&#128270; Find Duplicates</button>
+    <button class="fi" onclick="openDupModal()">&#128270; Find DB Duplicates</button>
+    <button class="fi" onclick="openR2DupModal()">&#9749; Find R2 Duplicates</button>
     <button class="fi" onclick="adminLogout()">&#128274; Sign Out</button>
   </div>
   <button class="fab" onclick="toggleFab()">+</button>
@@ -1782,6 +1794,111 @@ async function deleteAllDuplicates(){
   renderDupList();
   renderLib(allBooks,activeSearch);
   toast(`${deleted} duplicate${deleted!==1?'s':''} deleted.`);
+}
+
+// ── R2 DUPLICATES ──────────────────────────────────────────────────────────
+function r2BaseName(key){
+  // Strip prefix "books/", timestamp "1234567890-", and ".pdf" extension
+  return key.replace(/^books\//,'').replace(/^\d+-/,'').replace(/\.pdf$/i,'').toLowerCase().trim();
+}
+
+async function openR2DupModal(){
+  if(!isAdmin())return requireAdmin();
+  document.getElementById('r2dup-modal').classList.add('open');
+  document.getElementById('r2dup-body').innerHTML='<p class="edit-empty">Scanning R2 bucket&hellip;</p>';
+  try{
+    const res=await fetch(`${WORKER_URL}/list-r2`,{headers:{'X-Admin-Key':WORKER_SECRET}});
+    if(!res.ok) throw new Error(await res.text());
+    const {files}=await res.json();
+    renderR2DupList(files);
+  }catch(e){
+    document.getElementById('r2dup-body').innerHTML=`<p class="edit-empty" style="color:#c0392b;">Error: ${e.message}</p>`;
+  }
+}
+function closeR2DupModal(){document.getElementById('r2dup-modal').classList.remove('open');}
+
+function renderR2DupList(files){
+  const body=document.getElementById('r2dup-body');
+  const groups={};
+  files.forEach(f=>{
+    const name=r2BaseName(f.key);
+    if(!name)return;
+    if(!groups[name])groups[name]=[];
+    groups[name].push(f);
+  });
+  const dups=Object.values(groups).filter(g=>g.length>1).sort((a,b)=>b.length-a.length);
+  if(!dups.length){body.innerHTML='<p class="edit-empty">No duplicate files found in R2.</p>';return;}
+  const totalExtra=dups.reduce((s,g)=>s+g.length-1,0);
+  let html=`<p class="dup-summary">${dups.length} duplicate group${dups.length!==1?'s':''} &mdash; ${totalExtra} extra file${totalExtra!==1?'s':''} in R2.</p>`;
+  html+=`<button class="dup-del-all" onclick="deleteAllR2Dupes()">&#128465; Delete all R2 extras (keep oldest in each group)</button>`;
+  dups.forEach(group=>{
+    // Keep oldest file (smallest timestamp), delete the newer ones
+    const sorted=[...group].sort((a,b)=>{
+      const ta=parseInt((a.key.replace(/^books\//,'').match(/^(\d+)-/)||[0,0])[1]);
+      const tb=parseInt((b.key.replace(/^books\//,'').match(/^(\d+)-/)||[0,0])[1]);
+      return ta-tb;
+    });
+    const displayName=r2BaseName(sorted[0].key);
+    html+=`<div class="dup-group"><div class="dup-group-title">${escHtml(displayName)} &mdash; ${sorted.length} copies</div>`;
+    sorted.forEach((f,i)=>{
+      const label=i===0?'<strong style="color:var(--gold-dim)">[keep]</strong>':'<span style="color:#c0392b">[duplicate]</span>';
+      const size=f.size?(f.size/1024/1024).toFixed(1)+' MB':'';
+      html+=`<div class="dup-row"><div class="dup-row-info">${label} <span class="dup-row-meta">${escHtml(f.key)} ${size}</span></div>${i>0?`<button class="dup-del-btn" onclick="deleteR2File('${encodeURIComponent(f.key)}',this)">Delete</button>`:''}</div>`;
+    });
+    html+='</div>';
+  });
+  body.innerHTML=html;
+  // Store file list for bulk delete
+  body._r2files=files;
+}
+
+async function deleteR2File(encodedKey, btn){
+  if(!confirm('Delete this file from R2?'))return;
+  try{
+    if(btn){btn.disabled=true;btn.textContent='Deleting\u2026';}
+    const res=await fetch(`${WORKER_URL}/delete/${encodedKey}`,{method:'DELETE',headers:{'X-Admin-Key':WORKER_SECRET}});
+    if(!res.ok) throw new Error(await res.text());
+    // Re-scan after deletion
+    const listRes=await fetch(`${WORKER_URL}/list-r2`,{headers:{'X-Admin-Key':WORKER_SECRET}});
+    const {files}=await listRes.json();
+    renderR2DupList(files);
+    toast('File deleted from R2.');
+  }catch(e){toast('Error: '+e.message);if(btn){btn.disabled=false;btn.textContent='Delete';}}
+}
+
+async function deleteAllR2Dupes(){
+  const body=document.getElementById('r2dup-body');
+  const files=body._r2files;
+  if(!files)return;
+  const groups={};
+  files.forEach(f=>{
+    const name=r2BaseName(f.key);
+    if(!name)return;
+    if(!groups[name])groups[name]=[];
+    groups[name].push(f);
+  });
+  const toDelete=[];
+  Object.values(groups).filter(g=>g.length>1).forEach(g=>{
+    const sorted=[...g].sort((a,b)=>{
+      const ta=parseInt((a.key.replace(/^books\//,'').match(/^(\d+)-/)||[0,0])[1]);
+      const tb=parseInt((b.key.replace(/^books\//,'').match(/^(\d+)-/)||[0,0])[1]);
+      return ta-tb;
+    });
+    sorted.slice(1).forEach(f=>toDelete.push(f));
+  });
+  if(!toDelete.length)return toast('No duplicates to delete.');
+  if(!confirm(`Delete ${toDelete.length} duplicate file${toDelete.length!==1?'s':''} from R2? This cannot be undone.`))return;
+  let deleted=0;
+  for(const f of toDelete){
+    try{
+      const res=await fetch(`${WORKER_URL}/delete/${encodeURIComponent(f.key)}`,{method:'DELETE',headers:{'X-Admin-Key':WORKER_SECRET}});
+      if(res.ok)deleted++;
+    }catch(e){}
+  }
+  const listRes=await fetch(`${WORKER_URL}/list-r2`,{headers:{'X-Admin-Key':WORKER_SECRET}});
+  const {files:updated}=await listRes.json();
+  renderR2DupList(updated);
+  toast(`${deleted} duplicate file${deleted!==1?'s':''} deleted from R2.`);
 }
 
 function renderEditList(q=''){
