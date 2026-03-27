@@ -1741,10 +1741,18 @@ function renderDupList(){
 
 function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+async function deleteBookAndR2(book){
+  if(book.file_key){
+    try{await fetch(`${WORKER_URL}/delete/${encodeURIComponent(book.file_key)}`,{method:'DELETE',headers:{'X-Admin-Key':WORKER_SECRET}});}catch(e){}
+  }
+  await sbDelete(book.id);
+}
+
 async function deleteDupBook(id){
   if(!confirm('Delete this duplicate?'))return;
   try{
-    await sbDelete(id);
+    const book=allBooks.find(b=>b.id===id);
+    await deleteBookAndR2(book);
     allBooks=allBooks.filter(b=>b.id!==id);
     renderDupList();
     renderLib(allBooks,activeSearch);
@@ -1769,7 +1777,7 @@ async function deleteAllDuplicates(){
   if(!confirm(`Delete ${toDelete.length} duplicate book${toDelete.length!==1?'s':''}? This cannot be undone.`))return;
   let deleted=0;
   for(const b of toDelete){
-    try{await sbDelete(b.id);allBooks=allBooks.filter(x=>x.id!==b.id);deleted++;}catch(e){}
+    try{await deleteBookAndR2(b);allBooks=allBooks.filter(x=>x.id!==b.id);deleted++;}catch(e){}
   }
   renderDupList();
   renderLib(allBooks,activeSearch);
