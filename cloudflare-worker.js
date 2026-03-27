@@ -158,7 +158,7 @@ export default {
       try {
         const { key, uploadId, parts } = await request.json();
         const mpu = env.MY_BUCKET.resumeMultipartUpload(key, uploadId);
-        await mpu.completeMultipartUpload(parts);
+        await mpu.complete(parts);
         const publicUrl = `${env.PUBLIC_BUCKET_URL}/${key}`;
         return json({ success: true, key, url: publicUrl });
       } catch (err) {
