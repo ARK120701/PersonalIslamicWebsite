@@ -1084,7 +1084,7 @@ function openPdf(id){
     return;
   }
   pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  pdfjsLib.getDocument({url:b.file_url,cMapUrl:'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',cMapPacked:true}).promise
+  pdfjsLib.getDocument({url:b.file_url,cMapUrl:'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',cMapPacked:true,disableRange:true,disableStream:true,disableAutoFetch:true}).promise
     .then(doc=>{
       pdfDoc=doc;
       document.getElementById('pdf-prev').disabled=true;
