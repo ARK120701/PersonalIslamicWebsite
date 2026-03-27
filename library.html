@@ -334,6 +334,7 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
       <button class="panel-tab active" id="tab-single" onclick="switchUploadTab('single')">&#128196; Single Book</button>
       <button class="panel-tab" id="tab-folder" onclick="switchUploadTab('folder')">&#128193; Upload Folder</button>
       <button class="panel-tab" id="tab-gdrive" onclick="switchUploadTab('gdrive')">&#128229; Google Drive</button>
+      <button class="panel-tab" id="tab-recover" onclick="switchUploadTab('recover')" style="color:var(--gold-dim);">&#9851; Recover from R2</button>
     </div>
 
     <!-- SINGLE BOOK PANEL -->
@@ -465,6 +466,61 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
         <div class="prog-label" id="folder-prog-label">Uploading&hellip;</div>
         <div class="prog-track"><div class="prog-fill" id="folder-prog-fill"></div></div>
         <div class="prog-status" id="folder-prog-status"></div>
+      </div>
+    </div>
+
+    <!-- RECOVER FROM R2 PANEL -->
+    <div id="recover-panel" style="display:none;">
+      <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:1rem;">Scans your Cloudflare R2 bucket and re-imports all existing PDF files back into the database.</p>
+      <div class="form-row three">
+        <div class="fr"><label>Topic (applied to all) *</label>
+          <select id="rec-topic">
+            <optgroup label="Fiqh">
+              <option value="fiqh-hanafi">Fiqh &mdash; H&#803;anaf&#299;</option>
+              <option value="fiqh-maliki">Fiqh &mdash; M&#257;lik&#299;</option>
+              <option value="fiqh-shafi">Fiqh &mdash; Sh&#257;fi&#699;&#299;</option>
+              <option value="fiqh-hanbali">Fiqh &mdash; H&#803;anbal&#299;</option>
+              <option value="fiqh-muqaran">Fiqh &mdash; Comparative</option>
+            </optgroup>
+            <option value="usool">Us&#803;&#363;l al-Fiqh</option>
+            <option value="hadith">H&#803;ad&#299;th</option>
+            <option value="tafsir">Tafs&#299;r</option>
+            <option value="quran-sci">Qur&#702;&#257;nic Sciences</option>
+            <option value="tajweed">Tajw&#299;d</option>
+            <option value="qiraat">Qir&#257;&#702;&#257;t</option>
+            <option value="aqeedah">&#699;Aq&#299;dah</option>
+            <option value="seerah">S&#299;rah</option>
+            <option value="arabic">Arabic Language</option>
+            <option value="tasawwuf">T&#803;as&#803;awwuf</option>
+            <option value="mantiq">Mant&#803;iq</option>
+            <option value="other">General / Other</option>
+          </select>
+        </div>
+        <div class="fr"><label>Language (applied to all) *</label>
+          <select id="rec-lang">
+            <option value="arabic">Arabic</option>
+            <option value="english">English</option>
+            <option value="urdu">Urdu</option>
+            <option value="persian">Persian</option>
+            <option value="other-lang">Other</option>
+          </select>
+        </div>
+        <div class="fr" style="display:flex;align-items:flex-end;padding-bottom:.25rem;">
+          <button class="btn-gold" onclick="scanR2Files()" style="width:100%;">&#128269; Scan R2</button>
+        </div>
+      </div>
+      <div id="rec-file-list"></div>
+      <div id="rec-actions" style="display:none;margin-top:.75rem;">
+        <div style="display:flex;gap:.75rem;align-items:center;">
+          <button class="btn-gold" id="rec-import-btn" onclick="recoverR2Files()">&#8679; Import All</button>
+          <button class="btn-ghost" onclick="clearRecover()">Clear</button>
+          <span id="rec-summary" style="font-size:.8rem;color:var(--text-muted);font-style:italic;"></span>
+        </div>
+      </div>
+      <div class="upload-progress" id="rec-progress">
+        <div class="prog-label" id="rec-prog-label">Importing&hellip;</div>
+        <div class="prog-track"><div class="prog-fill" id="rec-prog-fill"></div></div>
+        <div class="prog-status" id="rec-prog-status"></div>
       </div>
     </div>
 
@@ -1191,7 +1247,7 @@ function clearUploadForm(){
 
 // ── UPLOAD TAB SWITCH ─────────────────────────────────────────────────────────
 function switchUploadTab(tab){
-  ['single','folder','gdrive'].forEach(t=>{
+  ['single','folder','gdrive','recover'].forEach(t=>{
     document.getElementById(t+'-panel').style.display = tab===t?'':'none';
     document.getElementById('tab-'+t).classList.toggle('active', tab===t);
   });
@@ -1276,6 +1332,87 @@ async function uploadFolderFiles(){
   await loadBooks(activeSearch);
   btn.disabled=false;
   setTimeout(()=>{prog.classList.remove('show');fill.style.width='0%';status.className='prog-status';},5000);
+}
+
+// ── RECOVER FROM R2 ───────────────────────────────────────────────────────────
+let recFiles = [];
+
+async function scanR2Files(){
+  if(!isAdmin()) return requireAdmin();
+  const list = document.getElementById('rec-file-list');
+  list.innerHTML='<div style="padding:.5rem;color:var(--text-muted);">Scanning R2 bucket\u2026</div>';
+  document.getElementById('rec-actions').style.display='none';
+  recFiles=[];
+  try{
+    const res = await fetch(`${WORKER_URL}/list-r2`,{headers:{'X-Admin-Key':WORKER_SECRET}});
+    if(!res.ok) throw new Error(await res.text());
+    const {files} = await res.json();
+    if(!files.length){list.innerHTML='<div style="padding:.5rem;color:var(--text-muted);">No files found in R2.</div>';return;}
+    recFiles = files;
+    list.innerHTML=`<div class="folder-file-list" style="max-height:280px;">${files.map((f,i)=>{
+      const name = f.key.replace('books/','').replace(/^\d+-/,'').replace(/\.pdf$/i,'');
+      return`<div class="folder-file-item" id="recfi-${i}">
+        <span>&#128196;</span>
+        <span class="ffi-name">${name}</span>
+        <span class="ffi-size">${f.size?(f.size/1024/1024).toFixed(1)+' MB':''}</span>
+        <span class="ffi-status">Queued</span>
+      </div>`;
+    }).join('')}</div>`;
+    document.getElementById('rec-actions').style.display='';
+    document.getElementById('rec-summary').textContent=`${files.length} file${files.length!==1?'s':''} found in R2`;
+  }catch(err){
+    list.innerHTML=`<div style="color:var(--red);padding:.5rem;">Error: ${err.message}</div>`;
+    console.error(err);
+  }
+}
+
+async function recoverR2Files(){
+  if(!isAdmin()) return requireAdmin();
+  if(!recFiles.length) return toast('No files to import.');
+  const topic=document.getElementById('rec-topic').value;
+  const lang=document.getElementById('rec-lang').value;
+  const btn=document.getElementById('rec-import-btn');btn.disabled=true;
+  const prog=document.getElementById('rec-progress');
+  const fill=document.getElementById('rec-prog-fill');
+  const label=document.getElementById('rec-prog-label');
+  const status=document.getElementById('rec-prog-status');
+  prog.classList.add('show');status.className='prog-status';
+
+  let successCount=0;
+  const total=recFiles.length;
+  for(let i=0;i<total;i++){
+    const file=recFiles[i];
+    const statusEl=document.getElementById(`recfi-${i}`)?.querySelector('.ffi-status');
+    if(statusEl){statusEl.textContent='Saving\u2026';statusEl.className='ffi-status uploading';}
+    label.textContent=`Importing ${i+1} of ${total}\u2026`;
+    fill.style.width=Math.round((i/total)*100)+'%';
+    try{
+      const title=file.key.replace('books/','').replace(/^\d+-/,'').replace(/\.pdf$/i,'').replace(/-/g,' ');
+      await sbInsert({title,author:null,topic,language:lang,date:null,description:null,file_url:file.url,file_key:file.key});
+      if(statusEl){statusEl.textContent='\u2713 Done';statusEl.className='ffi-status done';}
+      successCount++;
+    }catch(err){
+      if(statusEl){statusEl.textContent='\u2717 Failed';statusEl.className='ffi-status failed';}
+      console.error(err);
+    }
+  }
+  fill.style.width='100%';
+  status.textContent=`\u2713 ${successCount} of ${total} recovered successfully.`;
+  status.classList.add('ok');
+  toast(`${successCount} books recovered from R2.`);
+  await loadBooks(activeSearch);
+  btn.disabled=false;
+  setTimeout(()=>{prog.classList.remove('show');fill.style.width='0%';status.className='prog-status';},5000);
+}
+
+function clearRecover(){
+  recFiles=[];
+  document.getElementById('rec-file-list').innerHTML='';
+  document.getElementById('rec-actions').style.display='none';
+  document.getElementById('rec-summary').textContent='';
+  document.getElementById('rec-progress').classList.remove('show');
+  document.getElementById('rec-prog-fill').style.width='0%';
+  document.getElementById('rec-prog-status').className='prog-status';
 }
 
 // ── GOOGLE DRIVE IMPORT ───────────────────────────────────────────────────────

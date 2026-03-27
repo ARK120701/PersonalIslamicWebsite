@@ -69,6 +69,26 @@ export default {
       }
     }
 
+    // GET /list-r2 — list all files in the R2 bucket
+    if (request.method === 'GET' && path === '/list-r2') {
+      try {
+        let files = [];
+        let cursor = undefined;
+        do {
+          const listed = await env.MY_BUCKET.list({ prefix: 'books/', cursor, limit: 1000 });
+          files = files.concat(listed.objects.map(obj => ({
+            key: obj.key,
+            size: obj.size,
+            url: `${env.PUBLIC_BUCKET_URL}/${obj.key}`
+          })));
+          cursor = listed.truncated ? listed.cursor : undefined;
+        } while (cursor);
+        return json({ files });
+      } catch (err) {
+        return json({ error: err.message }, 500);
+      }
+    }
+
     // POST /import-gdrive — fetch a PDF from Google Drive and store in R2
     if (request.method === 'POST' && path === '/import-gdrive') {
       try {
