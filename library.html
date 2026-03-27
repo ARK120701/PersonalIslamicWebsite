@@ -935,7 +935,7 @@ function renderLib(books, q='') {
 
 function renderFolder(folder, books, depth) {
   const childFolders = getChildFolders(folder.id);
-  const folderBooks = (folder.bookIds||[]).map(bid=>books.find(b=>b.id===bid)).filter(Boolean);
+  const folderBooks = (folder.bookIds||[]).map(bid=>books.find(b=>String(b.id)===String(bid))).filter(Boolean);
   const totalItems = folderBooks.length + childFolders.length;
   const indent = depth > 0 ? ' nested' : '';
   const safeId = folder.id.replace(/[^a-zA-Z0-9_-]/g,'_');
