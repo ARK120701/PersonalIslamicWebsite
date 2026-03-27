@@ -759,9 +759,19 @@ let folders = [];
 const sbH = k => ({'apikey':k,'Authorization':'Bearer '+k,'Content-Type':'application/json','Prefer':'return=representation'});
 
 async function sbGet(q='') {
-  const res = await fetch(SUPABASE_URL+'/rest/v1/books?'+q+'&order=created_at.desc',{headers:{...sbH(SUPABASE_ANON),'Range-Unit':'items','Range':'0-9999'}});
-  if (!res.ok) throw new Error('DB '+res.status);
-  return res.json();
+  const pageSize = 1000;
+  let all = [], offset = 0;
+  while (true) {
+    const res = await fetch(SUPABASE_URL+'/rest/v1/books?'+q+'&order=created_at.desc',{
+      headers:{...sbH(SUPABASE_ANON),'Range-Unit':'items','Range':`${offset}-${offset+pageSize-1}`}
+    });
+    if (!res.ok) throw new Error('DB '+res.status);
+    const page = await res.json();
+    all = all.concat(page);
+    if (page.length < pageSize) break;
+    offset += pageSize;
+  }
+  return all;
 }
 async function sbInsert(row) {
   const res = await fetch(SUPABASE_URL+'/rest/v1/books',{method:'POST',headers:sbH(SUPABASE_SVC),body:JSON.stringify(row)});
