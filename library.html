@@ -703,7 +703,7 @@ let folders = [];
 const sbH = k => ({'apikey':k,'Authorization':'Bearer '+k,'Content-Type':'application/json','Prefer':'return=representation'});
 
 async function sbGet(q='') {
-  const res = await fetch(SUPABASE_URL+'/rest/v1/books?'+q+'&order=created_at.desc',{headers:sbH(SUPABASE_ANON)});
+  const res = await fetch(SUPABASE_URL+'/rest/v1/books?'+q+'&order=created_at.desc',{headers:{...sbH(SUPABASE_ANON),'Range-Unit':'items','Range':'0-9999'}});
   if (!res.ok) throw new Error('DB '+res.status);
   return res.json();
 }
