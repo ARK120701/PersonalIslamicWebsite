@@ -9,9 +9,14 @@
  *   Environment variable: ADMIN_SECRET = your secret password
  *
  * ROUTES:
- *   PUT  /upload/:filename  → upload a PDF to R2
- *   DELETE /delete/:key     → delete a PDF from R2
- *   GET  /health            → check worker is alive
+ *   PUT    /upload/:filename                      → upload a PDF to R2 (≤ 50 MB)
+ *   POST   /multipart-init/:filename              → start a multipart upload
+ *   PUT    /multipart-part/:uploadId/:partNumber  → upload one chunk (requires X-R2-Key header)
+ *   POST   /multipart-complete                    → finalise multipart upload
+ *   DELETE /delete/:key                           → delete a PDF from R2
+ *   GET    /list-r2                               → list all files in R2
+ *   POST   /import-gdrive                         → import a PDF from Google Drive
+ *   GET    /health                                → check worker is alive
  * ============================================================
  */
 
