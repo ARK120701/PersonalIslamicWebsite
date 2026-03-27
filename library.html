@@ -252,6 +252,25 @@ body.admin-mode .edit-books-btn{display:block;}
 .ef-save{padding:.36rem .95rem;background:var(--gold);color:var(--navy);border:none;font-family:'EB Garamond',serif;font-size:.8rem;font-weight:700;cursor:pointer;}
 .ef-cancel{padding:.36rem .75rem;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'EB Garamond',serif;font-size:.8rem;cursor:pointer;}
 .edit-empty{text-align:center;padding:2rem;color:var(--text-muted);font-style:italic;}
+/* DUPLICATES MODAL */
+.dup-modal{display:none;position:fixed;inset:0;background:rgba(13,31,60,.92);z-index:3500;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;}
+.dup-modal.open{display:flex;}
+.dup-box{background:var(--white);width:100%;max-width:700px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);margin:auto;}
+.dup-head{background:var(--navy);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.dup-head-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1rem;}
+.dup-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.1rem;cursor:pointer;}
+.dup-body{padding:1.25rem 1.5rem;max-height:70vh;overflow-y:auto;}
+.dup-summary{font-size:.88rem;color:var(--text-muted);margin-bottom:1rem;}
+.dup-group{border:1px solid var(--border);margin-bottom:1rem;}
+.dup-group-title{background:var(--cream);padding:.55rem .85rem;font-size:.82rem;font-weight:700;color:var(--navy);border-bottom:1px solid var(--border);}
+.dup-row{display:flex;align-items:center;gap:.6rem;padding:.45rem .85rem;border-bottom:1px solid var(--border);}
+.dup-row:last-child{border-bottom:none;}
+.dup-row-info{flex:1;font-size:.8rem;color:var(--text-body);}
+.dup-row-meta{font-size:.72rem;color:var(--text-muted);}
+.dup-del-btn{padding:.25rem .65rem;background:#c0392b;color:#fff;border:none;font-family:'EB Garamond',serif;font-size:.75rem;cursor:pointer;flex-shrink:0;}
+.dup-del-btn:hover{background:#a93226;}
+.dup-del-all{padding:.3rem .9rem;background:#c0392b;color:#fff;border:none;font-family:'EB Garamond',serif;font-size:.78rem;cursor:pointer;margin-bottom:1rem;}
+.dup-del-all:hover{background:#a93226;}
 
 /* FAB */
 .fab-wrap{position:fixed;bottom:1.75rem;right:1.75rem;z-index:1500;}
@@ -641,11 +660,23 @@ footer p{font-size:.8rem;color:rgba(255,255,255,.35);}
   </div>
 </div>
 
+<!-- DUPLICATES MODAL -->
+<div class="dup-modal" id="dup-modal">
+  <div class="dup-box">
+    <div class="dup-head">
+      <span class="dup-head-title">&#128270; Find Duplicates</span>
+      <button class="dup-x" onclick="closeDupModal()">&#10005;</button>
+    </div>
+    <div class="dup-body" id="dup-body"><p class="edit-empty">Scanning&hellip;</p></div>
+  </div>
+</div>
+
 <!-- FAB -->
 <div class="fab-wrap admin-only">
   <div class="fab-menu" id="fab-menu">
     <button class="fi" onclick="scrollToUpload()">&#128228; Upload New Book</button>
     <button class="fi" onclick="openEditModal()">&#9998; Edit Books</button>
+    <button class="fi" onclick="openDupModal()">&#128270; Find Duplicates</button>
     <button class="fi" onclick="adminLogout()">&#128274; Sign Out</button>
   </div>
   <button class="fab" onclick="toggleFab()">+</button>
@@ -1620,6 +1651,79 @@ async function deleteBook(id,encodedKey){
 // ── EDIT MODAL ────────────────────────────────────────────────────────────────
 function openEditModal(){if(!isAdmin())return requireAdmin();document.getElementById('edit-modal').classList.add('open');document.getElementById('edit-search').value='';renderEditList('');}
 function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');}
+
+// ── DUPLICATES ─────────────────────────────────────────────────────────────
+function openDupModal(){
+  if(!isAdmin())return requireAdmin();
+  const modal=document.getElementById('dup-modal');
+  modal.classList.add('open');
+  renderDupList();
+}
+function closeDupModal(){document.getElementById('dup-modal').classList.remove('open');}
+
+function renderDupList(){
+  const body=document.getElementById('dup-body');
+  const groups={};
+  allBooks.forEach(b=>{
+    const key=(b.title||'').trim().toLowerCase();
+    if(!key)return;
+    if(!groups[key])groups[key]=[];
+    groups[key].push(b);
+  });
+  const dups=Object.values(groups).filter(g=>g.length>1).sort((a,b)=>b.length-a.length);
+  if(!dups.length){body.innerHTML='<p class="edit-empty">No duplicates found.</p>';return;}
+  const totalExtra=dups.reduce((s,g)=>s+g.length-1,0);
+  let html=`<p class="dup-summary">${dups.length} duplicate group${dups.length!==1?'s':''} found &mdash; ${totalExtra} extra book${totalExtra!==1?'s':''} can be removed.</p>`;
+  html+=`<button class="dup-del-all" onclick="deleteAllDuplicates()">&#128465; Delete all extras (keep newest in each group)</button>`;
+  dups.forEach(group=>{
+    const sorted=[...group].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    html+=`<div class="dup-group"><div class="dup-group-title">${escHtml(sorted[0].title)} &mdash; ${sorted.length} copies</div>`;
+    sorted.forEach((b,i)=>{
+      const label=i===0?'<strong style="color:var(--gold-dim)">[keep]</strong>':'<span style="color:#c0392b">[duplicate]</span>';
+      const meta=[b.author||'Unknown author',b.topic||'',new Date(b.created_at).toLocaleDateString()].filter(Boolean).join(' &middot; ');
+      html+=`<div class="dup-row"><div class="dup-row-info">${label} <span class="dup-row-meta">${meta}</span></div>${i>0?`<button class="dup-del-btn" onclick="deleteDupBook(${b.id})">Delete</button>`:''}</div>`;
+    });
+    html+='</div>';
+  });
+  body.innerHTML=html;
+}
+
+function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+async function deleteDupBook(id){
+  if(!confirm('Delete this duplicate?'))return;
+  try{
+    await sbDelete(id);
+    allBooks=allBooks.filter(b=>b.id!==id);
+    renderDupList();
+    renderLib(allBooks,activeSearch);
+    toast('Duplicate deleted.');
+  }catch(e){toast('Error: '+e.message);}
+}
+
+async function deleteAllDuplicates(){
+  const groups={};
+  allBooks.forEach(b=>{
+    const key=(b.title||'').trim().toLowerCase();
+    if(!key)return;
+    if(!groups[key])groups[key]=[];
+    groups[key].push(b);
+  });
+  const toDelete=[];
+  Object.values(groups).filter(g=>g.length>1).forEach(g=>{
+    const sorted=[...g].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    sorted.slice(1).forEach(b=>toDelete.push(b));
+  });
+  if(!toDelete.length)return toast('No duplicates to delete.');
+  if(!confirm(`Delete ${toDelete.length} duplicate book${toDelete.length!==1?'s':''}? This cannot be undone.`))return;
+  let deleted=0;
+  for(const b of toDelete){
+    try{await sbDelete(b.id);allBooks=allBooks.filter(x=>x.id!==b.id);deleted++;}catch(e){}
+  }
+  renderDupList();
+  renderLib(allBooks,activeSearch);
+  toast(`${deleted} duplicate${deleted!==1?'s':''} deleted.`);
+}
 
 function renderEditList(q=''){
   const list=document.getElementById('edit-list');
