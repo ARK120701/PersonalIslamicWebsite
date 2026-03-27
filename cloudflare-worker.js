@@ -114,6 +114,54 @@ export default {
       }
     }
 
+    // POST /multipart-init/:filename — start a multipart upload, returns { key, uploadId }
+    if (request.method === 'POST' && path.startsWith('/multipart-init/')) {
+      try {
+        const filename = decodeURIComponent(path.replace('/multipart-init/', ''));
+        const key = `books/${Date.now()}-${filename}`;
+        const mpu = await env.MY_BUCKET.createMultipartUpload(key, {
+          httpMetadata: {
+            contentType: 'application/pdf',
+            contentDisposition: `inline; filename="${filename}"`,
+          },
+        });
+        return json({ key: mpu.key, uploadId: mpu.uploadId });
+      } catch (err) {
+        return json({ error: err.message }, 500);
+      }
+    }
+
+    // PUT /multipart-part/:uploadId/:partNumber — upload one chunk
+    // Requires X-R2-Key header with the object key from multipart-init
+    if (request.method === 'PUT' && path.startsWith('/multipart-part/')) {
+      try {
+        const segments = path.replace('/multipart-part/', '').split('/');
+        const uploadId = decodeURIComponent(segments[0]);
+        const partNumber = parseInt(segments[1]);
+        const key = request.headers.get('X-R2-Key');
+        if (!key) return json({ error: 'Missing X-R2-Key header' }, 400);
+        const mpu = env.MY_BUCKET.resumeMultipartUpload(key, uploadId);
+        const part = await mpu.uploadPart(partNumber, request.body);
+        return json({ partNumber, etag: part.etag });
+      } catch (err) {
+        return json({ error: err.message }, 500);
+      }
+    }
+
+    // POST /multipart-complete — finalise the upload
+    // Body: { key, uploadId, parts: [{ partNumber, etag }] }
+    if (request.method === 'POST' && path === '/multipart-complete') {
+      try {
+        const { key, uploadId, parts } = await request.json();
+        const mpu = env.MY_BUCKET.resumeMultipartUpload(key, uploadId);
+        await mpu.completeMultipartUpload(parts);
+        const publicUrl = `${env.PUBLIC_BUCKET_URL}/${key}`;
+        return json({ success: true, key, url: publicUrl });
+      } catch (err) {
+        return json({ error: err.message }, 500);
+      }
+    }
+
     // DELETE /delete/:key — remove a PDF
     if (request.method === 'DELETE' && path.startsWith('/delete/')) {
       try {

@@ -1223,6 +1223,60 @@ function pdfGoToPage(v){if(!pdfDoc)return;const n=parseInt(v);if(isNaN(n))return
 function pdfSetZoom(v){if(!pdfDoc)return;pdfScale=parseFloat(v);pdfRendering=false;renderPdfPage(pdfPageNum);}
 function closePdf(){document.getElementById('pdf-modal').classList.remove('open');pdfDoc=null;pdfRendering=false;document.getElementById('pdf-canvas-wrap').innerHTML='';}
 
+// ── R2 UPLOAD HELPER (supports files > 100 MB via multipart) ─────────────────
+const MULTIPART_THRESHOLD = 50 * 1024 * 1024;  // use multipart above 50 MB
+const CHUNK_SIZE          = 10 * 1024 * 1024;  // 10 MB chunks
+
+async function uploadToR2(file, filename, onProgress) {
+  if (file.size <= MULTIPART_THRESHOLD) {
+    // Simple single-request upload
+    const res = await fetch(`${WORKER_URL}/upload/${encodeURIComponent(filename)}`, {
+      method: 'PUT',
+      headers: { 'X-Admin-Key': WORKER_SECRET, 'Content-Type': 'application/pdf' },
+      body: file,
+    });
+    if (!res.ok) throw new Error('R2: ' + await res.text());
+    onProgress(90);
+    return res.json();
+  }
+
+  // ── Multipart upload ──────────────────────────────────────────────────────
+  // 1. Initialise
+  const initRes = await fetch(`${WORKER_URL}/multipart-init/${encodeURIComponent(filename)}`, {
+    method: 'POST',
+    headers: { 'X-Admin-Key': WORKER_SECRET },
+  });
+  if (!initRes.ok) throw new Error('Multipart init failed: ' + await initRes.text());
+  const { key, uploadId } = await initRes.json();
+
+  // 2. Upload parts
+  const totalParts = Math.ceil(file.size / CHUNK_SIZE);
+  const parts = [];
+  for (let i = 0; i < totalParts; i++) {
+    const start = i * CHUNK_SIZE;
+    const chunk = file.slice(start, start + CHUNK_SIZE);
+    const partRes = await fetch(`${WORKER_URL}/multipart-part/${encodeURIComponent(uploadId)}/${i + 1}`, {
+      method: 'PUT',
+      headers: { 'X-Admin-Key': WORKER_SECRET, 'X-R2-Key': key },
+      body: chunk,
+    });
+    if (!partRes.ok) throw new Error(`Part ${i + 1} upload failed: ` + await partRes.text());
+    const { etag } = await partRes.json();
+    parts.push({ partNumber: i + 1, etag });
+    onProgress(Math.round(((i + 1) / totalParts) * 85));
+  }
+
+  // 3. Complete
+  const completeRes = await fetch(`${WORKER_URL}/multipart-complete`, {
+    method: 'POST',
+    headers: { 'X-Admin-Key': WORKER_SECRET, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key, uploadId, parts }),
+  });
+  if (!completeRes.ok) throw new Error('Multipart complete failed: ' + await completeRes.text());
+  onProgress(90);
+  return completeRes.json();
+}
+
 // ── UPLOAD ────────────────────────────────────────────────────────────────────
 const zone=document.getElementById('lib-zone');
 const inp=document.getElementById('lib-input');
@@ -1249,12 +1303,11 @@ async function uploadBook(){
   const status=document.getElementById('prog-status');
   prog.classList.add('show');status.className='prog-status';
   try {
-    label.textContent='Step 1/2 \u2014 Uploading PDF to Cloudflare R2\u2026';fill.style.width='10%';
+    const isLarge = selectedFile.size > MULTIPART_THRESHOLD;
+    label.textContent=`Step 1/2 \u2014 Uploading PDF${isLarge?' (large file \u2014 splitting into chunks)':''}\u2026`;fill.style.width='10%';
     const fn=title.replace(/[^a-zA-Z0-9\s\-_.]/g,'').replace(/\s+/g,'-')+'.pdf';
-    const upRes=await fetch(`${WORKER_URL}/upload/${encodeURIComponent(fn)}`,{method:'PUT',headers:{'X-Admin-Key':WORKER_SECRET,'Content-Type':'application/pdf'},body:selectedFile});
-    fill.style.width='55%';
-    if(!upRes.ok){const e=await upRes.text();throw new Error('R2: '+e);}
-    const {key,url:fileUrl}=await upRes.json();fill.style.width='65%';
+    const {key,url:fileUrl}=await uploadToR2(selectedFile, fn, pct=>{fill.style.width=Math.max(10,pct)+'%';});
+    fill.style.width='65%';
     label.textContent='Step 2/2 \u2014 Saving to database\u2026';
     const row={title,author:document.getElementById('f-author').value.trim()||null,topic:document.getElementById('f-topic').value,language:document.getElementById('f-lang').value,date:document.getElementById('f-date').value.trim()||null,description:document.getElementById('f-desc').value.trim()||null,file_url:fileUrl,file_key:key};
     const inserted = await sbInsert(row);
@@ -1350,9 +1403,7 @@ async function uploadFolderFiles(){
     try{
       const title=file.name.replace(/\.pdf$/i,'');
       const fn=title.replace(/[^a-zA-Z0-9\s\-_.]/g,'').replace(/\s+/g,'-')+'.pdf';
-      const upRes=await fetch(`${WORKER_URL}/upload/${encodeURIComponent(fn)}`,{method:'PUT',headers:{'X-Admin-Key':WORKER_SECRET,'Content-Type':'application/pdf'},body:file});
-      if(!upRes.ok){const e=await upRes.text();throw new Error('R2: '+e);}
-      const {key,url:fileUrl}=await upRes.json();
+      const {key,url:fileUrl}=await uploadToR2(file, fn, ()=>{});
       const row={title,author:null,topic,language:lang,date:null,description:null,file_url:fileUrl,file_key:key};
       const inserted=await sbInsert(row);
       if(collId&&inserted&&inserted[0]){
