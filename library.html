@@ -1498,11 +1498,13 @@ async function createLibFolderTree(node, parentLibId, topic, lang){
   if(!node.pdfs.length&&!node.children.length) return;
   gdFolderCounter++;
   const newFolder={id:'fld_gd_'+Date.now()+'_'+gdFolderCounter, name:node.name, topic, lang, parentId:parentLibId||null, bookIds:[]};
-  await saveFolderToDB(newFolder);
+  const saved = await saveFolderToDB(newFolder);
+  const dbId = (Array.isArray(saved)&&saved[0]) ? String(saved[0].id) : newFolder.id;
+  newFolder.id = dbId;
   folders.push(newFolder);
-  node.libFolderId = newFolder.id;
+  node.libFolderId = dbId;
   populateCollectionDropdown();
-  for(const child of node.children) await createLibFolderTree(child, newFolder.id, topic, lang);
+  for(const child of node.children) await createLibFolderTree(child, dbId, topic, lang);
 }
 
 async function importGDriveFiles(){
