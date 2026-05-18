@@ -189,11 +189,20 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
     </div>
     <div class="filter-bar">
       <button class="fb active" onclick="setFilter('fatawa','all',this)">All</button>
-      <button class="fb" onclick="setFilter('fatawa','fatwa',this)">Fatwa</button>
-      <button class="fb" onclick="setFilter('fatawa','ibadah',this)">ʿIbādah</button>
-      <button class="fb" onclick="setFilter('fatawa','muamalat',this)">Muʿāmalāt</button>
-      <button class="fb" onclick="setFilter('fatawa','family',this)">Family Law</button>
-      <button class="fb" onclick="setFilter('fatawa','contemporary',this)">Contemporary</button>
+      <button class="fb" onclick="setFilter('fatawa','purification',this)">Purification</button>
+      <button class="fb" onclick="setFilter('fatawa','fasting',this)">Fasting</button>
+      <button class="fb" onclick="setFilter('fatawa','finance',this)">Finance</button>
+      <button class="fb" onclick="setFilter('fatawa','food-drink',this)">Food &amp; Drink</button>
+      <button class="fb" onclick="setFilter('fatawa','funerals',this)">Funerals</button>
+      <button class="fb" onclick="setFilter('fatawa','hajj-umrah',this)">Hajj &amp; Umrah</button>
+      <button class="fb" onclick="setFilter('fatawa','hunting-sacrifice',this)">Hunting &amp; Sacrifice</button>
+      <button class="fb" onclick="setFilter('fatawa','inheritance',this)">Inheritance</button>
+      <button class="fb" onclick="setFilter('fatawa','marriage-divorce',this)">Marriage &amp; Divorce</button>
+      <button class="fb" onclick="setFilter('fatawa','masjids',this)">Masjids</button>
+      <button class="fb" onclick="setFilter('fatawa','prayer',this)">Prayer</button>
+      <button class="fb" onclick="setFilter('fatawa','prohibition-permissibility',this)">Prohibition &amp; Permissibility</button>
+      <button class="fb" onclick="setFilter('fatawa','zakaat-sadaqah',this)">Zakaat &amp; Sadaqah</button>
+      <button class="fb" onclick="setFilter('fatawa','miscellaneous',this)">Miscellaneous</button>
     </div>
     <div class="pub-grid" id="fatawa-grid"></div>
   </div>
@@ -253,11 +262,20 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
       <div class="fr"><label>Title</label><input type="text" id="f-title" placeholder="Document title" /></div>
       <div class="fr"><label>Section</label>
         <select id="f-type">
-          <option value="fatwa">Fatwa</option>
-          <option value="ibadah">Fatwa — ʿIbādah</option>
-          <option value="muamalat">Fatwa — Muʿāmalāt</option>
-          <option value="family">Fatwa — Family Law</option>
-          <option value="contemporary">Fatwa — Contemporary</option>
+          <option value="purification">Purification</option>
+          <option value="fasting">Fasting</option>
+          <option value="finance">Finance</option>
+          <option value="food-drink">Food &amp; Drink</option>
+          <option value="funerals">Funerals</option>
+          <option value="hajj-umrah">Hajj &amp; Umrah</option>
+          <option value="hunting-sacrifice">Hunting &amp; Sacrifice</option>
+          <option value="inheritance">Inheritance</option>
+          <option value="marriage-divorce">Marriage &amp; Divorce</option>
+          <option value="masjids">Masjids</option>
+          <option value="prayer">Prayer</option>
+          <option value="prohibition-permissibility">Prohibition &amp; Permissibility</option>
+          <option value="zakaat-sadaqah">Zakaat &amp; Sadaqah</option>
+          <option value="miscellaneous">Miscellaneous</option>
           <option value="notes">Notes — Class Notes</option>
           <option value="essay">Notes — Essay</option>
           <option value="research">Notes — Research</option>
@@ -327,7 +345,7 @@ var storageRef  = firebase.storage();
 // ─────────────────────────────────────────────────────────────
 
 const ADMIN_PASSWORD = 'admin123';
-const FATAWA_TYPES   = ['fatwa','ibadah','muamalat','family','contemporary'];
+const FATAWA_TYPES   = ['purification','fasting','finance','food-drink','funerals','hajj-umrah','hunting-sacrifice','inheritance','marriage-divorce','masjids','prayer','prohibition-permissibility','zakaat-sadaqah','miscellaneous'];
 const filters        = { fatawa:'all', notes:'all' };
 const cache          = { fatawa:[], notes:[] };
 var pFile = null, pSec = null;
@@ -367,7 +385,7 @@ function renderPubs(sec) {
         '<p class="pub-excerpt">'+(item.description||'No description provided.')+'</p>' +
         '<div class="pub-ft">' +
           '<button class="btn-view" onclick="_openPdf(\''+esc(item.url)+'\',\''+esc(item.title)+'\')">View PDF</button>' +
-          '<a class="btn-sm" href="'+item.url+'" target="_blank" download>⬇</a>' +
+          (sec==='notes' ? '<a class="btn-sm" href="'+item.url+'" target="_blank" download>⬇</a>' : '') +
           '<button class="btn-sm btn-del" onclick="_delDoc(\''+sec+'\',\''+item.id+'\',\''+esc(item.storage_path||'')+'\')">✕</button>' +
         '</div>' +
       '</div>' +
@@ -456,7 +474,7 @@ function setupUpload(inId, zoneId, sec) {
       pFile = pdfs[0]; pSec = sec;
       document.getElementById('add-title').textContent = sec==='fatawa' ? 'Add Fatwa' : 'Add Note / Work';
       document.getElementById('f-title').value = pdfs[0].name.replace(/\.pdf$/i,'');
-      document.getElementById('f-type').value  = sec==='fatawa' ? 'fatwa' : 'notes';
+      document.getElementById('f-type').value  = sec==='fatawa' ? 'purification' : 'notes';
       document.getElementById('f-desc').value  = '';
       document.getElementById('f-date').value  = '';
       document.getElementById('add-modal').classList.add('open');
