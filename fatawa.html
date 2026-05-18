@@ -323,7 +323,7 @@ const FATAWA_TYPES   = ['fatwa','ibadah','muamalat','family','contemporary'];
 const filters        = { fatawa:'all', notes:'all' };
 const cache          = { fatawa:[], notes:[] };
 let pFile = null, pSec = null;
-function bucket(sec) { return sec === 'fatawa' ? 'fatwa' : 'notes'; }
+function bucket(sec) { return sec === 'fatawa' ? 'Fatwa' : 'Notes'; }
 function table(sec)  { return sec === 'fatawa' ? 'Fatwa' : 'Notes'; }
 
 // ── LOAD FROM SUPABASE ───────────────────────────────────────
