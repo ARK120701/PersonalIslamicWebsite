@@ -318,163 +318,235 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script type="module">
+import { initializeApp }                                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, getDocs, addDoc, deleteDoc,
+         doc, query, orderBy, serverTimestamp }                   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getStorage, ref, uploadBytes,
+         getDownloadURL, deleteObject }                           from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
+
+// ── FIREBASE CONFIG ──────────────────────────────────────────
+// 1. Go to https://console.firebase.google.com
+// 2. Create a project → Add a web app → copy the config below
+const firebaseConfig = {
+  apiKey:            "PASTE_YOUR_API_KEY_HERE",
+  authDomain:        "PASTE_YOUR_PROJECT_ID.firebaseapp.com",
+  projectId:         "PASTE_YOUR_PROJECT_ID",
+  storageBucket:     "PASTE_YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "PASTE_YOUR_MESSAGING_SENDER_ID",
+  appId:             "PASTE_YOUR_APP_ID"
+};
+// ─────────────────────────────────────────────────────────────
+
+const app     = initializeApp(firebaseConfig);
+const db      = getFirestore(app);
+const storage = getStorage(app);
+
 const ADMIN_PASSWORD = 'admin123';
-const S = { get: k => { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } }, set: (k,v) => localStorage.setItem(k,JSON.stringify(v)) };
+const FATAWA_TYPES   = ['ibadah','muamalat','family','contemporary'];
+const filters        = { fatawa:'all', notes:'all' };
+const cache          = { fatawa:[], notes:[] };
+let pFile = null, pSec = null;
 
-const FATAWA_TYPES = ['ibadah','muamalat','family','contemporary'];
-const NOTES_TYPES  = ['notes','essay','research','other'];
-const filters = { fatawa:'all', notes:'all' };
+// ── FIREBASE HELPERS ─────────────────────────────────────────
+async function refreshCache(sec) {
+  try {
+    const snap = await getDocs(query(collection(db, sec), orderBy('createdAt','desc')));
+    cache[sec] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) {
+    cache[sec] = [];
+    console.error('Firebase load error:', e);
+  }
+}
 
-let pFile=null, pSec=null;
+// ── RENDER ───────────────────────────────────────────────────
+function esc(s) { return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
 function renderPubs(sec) {
-  const all = S.get(sec);
-  const q = (document.getElementById(sec+'-search')?.value||'').toLowerCase().trim();
-  const tf = filters[sec]||'all';
-  let items = (tf==='all') ? all : all.filter(i => i.type===tf);
+  const all = cache[sec];
+  const q   = (document.getElementById(sec+'-search')?.value||'').toLowerCase().trim();
+  const tf  = filters[sec]||'all';
+  let items = tf==='all' ? all : all.filter(i => i.type===tf);
   if (q) items = items.filter(i => i.title.toLowerCase().includes(q)||(i.desc||'').toLowerCase().includes(q));
-  const g = document.getElementById(sec+'-grid');
+  const g    = document.getElementById(sec+'-grid');
   const icon = sec==='fatawa' ? '🕌' : '📝';
   if (!items.length) {
     g.innerHTML = `<div class="empty-st">${all.length ? 'No items match your search.' : 'No documents yet — upload PDFs using the area above.'}</div>`;
     return;
   }
-  g.innerHTML = items.map(item => {
-    const oi = all.indexOf(item);
-    return `<div class="pub-card">
-      <div class="pub-hdr"><span class="pub-icon">${icon}</span><span class="pub-badge">${item.type}</span></div>
-      <div class="pub-body">
-        <div class="pub-title">${item.title}</div>
-        <div class="pub-date">${item.date||''}</div>
-        <p class="pub-excerpt">${item.desc||'No description provided.'}</p>
-        <div class="pub-ft">
-          <button class="btn-view" onclick="openPdf('${sec}',${oi})">View PDF</button>
-          <button class="btn-sm" onclick="dlDoc('${sec}',${oi})">⬇</button>
-          <button class="btn-sm btn-del" onclick="delDoc('${sec}',${oi})">✕</button>
-        </div>
+  g.innerHTML = items.map(item => `<div class="pub-card">
+    <div class="pub-hdr"><span class="pub-icon">${icon}</span><span class="pub-badge">${item.type}</span></div>
+    <div class="pub-body">
+      <div class="pub-title">${item.title}</div>
+      <div class="pub-date">${item.date||''}</div>
+      <p class="pub-excerpt">${item.desc||'No description provided.'}</p>
+      <div class="pub-ft">
+        <button class="btn-view" onclick="window._openPdf('${esc(item.url)}','${esc(item.title)}')">View PDF</button>
+        <a class="btn-sm" href="${item.url}" target="_blank" download>⬇</a>
+        <button class="btn-sm btn-del" onclick="window._delDoc('${sec}','${item.id}','${esc(item.storagePath||'')}')">✕</button>
       </div>
-    </div>`;
-  }).join('');
+    </div>
+  </div>`).join('');
 }
 
-function setFilter(sec, type, btn) {
+// ── GLOBAL SHIMS (for inline onclick) ────────────────────────
+window.renderPubs  = renderPubs;
+
+window.setFilter = (sec, type, btn) => {
   document.querySelectorAll(`#${sec} .fb`).forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   filters[sec] = type;
   renderPubs(sec);
-}
+};
 
-function openPdf(sec, idx) {
-  const item = S.get(sec)[idx];
-  if (!item?.url) return toast('No PDF attached to this document.');
-  document.getElementById('modal-title').textContent = item.title;
-  document.getElementById('pdf-frame').src = item.url;
-  const dl = document.getElementById('modal-dl'); dl.href=item.url; dl.download=item.title+'.pdf';
+window._openPdf = (url, title) => {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('pdf-frame').src = url;
+  const dl = document.getElementById('modal-dl'); dl.href = url; dl.download = title+'.pdf';
   document.getElementById('pdf-modal').classList.add('open');
-}
-function closePdf() { document.getElementById('pdf-modal').classList.remove('open'); document.getElementById('pdf-frame').src=''; }
+};
+window.closePdf = () => {
+  document.getElementById('pdf-modal').classList.remove('open');
+  document.getElementById('pdf-frame').src = '';
+};
 
-function dlDoc(sec, idx) {
-  const item = S.get(sec)[idx]; if (!item?.url) return;
-  const a=document.createElement('a'); a.href=item.url; a.download=item.title+'.pdf'; a.click();
-}
-
-function delDoc(sec, idx) {
+window._delDoc = async (sec, docId, storagePath) => {
   if (!isAdmin() || !confirm('Remove this document?')) return;
-  const items = S.get(sec);
-  if (items[idx]?.url?.startsWith('blob:')) URL.revokeObjectURL(items[idx].url);
-  items.splice(idx,1); S.set(sec,items); renderPubs(sec); toast('Document removed.');
-}
+  try {
+    if (storagePath) await deleteObject(ref(storage, storagePath));
+    await deleteDoc(doc(db, sec, docId));
+    await refreshCache(sec);
+    renderPubs(sec);
+    toast('Document removed.');
+  } catch(e) { toast('Error: ' + e.message); }
+};
 
-function setupUpload(inId, zoneId, sec) {
-  const inp = document.getElementById(inId);
-  const zone = document.getElementById(zoneId);
-  const handle = files => {
-    const pdfs = files.filter(f => f.type==='application/pdf'||f.name.endsWith('.pdf'));
-    if (!pdfs.length) return toast('Please upload PDF files only.');
-    if (pdfs.length===1) {
-      pFile=pdfs[0]; pSec=sec;
-      const defType = sec==='fatawa' ? 'ibadah' : 'notes';
-      document.getElementById('add-title').textContent = sec==='fatawa' ? 'Add Fatwa' : 'Add Note / Work';
-      document.getElementById('f-title').value = pdfs[0].name.replace(/\.pdf$/i,'');
-      document.getElementById('f-type').value = defType;
-      document.getElementById('f-desc').value=''; document.getElementById('f-date').value='';
-      document.getElementById('add-modal').classList.add('open');
-    } else {
-      const dt = new Date().getFullYear().toString();
-      const defType = sec==='fatawa' ? 'ibadah' : 'notes';
-      const items = S.get(sec);
-      pdfs.forEach(f => items.push({ title:f.name.replace(/\.pdf$/i,''), type:defType, desc:'', date:dt, url:URL.createObjectURL(f) }));
-      S.set(sec,items); renderPubs(sec); toast(`${pdfs.length} files added.`);
-    }
-    inp.value='';
-  };
-  inp.addEventListener('change', e => handle(Array.from(e.target.files)));
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dov'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('dov'));
-  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dov'); handle(Array.from(e.dataTransfer.files)); });
-}
+window.closeAdd = () => { document.getElementById('add-modal').classList.remove('open'); pFile=null; pSec=null; };
 
-function closeAdd() { document.getElementById('add-modal').classList.remove('open'); pFile=null; pSec=null; }
-
-function saveDoc() {
-  const title = document.getElementById('f-title').value.trim() || (pFile?.name||'Untitled');
+window.saveDoc = async () => {
+  if (!pFile) return toast('No file selected.');
+  const title = document.getElementById('f-title').value.trim() || pFile.name.replace(/\.pdf$/i,'');
   const type  = document.getElementById('f-type').value;
   const desc  = document.getElementById('f-desc').value.trim();
   const date  = document.getElementById('f-date').value.trim();
-  const url   = pFile ? URL.createObjectURL(pFile) : null;
   const sec   = pSec || (FATAWA_TYPES.includes(type) ? 'fatawa' : 'notes');
-  const items = S.get(sec);
-  items.push({ title, type, desc, date, url });
-  S.set(sec,items); closeAdd(); renderPubs(sec);
-  toast(`"${title}" saved.`);
-}
+  const btn   = document.querySelector('#add-modal .btn-sub');
+  btn.textContent = 'Uploading…'; btn.disabled = true;
+  try {
+    const storageRef = ref(storage, `${sec}/${Date.now()}-${pFile.name}`);
+    const snap       = await uploadBytes(storageRef, pFile);
+    const url        = await getDownloadURL(snap.ref);
+    await addDoc(collection(db, sec), {
+      title, type, desc, date, url,
+      storagePath: snap.ref.fullPath,
+      createdAt: serverTimestamp()
+    });
+    window.closeAdd();
+    await refreshCache(sec);
+    renderPubs(sec);
+    toast(`"${title}" saved.`);
+  } catch(e) {
+    toast('Upload failed: ' + e.message);
+  } finally {
+    btn.textContent = 'Save to Collection'; btn.disabled = false;
+  }
+};
 
-function scrollToZone(id) {
+window.scrollToZone = id => {
   document.getElementById('fab-menu').classList.remove('open');
   document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'center'});
+};
+
+// ── UPLOAD ZONES ─────────────────────────────────────────────
+function setupUpload(inId, zoneId, sec) {
+  const inp  = document.getElementById(inId);
+  const zone = document.getElementById(zoneId);
+  const handle = async files => {
+    const pdfs = files.filter(f => f.type==='application/pdf'||f.name.endsWith('.pdf'));
+    if (!pdfs.length) return toast('Please upload PDF files only.');
+    if (pdfs.length === 1) {
+      pFile = pdfs[0]; pSec = sec;
+      document.getElementById('add-title').textContent = sec==='fatawa' ? 'Add Fatwa' : 'Add Note / Work';
+      document.getElementById('f-title').value = pdfs[0].name.replace(/\.pdf$/i,'');
+      document.getElementById('f-type').value  = sec==='fatawa' ? 'ibadah' : 'notes';
+      document.getElementById('f-desc').value  = '';
+      document.getElementById('f-date').value  = '';
+      document.getElementById('add-modal').classList.add('open');
+    } else {
+      toast(`Uploading ${pdfs.length} files…`);
+      try {
+        await Promise.all(pdfs.map(async f => {
+          const storageRef = ref(storage, `${sec}/${Date.now()}-${f.name}`);
+          const snap = await uploadBytes(storageRef, f);
+          const url  = await getDownloadURL(snap.ref);
+          await addDoc(collection(db, sec), {
+            title: f.name.replace(/\.pdf$/i,''),
+            type: sec==='fatawa' ? 'ibadah' : 'notes',
+            desc:'', date: new Date().getFullYear().toString(),
+            url, storagePath: snap.ref.fullPath,
+            createdAt: serverTimestamp()
+          });
+        }));
+        await refreshCache(sec);
+        renderPubs(sec);
+        toast(`${pdfs.length} files uploaded.`);
+      } catch(e) { toast('Upload error: ' + e.message); }
+    }
+    inp.value = '';
+  };
+  inp.addEventListener('change', e => handle(Array.from(e.target.files)));
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('dov'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dov'));
+  zone.addEventListener('drop',      e => { e.preventDefault(); zone.classList.remove('dov'); handle(Array.from(e.dataTransfer.files)); });
 }
 
-// ADMIN AUTH
+// ── ADMIN AUTH ───────────────────────────────────────────────
 function isAdmin() { return sessionStorage.getItem('__admin')==='1'; }
 function applyAdminState() {
   document.body.classList.toggle('admin-mode', isAdmin());
   document.getElementById('admin-badge').classList.toggle('visible', isAdmin());
 }
-function requireAdmin() {
+window.requireAdmin = () => {
   if (isAdmin()) return;
-  document.getElementById('auth-pw').value='';
+  document.getElementById('auth-pw').value = '';
   document.getElementById('auth-error').classList.remove('show');
   document.getElementById('auth-overlay').classList.add('open');
-  setTimeout(()=>document.getElementById('auth-pw').focus(),120);
-}
-function submitLogin() {
-  if (document.getElementById('auth-pw').value===ADMIN_PASSWORD) {
+  setTimeout(() => document.getElementById('auth-pw').focus(), 120);
+};
+window.submitLogin = () => {
+  if (document.getElementById('auth-pw').value === ADMIN_PASSWORD) {
     sessionStorage.setItem('__admin','1');
     document.getElementById('auth-overlay').classList.remove('open');
-    applyAdminState(); renderPubs('fatawa'); renderPubs('notes'); toast('Admin access granted.');
+    applyAdminState(); renderPubs('fatawa'); renderPubs('notes');
+    toast('Admin access granted.');
   } else {
     document.getElementById('auth-error').classList.add('show');
-    document.getElementById('auth-pw').value='';
+    document.getElementById('auth-pw').value = '';
     document.getElementById('auth-pw').focus();
   }
-}
-function closeOverlay() { document.getElementById('auth-overlay').classList.remove('open'); }
-function adminLogout() { if(!confirm('Sign out?')) return; sessionStorage.removeItem('__admin'); applyAdminState(); renderPubs('fatawa'); renderPubs('notes'); toast('Signed out.'); }
-function togglePw() { const i=document.getElementById('auth-pw'); i.type=i.type==='password'?'text':'password'; }
-function toast(msg) { const e=document.getElementById('toast'); e.textContent=msg; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),3200); }
+};
+window.closeOverlay  = () => document.getElementById('auth-overlay').classList.remove('open');
+window.adminLogout   = () => { if(!confirm('Sign out?')) return; sessionStorage.removeItem('__admin'); applyAdminState(); renderPubs('fatawa'); renderPubs('notes'); toast('Signed out.'); };
+window.togglePw      = () => { const i=document.getElementById('auth-pw'); i.type=i.type==='password'?'text':'password'; };
+function toast(msg)  { const e=document.getElementById('toast'); e.textContent=msg; e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),3200); }
+window.toast = toast;
 
-document.addEventListener('DOMContentLoaded', () => {
+// ── INIT ─────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
   applyAdminState();
+  ['fatawa-grid','notes-grid'].forEach(id => {
+    const g = document.getElementById(id);
+    if (g) g.innerHTML = '<div class="empty-st">Loading…</div>';
+  });
+  await Promise.all([refreshCache('fatawa'), refreshCache('notes')]);
   renderPubs('fatawa'); renderPubs('notes');
   setupUpload('fatawa-input','fatawa-zone','fatawa');
   setupUpload('notes-input','notes-zone','notes');
-  document.getElementById('pdf-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closePdf(); });
-  document.getElementById('add-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAdd(); });
-  document.getElementById('auth-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeOverlay(); });
+  document.getElementById('pdf-modal').addEventListener('click',  e => { if(e.target===e.currentTarget) window.closePdf(); });
+  document.getElementById('add-modal').addEventListener('click',  e => { if(e.target===e.currentTarget) window.closeAdd(); });
+  document.getElementById('auth-overlay').addEventListener('click',e => { if(e.target===e.currentTarget) window.closeOverlay(); });
   document.addEventListener('click', e => { const fw=document.querySelector('.fab-wrap'); if(fw&&!fw.contains(e.target)) document.getElementById('fab-menu').classList.remove('open'); });
-  document.addEventListener('keydown', e => { if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();requireAdmin();} });
+  document.addEventListener('keydown', e => { if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();window.requireAdmin();} });
 });
 </script>
 </body>
