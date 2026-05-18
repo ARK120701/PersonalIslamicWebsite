@@ -322,11 +322,12 @@ const filters        = { fatawa:'all', notes:'all' };
 const cache          = { fatawa:[], notes:[] };
 let pFile = null, pSec = null;
 function bucket(sec) { return sec === 'fatawa' ? 'Fatwa' : 'Notes'; }
+function table(sec)  { return sec === 'fatawa' ? 'Fatwa' : 'Notes'; }
 
 // ── LOAD FROM SUPABASE ───────────────────────────────────────
 async function refreshCache(sec) {
   try {
-    const { data, error } = await db.from(sec).select('*').order('created_at', { ascending: false });
+    const { data, error } = await db.from(table(sec)).select('*').order('created_at', { ascending: false });
     if (error) throw error;
     cache[sec] = data || [];
   } catch(e) {
@@ -391,7 +392,7 @@ async function _delDoc(sec, id, storagePath) {
   if (!isAdmin() || !confirm('Remove this document?')) return;
   try {
     if (storagePath) await db.storage.from(bucket(sec)).remove([storagePath]);
-    await db.from(sec).delete().eq('id', id);
+    await db.from(table(sec)).delete().eq('id', id);
     await refreshCache(sec);
     renderPubs(sec);
     toast('Document removed.');
@@ -416,7 +417,7 @@ async function saveDoc() {
     if (upRes.error) throw upRes.error;
     var urlRes = db.storage.from(bucket(sec)).getPublicUrl(filename);
     var publicUrl = urlRes.data.publicUrl;
-    var dbRes = await db.from(sec).insert({ title: title, type: type, description: desc, date: date, url: publicUrl, storage_path: filename });
+    var dbRes = await db.from(table(sec)).insert({ title: title, type: type, description: desc, date: date, url: publicUrl, storage_path: filename });
     if (dbRes.error) throw dbRes.error;
     closeAdd();
     await refreshCache(sec);
@@ -458,7 +459,7 @@ function setupUpload(inId, zoneId, sec) {
           var filename = Date.now() + '-' + f.name;
           await db.storage.from(bucket(sec)).upload(filename, f, { contentType: 'application/pdf' });
           var publicUrl = db.storage.from(bucket(sec)).getPublicUrl(filename).data.publicUrl;
-          await db.from(sec).insert({ title: f.name.replace(/\.pdf$/i,''), type: sec==='fatawa'?'ibadah':'notes', description: '', date: String(new Date().getFullYear()), url: publicUrl, storage_path: filename });
+          await db.from(table(sec)).insert({ title: f.name.replace(/\.pdf$/i,''), type: sec==='fatawa'?'ibadah':'notes', description: '', date: String(new Date().getFullYear()), url: publicUrl, storage_path: filename });
         }
         await refreshCache(sec);
         renderPubs(sec);
