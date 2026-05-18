@@ -306,35 +306,40 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
 
 <div class="toast" id="toast"></div>
 
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
-// ── SUPABASE CONFIG ──────────────────────────────────────────
-// 1. Go to https://supabase.com → your project
-// 2. Left sidebar → Settings → API
-// 3. Copy "Project URL" and "anon / public" key and paste below
-const SUPABASE_URL = 'https://felcootbexaaelpxekjq.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlbGNvb3RiZXhhYWVscHhla2pxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNTk4NDEsImV4cCI6MjA5NDYzNTg0MX0.Ig-WPKnVd8x3vCFVGGYckPECmMfw6hTr8ZssO3REq5U';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ── FIREBASE CONFIG ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyC-Mia0VsR6Qq3UiFL-EEbVKebqqmfhRy4",
+  authDomain: "fatwadatabasearkwebsite.firebaseapp.com",
+  projectId: "fatwadatabasearkwebsite",
+  storageBucket: "fatwadatabasearkwebsite.firebasestorage.app",
+  messagingSenderId: "675695422048",
+  appId: "1:675695422048:web:9c92f45030dc21e157b105",
+  measurementId: "G-3DKZFYP541"
+};
+firebase.initializeApp(firebaseConfig);
+var firestoreDb = firebase.firestore();
+var storageRef  = firebase.storage();
 // ─────────────────────────────────────────────────────────────
 
 const ADMIN_PASSWORD = 'admin123';
 const FATAWA_TYPES   = ['fatwa','ibadah','muamalat','family','contemporary'];
 const filters        = { fatawa:'all', notes:'all' };
 const cache          = { fatawa:[], notes:[] };
-let pFile = null, pSec = null;
-function bucket(sec) { return sec === 'fatawa' ? 'Fatwa' : 'Notes'; }
-function table(sec)  { return sec === 'fatawa' ? 'Fatwa' : 'Notes'; }
+var pFile = null, pSec = null;
 
-// ── LOAD FROM SUPABASE ───────────────────────────────────────
+// ── LOAD FROM FIREBASE ───────────────────────────────────────
 async function refreshCache(sec) {
   try {
-    const { data, error } = await db.from(table(sec)).select('*').order('created_at', { ascending: false });
-    if (error) throw error;
-    cache[sec] = data || [];
+    var snapshot = await firestoreDb.collection(sec).orderBy('created_at', 'desc').get();
+    cache[sec] = snapshot.docs.map(function(d){ return Object.assign({id: d.id}, d.data()); });
   } catch(e) {
     cache[sec] = [];
-    console.error('Supabase load error:', e);
+    console.error('Firebase load error:', e);
   }
 }
 
@@ -342,19 +347,19 @@ async function refreshCache(sec) {
 function esc(s) { return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
 function renderPubs(sec) {
-  const all  = cache[sec];
-  const q    = (document.getElementById(sec+'-search')?.value||'').toLowerCase().trim();
-  const tf   = filters[sec]||'all';
-  let items  = tf==='all' ? all : all.filter(i => i.type===tf);
-  if (q) items = items.filter(i => i.title.toLowerCase().includes(q)||(i.description||'').toLowerCase().includes(q));
-  const g    = document.getElementById(sec+'-grid');
-  const icon = sec==='fatawa' ? '🕌' : '📝';
+  var all   = cache[sec];
+  var q     = (document.getElementById(sec+'-search').value||'').toLowerCase().trim();
+  var tf    = filters[sec]||'all';
+  var items = tf==='all' ? all : all.filter(function(i){ return i.type===tf; });
+  if (q) items = items.filter(function(i){ return i.title.toLowerCase().includes(q)||(i.description||'').toLowerCase().includes(q); });
+  var g    = document.getElementById(sec+'-grid');
+  var icon = sec==='fatawa' ? '🕌' : '📝';
   if (!items.length) {
     g.innerHTML = '<div class="empty-st">'+(all.length ? 'No items match your search.' : 'No documents yet — upload PDFs using the area above.')+'</div>';
     return;
   }
-  g.innerHTML = items.map(item =>
-    '<div class="pub-card">' +
+  g.innerHTML = items.map(function(item){
+    return '<div class="pub-card">' +
       '<div class="pub-hdr"><span class="pub-icon">'+icon+'</span><span class="pub-badge">'+item.type+'</span></div>' +
       '<div class="pub-body">' +
         '<div class="pub-title">'+item.title+'</div>' +
@@ -366,12 +371,12 @@ function renderPubs(sec) {
           '<button class="btn-sm btn-del" onclick="_delDoc(\''+sec+'\',\''+item.id+'\',\''+esc(item.storage_path||'')+'\')">✕</button>' +
         '</div>' +
       '</div>' +
-    '</div>'
-  ).join('');
+    '</div>';
+  }).join('');
 }
 
 function setFilter(sec, type, btn) {
-  document.querySelectorAll('#'+sec+' .fb').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#'+sec+' .fb').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
   filters[sec] = type;
   renderPubs(sec);
@@ -393,8 +398,8 @@ function closePdf() {
 async function _delDoc(sec, id, storagePath) {
   if (!isAdmin() || !confirm('Remove this document?')) return;
   try {
-    if (storagePath) await db.storage.from(bucket(sec)).remove([storagePath]);
-    await db.from(table(sec)).delete().eq('id', id);
+    if (storagePath) await storageRef.ref(storagePath).delete();
+    await firestoreDb.collection(sec).doc(id).delete();
     await refreshCache(sec);
     renderPubs(sec);
     toast('Document removed.');
@@ -414,13 +419,15 @@ async function saveDoc() {
   var btn   = document.querySelector('#add-modal .btn-sub');
   btn.textContent = 'Uploading…'; btn.disabled = true;
   try {
-    var filename = Date.now() + '-' + pFile.name;
-    var upRes = await db.storage.from(bucket(sec)).upload(filename, pFile, { contentType: 'application/pdf' });
-    if (upRes.error) throw upRes.error;
-    var urlRes = db.storage.from(bucket(sec)).getPublicUrl(filename);
-    var publicUrl = urlRes.data.publicUrl;
-    var dbRes = await db.from(table(sec)).insert({ title: title, type: type, description: desc, date: date, url: publicUrl, storage_path: filename });
-    if (dbRes.error) throw dbRes.error;
+    var filename    = sec + '/' + Date.now() + '-' + pFile.name;
+    var ref         = storageRef.ref(filename);
+    await ref.put(pFile);
+    var publicUrl   = await ref.getDownloadURL();
+    await firestoreDb.collection(sec).add({
+      title: title, type: type, description: desc, date: date,
+      url: publicUrl, storage_path: filename,
+      created_at: firebase.firestore.FieldValue.serverTimestamp()
+    });
     closeAdd();
     await refreshCache(sec);
     renderPubs(sec);
@@ -457,11 +464,17 @@ function setupUpload(inId, zoneId, sec) {
       toast('Uploading ' + pdfs.length + ' files…');
       try {
         for (var i=0; i<pdfs.length; i++) {
-          var f = pdfs[i];
-          var filename = Date.now() + '-' + f.name;
-          await db.storage.from(bucket(sec)).upload(filename, f, { contentType: 'application/pdf' });
-          var publicUrl = db.storage.from(bucket(sec)).getPublicUrl(filename).data.publicUrl;
-          await db.from(table(sec)).insert({ title: f.name.replace(/\.pdf$/i,''), type: sec==='fatawa'?'ibadah':'notes', description: '', date: String(new Date().getFullYear()), url: publicUrl, storage_path: filename });
+          var f        = pdfs[i];
+          var filename = sec + '/' + Date.now() + '-' + f.name;
+          var ref      = storageRef.ref(filename);
+          await ref.put(f);
+          var url      = await ref.getDownloadURL();
+          await firestoreDb.collection(sec).add({
+            title: f.name.replace(/\.pdf$/i,''), type: sec==='fatawa'?'fatwa':'notes',
+            description: '', date: String(new Date().getFullYear()),
+            url: url, storage_path: filename,
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+          });
         }
         await refreshCache(sec);
         renderPubs(sec);
