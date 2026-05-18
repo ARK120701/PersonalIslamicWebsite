@@ -125,6 +125,8 @@ body:not(.admin-mode) .proj-del{display:none!important;}
 <script>
 const ADMIN_PASSWORD='admin123';
 const S={get:k=>{try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[];}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+const DATA_VERSION='v2';
+if(localStorage.getItem('cs_projects_ver')!==DATA_VERSION){localStorage.removeItem('cs_projects');localStorage.setItem('cs_projects_ver',DATA_VERSION);}
 const DEF_PROJECTS = [
   {
     title: "8 Queens Algorithm",
@@ -161,13 +163,19 @@ const DEF_PROJECTS = [
     context: "Python · Flask · Docker",
     desc: "• Designed and deployed a containerised REST API using Python, Flask, and Docker that serves real-time predictions, demonstrating backend service development and cloud-ready architecture.\n• Built a reproducible deployment pipeline by packaging application code, dependencies, and model artifacts into a Docker image and validating functionality through HTTP-based client requests.",
     github: "", demo: ""
+  },
+  {
+    title: "Tahawiyyah Institute Website",
+    context: "Freelance Web Development · April 2026",
+    desc: "• Designed and developed the official website for Tahawiyyah Institute, a platform dedicated to Islamic education and scholarly resources.\n• Built a responsive, modern site providing visitors access to the Institute's programmes, courses, and scholarly content.",
+    github: "", demo: "https://www.darultahawiyyah.com/", demoLabel: "View Website →"
   }
 ];
 
 function renderProjects(){
   const all=S.get('cs_projects').length?S.get('cs_projects'):DEF_PROJECTS;const list=document.getElementById('proj-list');
   if(!all.length){list.innerHTML='<div class="empty-state"><span class="empty-state-icon">💻</span><p>No projects added yet.</p></div>';return;}
-  list.innerHTML=all.map((p,i)=>`<div class="proj-entry"><div class="proj-title">${p.title}<button class="proj-del" onclick="deleteProject(${i})" title="Remove">✕</button></div>${p.context?`<div class="proj-context">${p.context}</div>`:''}<p class="proj-desc">${(p.desc||'').replace(/\n/g,'<br>')}</p>${(p.github||p.demo)?`<div class="proj-links">${p.github?`<a class="proj-link primary" href="${p.github}" target="_blank" rel="noopener">GitHub →</a>`:''}${p.demo?`<a class="proj-link secondary" href="${p.demo}" target="_blank" rel="noopener">Demo / Report</a>`:''}</div>`:''}</div>`).join('');
+  list.innerHTML=all.map((p,i)=>`<div class="proj-entry"><div class="proj-title">${p.title}<button class="proj-del" onclick="deleteProject(${i})" title="Remove">✕</button></div>${p.context?`<div class="proj-context">${p.context}</div>`:''}<p class="proj-desc">${(p.desc||'').replace(/\n/g,'<br>')}</p>${(p.github||p.demo)?`<div class="proj-links">${p.github?`<a class="proj-link primary" href="${p.github}" target="_blank" rel="noopener">GitHub →</a>`:''}${p.demo?`<a class="proj-link secondary" href="${p.demo}" target="_blank" rel="noopener">${p.demoLabel||'Demo / Report'}</a>`:''}</div>`:''}</div>`).join('');
 }
 function toggleForm(){const f=document.getElementById('add-form');f.classList.toggle('open');if(f.classList.contains('open')){['pj-title','pj-context','pj-desc','pj-github','pj-demo'].forEach(id=>document.getElementById(id).value='');}}
 function addProject(){

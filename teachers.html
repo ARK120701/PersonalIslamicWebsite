@@ -158,6 +158,8 @@ body:not(.admin-mode) .tb-del{display:none!important;}
 <script>
 const ADMIN_PASSWORD = 'admin123';
 const S = { get: k => { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } }, set: (k,v) => localStorage.setItem(k,JSON.stringify(v)) };
+const DATA_VERSION = 'v2';
+if (localStorage.getItem('teachers_ver') !== DATA_VERSION) { localStorage.removeItem('teachers'); localStorage.setItem('teachers_ver', DATA_VERSION); }
 
 const DEF_TEACHERS = [
   { name:"Mufti Mizanur Rahman", arabic:"مفتي ميزان الرحمن سيد", meta:"Senior Mufti · Senior Muḥaddith", bio:"Mufti Mizanur Rahman is a senior mufti and scholar of the Islamic sciences a teacher in the Takhaṣṣuṣ programme. [Biography to be completed.]" },
@@ -173,16 +175,16 @@ const DEF_TEACHERS = [
   { name:"Mawlana Osama", arabic:"مولانا أسامة", meta:"Scholar of Islamic Sciences", bio:"Mawlana Osama is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
   { name:"Mawlana Abdullah Kamal", arabic:"مولانا عبد الله كمال", meta:"Scholar of Islamic Sciences", bio:"Mawlana Abdullah Kamal is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
   { name:"Mufti Mahdi Alam", arabic:"مفتي مهدي عالم", meta:"Scholar of Islamic Sciences", bio:"Mufti Mahdi Alam is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
-  { name:"Mawlana Hamoon Rashid", arabic:"مولانا هامون رشيد", meta:"Scholar of Islamic Sciences", bio:"Mawlana Hamoon Rashid is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
-  { name:"Mawlana Yusuf Chowdhury", arabic:"مولانا يوسف چودهري", meta:"Scholar of Islamic Sciences", bio:"Mawlana Yusuf Chowdhury is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
-  { name:"Mawlana Tareque", arabic:"مولانا طارق", meta:"Scholar of Islamic Sciences", bio:"Mawlana Tareque is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
-  { name:"Mawlana Fathi", arabic:"مولانا فتحي", meta:"Scholar of Islamic Sciences", bio:"Mawlana Fathi is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mufti Hamoon Rashid", arabic:"مفتي هامون رشيد", meta:"Scholar of Islamic Sciences", bio:"Mufti Hamoon Rashid is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mufti Yusuf Chowdhury", arabic:"مفتي يوسف چودهري", meta:"Scholar of Islamic Sciences", bio:"Mufti Yusuf Chowdhury is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mufti Tareque Ahmed", arabic:"مفتي طارق أحمد", meta:"Scholar of Islamic Sciences", bio:"Mufti Tareque Ahmed is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mufti Fathi Alam", arabic:"مفتي فتحي عالم", meta:"Scholar of Islamic Sciences", bio:"Mufti Fathi Alam is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
   { name:"Mawlana Zafar", arabic:"مولانا ظفر", meta:"Scholar of Islamic Sciences", bio:"Mawlana Zafar is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
   { name:"Mawlana Azfar", arabic:"مولانا أزفر", meta:"Scholar of Islamic Sciences", bio:"Mawlana Azfar is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
-  { name:"Mawlana Adnan Lunat", arabic:"مولانا عدنان لونات", meta:"Scholar of Islamic Sciences", bio:"Mawlana Adnan Lunat is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Mufti Adnan Lunat", arabic:"مفتي عدنان لونات", meta:"Scholar of Islamic Sciences", bio:"Mufti Adnan Lunat is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
   { name:"Mawlana Faisal", arabic:"مولانا فيصل", meta:"Scholar of Islamic Sciences", bio:"Mawlana Faisal is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
   { name:"Mawlana Farzan", arabic:"مولانا فرزان", meta:"Scholar of Islamic Sciences", bio:"Mawlana Farzan is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
-  { name:"Mawlana Mujahid Islaam", arabic:"مولانا مجاهد إسلام", meta:"Scholar of Islamic Sciences", bio:"Mawlana Mujahid Islaam is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
+  { name:"Sheikh Mujahid Islam", arabic:"الشيخ مجاهد إسلام", meta:"Scholar of Islamic Sciences", bio:"Sheikh Mujahid Islam is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
   { name:"Mawlana Junayed Ahmed", arabic:"مولانا جنيد أحمد", meta:"Scholar of Islamic Sciences", bio:"Mawlana Junayed Ahmed is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" },
   { name:"Sheikh Aqib Choudhury", arabic:"الشيخ عاقب چودهري", meta:"Scholar of Islamic Sciences", bio:"Sheikh Aqib Choudhury is a scholar of the Islamic sciences a teacher in the ʿĀlimiyyah programme. [Biography to be completed.]" }
 ];
