@@ -189,6 +189,7 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
     </div>
     <div class="filter-bar">
       <button class="fb active" onclick="setFilter('fatawa','all',this)">All</button>
+      <button class="fb" onclick="setFilter('fatawa','fatwa',this)">Fatwa</button>
       <button class="fb" onclick="setFilter('fatawa','ibadah',this)">ʿIbādah</button>
       <button class="fb" onclick="setFilter('fatawa','muamalat',this)">Muʿāmalāt</button>
       <button class="fb" onclick="setFilter('fatawa','family',this)">Family Law</button>
@@ -252,6 +253,7 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
       <div class="fr"><label>Title</label><input type="text" id="f-title" placeholder="Document title" /></div>
       <div class="fr"><label>Section</label>
         <select id="f-type">
+          <option value="fatwa">Fatwa</option>
           <option value="ibadah">Fatwa — ʿIbādah</option>
           <option value="muamalat">Fatwa — Muʿāmalāt</option>
           <option value="family">Fatwa — Family Law</option>
@@ -317,7 +319,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // ─────────────────────────────────────────────────────────────
 
 const ADMIN_PASSWORD = 'admin123';
-const FATAWA_TYPES   = ['ibadah','muamalat','family','contemporary'];
+const FATAWA_TYPES   = ['fatwa','ibadah','muamalat','family','contemporary'];
 const filters        = { fatawa:'all', notes:'all' };
 const cache          = { fatawa:[], notes:[] };
 let pFile = null, pSec = null;
@@ -447,7 +449,7 @@ function setupUpload(inId, zoneId, sec) {
       pFile = pdfs[0]; pSec = sec;
       document.getElementById('add-title').textContent = sec==='fatawa' ? 'Add Fatwa' : 'Add Note / Work';
       document.getElementById('f-title').value = pdfs[0].name.replace(/\.pdf$/i,'');
-      document.getElementById('f-type').value  = sec==='fatawa' ? 'ibadah' : 'notes';
+      document.getElementById('f-type').value  = sec==='fatawa' ? 'fatwa' : 'notes';
       document.getElementById('f-desc').value  = '';
       document.getElementById('f-date').value  = '';
       document.getElementById('add-modal').classList.add('open');
