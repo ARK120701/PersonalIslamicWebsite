@@ -321,6 +321,7 @@ const FATAWA_TYPES   = ['ibadah','muamalat','family','contemporary'];
 const filters        = { fatawa:'all', notes:'all' };
 const cache          = { fatawa:[], notes:[] };
 let pFile = null, pSec = null;
+function bucket(sec) { return sec === 'fatawa' ? 'Fatwa' : 'Notes'; }
 
 // ── LOAD FROM SUPABASE ───────────────────────────────────────
 async function refreshCache(sec) {
@@ -389,7 +390,7 @@ function closePdf() {
 async function _delDoc(sec, id, storagePath) {
   if (!isAdmin() || !confirm('Remove this document?')) return;
   try {
-    if (storagePath) await db.storage.from(sec).remove([storagePath]);
+    if (storagePath) await db.storage.from(bucket(sec)).remove([storagePath]);
     await db.from(sec).delete().eq('id', id);
     await refreshCache(sec);
     renderPubs(sec);
@@ -411,9 +412,9 @@ async function saveDoc() {
   btn.textContent = 'Uploading…'; btn.disabled = true;
   try {
     var filename = Date.now() + '-' + pFile.name;
-    var upRes = await db.storage.from(sec).upload(filename, pFile, { contentType: 'application/pdf' });
+    var upRes = await db.storage.from(bucket(sec)).upload(filename, pFile, { contentType: 'application/pdf' });
     if (upRes.error) throw upRes.error;
-    var urlRes = db.storage.from(sec).getPublicUrl(filename);
+    var urlRes = db.storage.from(bucket(sec)).getPublicUrl(filename);
     var publicUrl = urlRes.data.publicUrl;
     var dbRes = await db.from(sec).insert({ title: title, type: type, description: desc, date: date, url: publicUrl, storage_path: filename });
     if (dbRes.error) throw dbRes.error;
@@ -455,8 +456,8 @@ function setupUpload(inId, zoneId, sec) {
         for (var i=0; i<pdfs.length; i++) {
           var f = pdfs[i];
           var filename = Date.now() + '-' + f.name;
-          await db.storage.from(sec).upload(filename, f, { contentType: 'application/pdf' });
-          var publicUrl = db.storage.from(sec).getPublicUrl(filename).data.publicUrl;
+          await db.storage.from(bucket(sec)).upload(filename, f, { contentType: 'application/pdf' });
+          var publicUrl = db.storage.from(bucket(sec)).getPublicUrl(filename).data.publicUrl;
           await db.from(sec).insert({ title: f.name.replace(/\.pdf$/i,''), type: sec==='fatawa'?'ibadah':'notes', description: '', date: String(new Date().getFullYear()), url: publicUrl, storage_path: filename });
         }
         await refreshCache(sec);
