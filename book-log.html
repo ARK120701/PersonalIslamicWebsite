@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Book Reading Log — Abdurrahman Khan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:        #0d1f3c;
+  --navy-mid:    #162d52;
+  --navy-light:  #1e3d6e;
+  --navy-pale:   #2a5298;
+  --gold:        #c8952a;
+  --gold-light:  #e8b84b;
+  --gold-pale:   #f5d98a;
+  --gold-dim:    #8a6218;
+  --white:       #ffffff;
+  --off-white:   #f8f7f4;
+  --cream:       #f2efe8;
+  --slate:       #e8edf5;
+  --text-dark:   #0d1f3c;
+  --text-body:   #2c3e5a;
+  --text-muted:  #5a6a85;
+  --border:      #d0d8e8;
+  --shadow-sm:   0 2px 8px rgba(13,31,60,0.10);
+  --shadow-md:   0 6px 24px rgba(13,31,60,0.14);
+  --shadow-lg:   0 16px 48px rgba(13,31,60,0.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'EB Garamond',Georgia,serif;font-size:18px;line-height:1.75;color:var(--text-body);background:var(--off-white);overflow-x:hidden;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--slate);}::-webkit-scrollbar-thumb{background:var(--navy-pale);border-radius:3px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--navy);height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;border-bottom:3px solid var(--gold);box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.nav-brand{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1.05rem;font-weight:700;text-decoration:none;}
+.nav-links{display:flex;list-style:none;gap:.1rem;}
+.nav-links a{color:rgba(255,255,255,.82);text-decoration:none;font-family:'EB Garamond',serif;font-size:.95rem;padding:.4rem .85rem;transition:color .2s,background .2s;border-radius:2px;white-space:nowrap;}
+.nav-links a:hover{color:var(--gold-light);background:rgba(200,149,42,.12);}
+
+/* QUICK-NAV TABS */
+.quick-nav{background:var(--navy-mid);border-bottom:1px solid rgba(200,149,42,.2);padding:0 3rem;display:flex;gap:0;overflow-x:auto;position:fixed;top:62px;left:0;right:0;z-index:999;}
+.quick-nav::-webkit-scrollbar{height:3px;}
+.qn-tab{display:inline-flex;align-items:center;gap:.45rem;padding:.65rem 1.3rem;color:rgba(255,255,255,.5);font-family:'EB Garamond',serif;font-size:.88rem;text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s;letter-spacing:.02em;}
+.qn-tab:hover{color:var(--gold-light);border-bottom-color:rgba(200,149,42,.4);}
+.qn-tab.active{color:var(--gold-light);border-bottom-color:var(--gold);}
+.qn-tab-icon{font-size:.9rem;opacity:.75;}
+
+/* PAGE HEADER */
+.page-header{padding:9rem 2rem 3rem;background:linear-gradient(170deg,rgba(13,31,60,.97) 0%,rgba(22,45,82,.95) 55%,rgba(30,61,110,.9) 100%);position:relative;overflow:hidden;text-align:center;}
+.page-header::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='.6' fill='%23c8952a' opacity='.25'/%3E%3C/svg%3E");pointer-events:none;}
+.ph-inner{position:relative;z-index:1;max-width:700px;margin:0 auto;}
+.ph-eyebrow{font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;}
+.ph-title{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,3.5rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:.4rem;}
+.ph-arabic{font-family:'Noto Naskh Arabic',serif;font-size:1.6rem;color:rgba(255,255,255,.45);direction:rtl;margin-bottom:.8rem;}
+.ph-rule{width:90px;height:1px;margin:.8rem auto;background:linear-gradient(to right,transparent,var(--gold),transparent);}
+.ph-sub{color:rgba(248,247,244,.65);font-size:1rem;font-style:italic;}
+
+/* SECTIONS */
+section{padding:3.5rem 2rem;position:relative;}
+.si{max-width:1100px;margin:0 auto;}
+.sh{text-align:center;margin-bottom:2.5rem;}
+.s-tag{display:inline-block;font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border-top:1px solid var(--gold-dim);border-bottom:1px solid var(--gold-dim);padding:.25rem 1rem;margin-bottom:.9rem;}
+.s-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--navy);margin-bottom:.4rem;line-height:1.15;}
+.s-lead{font-style:italic;color:var(--text-muted);font-size:.98rem;}
+
+.bg-white{background:var(--white);}
+.bg-cream{background:var(--cream);}
+.bg-slate{background:var(--slate);}
+.bg-navy{background:var(--navy);}
+.bg-navy .s-title{color:var(--gold-light);}
+.bg-navy .s-lead{color:rgba(255,255,255,.45);}
+.bg-navy .s-tag{color:var(--gold-pale);border-color:var(--gold-dim);}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2.5rem;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:1.4rem 1.2rem;text-align:center;}
+.stat-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--navy);line-height:1;margin-bottom:.2rem;}
+.stat-label{font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);}
+
+/* FORM PANEL */
+.form-panel{background:var(--white);border:1px solid var(--border);border-top:4px solid var(--gold);padding:2rem;box-shadow:var(--shadow-sm);margin-bottom:2.5rem;}
+.form-panel-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr;}
+.fr{margin-bottom:0;}
+.fr label{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin-bottom:.35rem;font-weight:700;}
+.fr input,.fr select,.fr textarea{width:100%;padding:.6rem .9rem;border:1px solid var(--border);background:var(--off-white);font-family:'EB Garamond',serif;font-size:1rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.fr input:focus,.fr select:focus,.fr textarea:focus{border-color:var(--navy-pale);}
+.fr input[dir="rtl"]{font-family:'Noto Naskh Arabic',serif;font-size:1.05rem;}
+.form-actions{display:flex;gap:.75rem;margin-top:1.25rem;}
+.btn-sub{flex:1;padding:.75rem;background:var(--navy);color:var(--gold-light);border:none;cursor:pointer;font-family:'EB Garamond',serif;font-size:.95rem;letter-spacing:.06em;transition:background .18s;}
+.btn-sub:hover{background:var(--navy-light);}
+.btn-reset{padding:.75rem 1.4rem;background:transparent;color:var(--text-muted);border:1px solid var(--border);cursor:pointer;font-family:'EB Garamond',serif;font-size:.95rem;transition:all .18s;}
+.btn-reset:hover{background:var(--slate);color:var(--navy);}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center;}
+.filter-label{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-right:.3rem;}
+.fb{padding:.35rem 1rem;border:1px solid var(--border);background:transparent;color:var(--text-body);font-family:'EB Garamond',serif;font-size:.9rem;cursor:pointer;border-radius:2px;transition:all .18s;white-space:nowrap;}
+.fb:hover{border-color:var(--navy-pale);color:var(--navy);background:var(--slate);}
+.fb.active{background:var(--navy);color:var(--gold-light);border-color:var(--navy);}
+
+/* SEARCH BAR */
+.search-wrap{display:flex;gap:.75rem;margin-bottom:1.5rem;}
+.log-search{flex:1;padding:.6rem 1rem;border:1px solid var(--border);background:var(--white);font-family:'EB Garamond',serif;font-size:1rem;color:var(--text-dark);outline:none;transition:border-color .2s;}
+.log-search:focus{border-color:var(--navy-pale);}
+
+/* LOG TABLE */
+.log-table-wrap{overflow-x:auto;}
+.log-table{width:100%;border-collapse:collapse;font-size:.93rem;}
+.log-table thead{background:var(--navy);}
+.log-table thead th{color:var(--gold-pale);font-family:'EB Garamond',serif;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;padding:.75rem 1rem;text-align:left;white-space:nowrap;font-weight:600;}
+.log-table tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+.log-table tbody tr:hover{background:var(--slate);}
+.log-table td{padding:.8rem 1rem;color:var(--text-body);vertical-align:middle;}
+.log-table .td-book{font-weight:600;color:var(--navy);}
+.log-table .td-arabic{font-family:'Noto Naskh Arabic',serif;direction:rtl;font-size:1rem;color:var(--text-muted);}
+.log-table .td-pages{font-family:'Playfair Display',serif;font-weight:700;color:var(--navy-pale);}
+.topic-badge{display:inline-block;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .6rem;border-radius:2px;white-space:nowrap;font-weight:700;}
+.topic-fiqh     {background:#e8f0fb;color:#1e3d6e;}
+.topic-fatwa    {background:#fef3e2;color:#7a4a00;}
+.topic-tafseer  {background:#e9f5e9;color:#1a5c1a;}
+.topic-hadith   {background:#f3e8f5;color:#5a1a6e;}
+.topic-aqeedah  {background:#e8f5f3;color:#1a5c50;}
+.topic-seerah   {background:#fdf0f0;color:#7a1a1a;}
+.topic-arabic   {background:#f5f5e8;color:#5c5c1a;}
+.topic-usool    {background:#eef0fb;color:#2a2a6e;}
+.topic-tasawwuf {background:#f5eaee;color:#6e1a3a;}
+.topic-other    {background:#f0f0f0;color:#444;}
+.vol-badge{display:inline-block;font-size:.7rem;background:var(--slate);color:var(--text-dark);padding:.18rem .55rem;margin-left:.3rem;}
+.td-date{font-size:.8rem;color:var(--text-muted);white-space:nowrap;}
+.td-actions{white-space:nowrap;}
+.btn-icon{background:none;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;width:28px;height:28px;font-size:.8rem;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;margin-left:.3rem;}
+.btn-icon:hover{background:var(--slate);color:var(--navy);}
+.btn-icon.del:hover{background:#fff0f0;color:#c0392b;border-color:#e8d0d0;}
+.log-empty{text-align:center;padding:3rem;color:var(--text-muted);font-style:italic;font-size:.95rem;}
+
+/* RUNNING TOTAL ROW */
+.log-table tfoot td{background:var(--navy-mid);color:var(--gold-pale);font-family:'EB Garamond',serif;font-size:.85rem;font-weight:600;padding:.7rem 1rem;letter-spacing:.05em;}
+.log-table tfoot .total-pages{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold-light);}
+
+/* TOPIC BREAKDOWN */
+.breakdown-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;}
+.bd-card{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--gold);padding:1rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
+.bd-label{font-size:.82rem;font-weight:600;color:var(--navy);}
+.bd-num{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--navy-pale);}
+.bd-sub{font-size:.7rem;color:var(--text-muted);margin-top:.05rem;}
+
+/* EDIT MODAL */
+.mbk{display:none;position:fixed;inset:0;background:rgba(13,31,60,.88);z-index:2000;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px);}
+.mbk.open{display:flex;}
+.mc{background:var(--white);width:100%;max-width:560px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);}
+.mtb{background:var(--navy);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.m-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:.95rem;font-weight:700;flex:1;}
+.m-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;padding:.1rem .4rem;transition:color .15s;}
+.m-x:hover{color:#fff;}
+.m-body{padding:1.75rem 2rem 2rem;}
+.m-body .fr{margin-bottom:1rem;}
+.m-body .form-grid{gap:.85rem;}
+
+/* ADMIN */
+.admin-lock-overlay{display:none;position:fixed;inset:0;background:rgba(13,31,60,.96);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.admin-lock-overlay.open{display:flex;}
+.admin-login-box{background:var(--white);width:100%;max-width:390px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.6);}
+.admin-login-head{background:var(--navy);padding:1.5rem 2rem;text-align:center;}
+.admin-login-seal{width:54px;height:54px;border:2px solid rgba(200,149,42,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:1.3rem;}
+.admin-login-title{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:1.05rem;font-weight:700;margin-bottom:.2rem;}
+.admin-login-sub{font-size:.76rem;color:rgba(255,255,255,.42);letter-spacing:.05em;}
+.admin-login-body{padding:1.75rem 2rem 2rem;}
+.admin-login-body .fr{margin-bottom:1rem;}
+.admin-pw-wrap{position:relative;}
+.admin-pw-wrap input{padding-right:2.8rem!important;}
+.admin-pw-eye{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;line-height:1;}
+.admin-login-error{display:none;color:#c0392b;font-size:.82rem;margin-bottom:.75rem;padding:.45rem .75rem;background:#fff0f0;border-left:3px solid #c0392b;}
+.admin-login-error.show{display:block;}
+.admin-login-hint{font-size:.76rem;color:var(--text-muted);text-align:center;margin-top:.85rem;font-style:italic;}
+.admin-badge{display:none;position:fixed;top:70px;right:1rem;background:var(--gold);color:var(--navy);font-family:'EB Garamond',serif;font-size:.72rem;font-weight:700;padding:.3rem .9rem;letter-spacing:.07em;z-index:999;cursor:pointer;box-shadow:var(--shadow-md);text-transform:uppercase;}
+.admin-badge.visible{display:block;}
+.admin-only{display:none!important;}
+body.admin-mode .admin-only{display:block!important;}
+body:not(.admin-mode) .btn-icon.del{display:none!important;}
+body:not(.admin-mode) .btn-icon.edit-btn{display:none!important;}
+body:not(.admin-mode) #add-form-section{display:none!important;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--gold-pale);border-left:3px solid var(--gold);padding:.75rem 1.5rem;font-family:'EB Garamond',serif;font-size:.95rem;z-index:9999;box-shadow:var(--shadow-lg);transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* FOOTER */
+footer{background:var(--navy);border-top:3px solid var(--gold-dim);text-align:center;padding:3rem 2rem;}
+footer p{font-size:.82rem;color:rgba(255,255,255,.35);line-height:1.9;}
+
+@media(max-width:900px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .form-grid{grid-template-columns:1fr;}
+  .form-grid.three{grid-template-columns:1fr;}
+  nav{padding:0 1rem;}
+  .nav-links{display:none;}
+  .quick-nav{padding:0 1rem;}
+}
+@media(max-width:600px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .log-table .td-arabic{display:none;}
+  .log-table .td-date{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">Abdurrahman Khan</a>
+  <ul class="nav-links">
+    <li><a href="biography.html">Biography</a></li>
+    <li><a href="index.html#education">Education</a></li>
+    <li><a href="index.html#work-experience">Experience</a></li>
+    <li><a href="books.html">Books Studied</a></li>
+    <li><a href="teachers.html">Teachers</a></li>
+    <li><a href="fatawa.html">Fatawa</a></li>
+    <li><a href="projects.html">CS Projects</a></li>
+    <li><a href="book-log.html" style="color:var(--gold-light);">Book Log</a></li>
+  </ul>
+  <button id="admin-nav-btn" onclick="requireAdmin()" title="Admin" style="background:none;border:none;cursor:pointer;padding:.4rem .6rem;opacity:0;font-size:.7rem;color:rgba(255,255,255,.15);transition:opacity .2s;" onmouseenter="this.style.opacity='.4'" onmouseleave="this.style.opacity='0'">⚙</button>
+</nav>
+
+<div class="quick-nav">
+  <a href="index.html" class="qn-tab"><span class="qn-tab-icon">🏠</span>Home</a>
+  <a href="books.html" class="qn-tab"><span class="qn-tab-icon">📖</span>Books Studied Under Teachers</a>
+  <a href="teachers.html" class="qn-tab"><span class="qn-tab-icon">🎓</span>Teacher Biographies</a>
+  <a href="fatawa.html" class="qn-tab"><span class="qn-tab-icon">🕌</span>Fatawa</a>
+  <a href="projects.html" class="qn-tab"><span class="qn-tab-icon">💻</span>CS Projects</a>
+  <a href="book-log.html" class="qn-tab active"><span class="qn-tab-icon">📒</span>Book Log</a>
+</div>
+
+<div class="page-header">
+  <div class="ph-inner">
+    <div class="ph-eyebrow">Personal Reading Record</div>
+    <h1 class="ph-title">Book Reading Log</h1>
+    <div class="ph-arabic">سجل القراءة</div>
+    <div class="ph-rule"></div>
+    <p class="ph-sub">A private record of books studied — tracking volumes, pages, and topics across the Islamic sciences</p>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="bg-white" style="padding-bottom:0;">
+  <div class="si">
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-entries">0</div>
+        <div class="stat-label">Log Entries</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-pages">0</div>
+        <div class="stat-label">Total Pages Read</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-books">0</div>
+        <div class="stat-label">Unique Books</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-topics">0</div>
+        <div class="stat-label">Subjects Covered</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ADD ENTRY FORM (admin only) -->
+<section id="add-form-section" class="bg-white">
+  <div class="si">
+    <div class="form-panel">
+      <div class="form-panel-title">✏ Log a Reading Session</div>
+      <div class="form-grid" style="margin-bottom:1rem;">
+        <div class="fr">
+          <label>Book Name (English)</label>
+          <input type="text" id="f-name-en" placeholder="e.g. Al-Hidaya, Sahih al-Bukhari…" />
+        </div>
+        <div class="fr">
+          <label>Book Name (Arabic) — اختياري</label>
+          <input type="text" id="f-name-ar" placeholder="مثلاً: الهداية، صحيح البخاري" dir="rtl" />
+        </div>
+      </div>
+      <div class="form-grid three" style="margin-bottom:1rem;">
+        <div class="fr">
+          <label>Topic / Subject</label>
+          <select id="f-topic">
+            <option value="">— Select Topic —</option>
+            <option value="fiqh">Fiqh — الفقه</option>
+            <option value="fatwa">Fatwa — الفتوى</option>
+            <option value="tafseer">Tafseer — التفسير</option>
+            <option value="hadith">Hadith — الحديث</option>
+            <option value="aqeedah">Aqeedah — العقيدة</option>
+            <option value="seerah">Seerah — السيرة</option>
+            <option value="arabic">Arabic Sciences — علوم العربية</option>
+            <option value="usool">Usool al-Fiqh — أصول الفقه</option>
+            <option value="tasawwuf">Tasawwuf — التصوف</option>
+            <option value="other">Other — أخرى</option>
+          </select>
+        </div>
+        <div class="fr">
+          <label>Volume (Juz / Vol)</label>
+          <input type="number" id="f-volume" placeholder="e.g. 1, 2, 3…" min="1" />
+        </div>
+        <div class="fr">
+          <label>Pages Read (this session)</label>
+          <input type="number" id="f-pages" placeholder="e.g. 25" min="1" />
+        </div>
+      </div>
+      <div class="form-grid" style="margin-bottom:0;">
+        <div class="fr">
+          <label>Date</label>
+          <input type="date" id="f-date" />
+        </div>
+        <div class="fr">
+          <label>Notes (optional)</label>
+          <input type="text" id="f-notes" placeholder="Any notes on this session…" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-sub" onclick="addEntry()">Add to Log</button>
+        <button class="btn-reset" onclick="resetForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOG -->
+<section class="bg-cream">
+  <div class="si">
+    <div class="sh">
+      <span class="s-tag">Reading Record</span>
+      <h2 class="s-title">Log Entries</h2>
+      <p class="s-lead">All recorded reading sessions, sorted by most recent</p>
+    </div>
+
+    <div class="search-wrap">
+      <input class="log-search" type="text" id="log-search" placeholder="Search by book name, topic, notes…" oninput="renderLog()" />
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-label">Filter:</span>
+      <button class="fb active" onclick="setFilter('all',this)">All</button>
+      <button class="fb" onclick="setFilter('fiqh',this)">Fiqh</button>
+      <button class="fb" onclick="setFilter('fatwa',this)">Fatwa</button>
+      <button class="fb" onclick="setFilter('tafseer',this)">Tafseer</button>
+      <button class="fb" onclick="setFilter('hadith',this)">Hadith</button>
+      <button class="fb" onclick="setFilter('aqeedah',this)">Aqeedah</button>
+      <button class="fb" onclick="setFilter('seerah',this)">Seerah</button>
+      <button class="fb" onclick="setFilter('arabic',this)">Arabic Sciences</button>
+      <button class="fb" onclick="setFilter('usool',this)">Usool al-Fiqh</button>
+      <button class="fb" onclick="setFilter('tasawwuf',this)">Tasawwuf</button>
+      <button class="fb" onclick="setFilter('other',this)">Other</button>
+    </div>
+
+    <div class="log-table-wrap">
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Book (English)</th>
+            <th class="td-arabic">Book (Arabic)</th>
+            <th>Topic</th>
+            <th>Volume</th>
+            <th>Pages</th>
+            <th class="td-date">Date</th>
+            <th>Notes</th>
+            <th class="admin-only">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="log-body">
+          <tr><td colspan="9" class="log-empty">No entries yet. Use the form above to log a reading session.</td></tr>
+        </tbody>
+        <tfoot id="log-foot" style="display:none;">
+          <tr>
+            <td colspan="4">Showing <span id="foot-count">0</span> entries</td>
+            <td></td>
+            <td class="total-pages" id="foot-pages">0</td>
+            <td colspan="3">pages total</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TOPIC BREAKDOWN -->
+<section class="bg-white">
+  <div class="si">
+    <div class="sh">
+      <span class="s-tag">By Subject</span>
+      <h2 class="s-title">Pages by Topic</h2>
+      <p class="s-lead">Breakdown of total pages read per Islamic science</p>
+    </div>
+    <div class="breakdown-grid" id="breakdown-grid">
+      <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);font-style:italic;padding:2rem;">No data yet.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>All rights reserved · Personal scholarly archive</p>
+</footer>
+
+<!-- EDIT MODAL -->
+<div class="mbk" id="edit-modal">
+  <div class="mc">
+    <div class="mtb">
+      <span class="m-title">Edit Entry</span>
+      <button class="m-x" onclick="closeEdit()">✕</button>
+    </div>
+    <div class="m-body">
+      <input type="hidden" id="edit-idx" />
+      <div class="form-grid" style="margin-bottom:.85rem;">
+        <div class="fr"><label>Book Name (English)</label><input type="text" id="e-name-en" /></div>
+        <div class="fr"><label>Book Name (Arabic)</label><input type="text" id="e-name-ar" dir="rtl" /></div>
+      </div>
+      <div class="form-grid three" style="margin-bottom:.85rem;">
+        <div class="fr">
+          <label>Topic</label>
+          <select id="e-topic">
+            <option value="fiqh">Fiqh</option>
+            <option value="fatwa">Fatwa</option>
+            <option value="tafseer">Tafseer</option>
+            <option value="hadith">Hadith</option>
+            <option value="aqeedah">Aqeedah</option>
+            <option value="seerah">Seerah</option>
+            <option value="arabic">Arabic Sciences</option>
+            <option value="usool">Usool al-Fiqh</option>
+            <option value="tasawwuf">Tasawwuf</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="fr"><label>Volume</label><input type="number" id="e-volume" min="1" /></div>
+        <div class="fr"><label>Pages Read</label><input type="number" id="e-pages" min="1" /></div>
+      </div>
+      <div class="form-grid" style="margin-bottom:.85rem;">
+        <div class="fr"><label>Date</label><input type="date" id="e-date" /></div>
+        <div class="fr"><label>Notes</label><input type="text" id="e-notes" /></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-sub" onclick="saveEdit()">Save Changes</button>
+        <button class="btn-reset" onclick="closeEdit()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="admin-lock-overlay" id="admin-overlay">
+  <div class="admin-login-box">
+    <div class="admin-login-head">
+      <div class="admin-login-seal">🔐</div>
+      <div class="admin-login-title">Admin Access</div>
+      <div class="admin-login-sub">Enter password to manage entries</div>
+    </div>
+    <div class="admin-login-body">
+      <div class="admin-login-error" id="admin-error">Incorrect password. Please try again.</div>
+      <div class="fr">
+        <label>Password</label>
+        <div class="admin-pw-wrap">
+          <input type="password" id="admin-pw-input" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')submitAdminLogin()" />
+          <button class="admin-pw-eye" onclick="togglePwVis()" title="Show/hide">👁</button>
+        </div>
+      </div>
+      <button class="btn-sub" onclick="submitAdminLogin()">Sign In</button>
+      <button class="btn-sub" style="background:transparent;color:var(--text-muted);border:1px solid var(--border);margin-top:.5rem;" onclick="closeAdminOverlay()">Cancel</button>
+      <p class="admin-login-hint">Access via <strong>Ctrl+Shift+A</strong>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="admin-badge" id="admin-badge" onclick="adminLogout()">⚙ Admin — Click to Sign Out</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ADMIN_PASSWORD = 'admin123';
+const STORE_KEY = 'booklog_entries';
+
+const TOPIC_LABELS = {
+  fiqh:'Fiqh', fatwa:'Fatwa', tafseer:'Tafseer', hadith:'Hadith',
+  aqeedah:'Aqeedah', seerah:'Seerah', arabic:'Arabic Sciences',
+  usool:'Usool al-Fiqh', tasawwuf:'Tasawwuf', other:'Other'
+};
+
+let activeFilter = 'all';
+
+// ── STORAGE ──
+function getEntries() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch { return []; }
+}
+function setEntries(arr) { localStorage.setItem(STORE_KEY, JSON.stringify(arr)); }
+
+// ── FORM ──
+function addEntry() {
+  if (!isAdmin()) { requireAdmin(); return; }
+  const nameEn = document.getElementById('f-name-en').value.trim();
+  const nameAr = document.getElementById('f-name-ar').value.trim();
+  const topic  = document.getElementById('f-topic').value;
+  const volume = parseInt(document.getElementById('f-volume').value) || null;
+  const pages  = parseInt(document.getElementById('f-pages').value);
+  const date   = document.getElementById('f-date').value;
+  const notes  = document.getElementById('f-notes').value.trim();
+
+  if (!nameEn && !nameAr) return toast('Please enter at least a book name.');
+  if (!topic) return toast('Please select a topic.');
+  if (!pages || pages < 1) return toast('Please enter a valid page count.');
+
+  const entries = getEntries();
+  entries.unshift({ nameEn, nameAr, topic, volume, pages, date, notes, id: Date.now() });
+  setEntries(entries);
+  resetForm();
+  renderAll();
+  toast('Entry added.');
+}
+
+function resetForm() {
+  ['f-name-en','f-name-ar','f-volume','f-pages','f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-topic').value = '';
+  document.getElementById('f-date').value = todayStr();
+}
+
+function todayStr() {
+  return new Date().toISOString().slice(0,10);
+}
+
+// ── FILTER ──
+function setFilter(val, btn) {
+  activeFilter = val;
+  document.querySelectorAll('.filter-bar .fb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLog();
+}
+
+// ── RENDER LOG ──
+function renderLog() {
+  const entries = getEntries();
+  const q = (document.getElementById('log-search').value || '').toLowerCase();
+  let filtered = entries.filter(e => {
+    const matchFilter = activeFilter === 'all' || e.topic === activeFilter;
+    const matchSearch = !q || [e.nameEn, e.nameAr, e.notes, TOPIC_LABELS[e.topic]||'']
+      .some(s => (s||'').toLowerCase().includes(q));
+    return matchFilter && matchSearch;
+  });
+
+  const tbody = document.getElementById('log-body');
+  const tfoot = document.getElementById('log-foot');
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="9" class="log-empty">${entries.length ? 'No entries match your filter.' : 'No entries yet — log a reading session using the form above.'}</td></tr>`;
+    tfoot.style.display = 'none';
+    return;
+  }
+
+  let totalPages = 0;
+  tbody.innerHTML = filtered.map((e, i) => {
+    totalPages += (e.pages || 0);
+    const topicClass = 'topic-' + (e.topic || 'other');
+    const topicLabel = TOPIC_LABELS[e.topic] || e.topic || '—';
+    const volBadge = e.volume ? `<span class="vol-badge">Vol. ${e.volume}</span>` : '';
+    const dateDisp = e.date ? new Date(e.date + 'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : '—';
+    const realIdx = getEntries().indexOf(e) !== -1 ? getEntries().findIndex(x => x.id === e.id) : -1;
+    return `<tr>
+      <td style="color:var(--text-muted);font-size:.8rem;">${i+1}</td>
+      <td class="td-book">${esc(e.nameEn) || '<span style="color:var(--text-muted);font-style:italic;">—</span>'}</td>
+      <td class="td-arabic">${esc(e.nameAr) || ''}</td>
+      <td><span class="topic-badge ${topicClass}">${topicLabel}</span></td>
+      <td>${volBadge || '<span style="color:var(--text-muted);">—</span>'}</td>
+      <td class="td-pages">${e.pages || 0}</td>
+      <td class="td-date">${dateDisp}</td>
+      <td style="font-size:.85rem;color:var(--text-muted);">${esc(e.notes) || ''}</td>
+      <td class="td-actions admin-only">
+        <button class="btn-icon edit-btn" title="Edit" onclick="openEdit(${realIdx})">✎</button>
+        <button class="btn-icon del" title="Delete" onclick="deleteEntry(${realIdx})">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('foot-count').textContent = filtered.length;
+  document.getElementById('foot-pages').textContent = totalPages.toLocaleString();
+  tfoot.style.display = '';
+}
+
+// ── RENDER STATS ──
+function renderStats() {
+  const entries = getEntries();
+  const totalPages = entries.reduce((s, e) => s + (e.pages || 0), 0);
+  const uniqueBooks = new Set(entries.map(e => (e.nameEn || e.nameAr || '').toLowerCase().trim()).filter(Boolean)).size;
+  const topics = new Set(entries.map(e => e.topic).filter(Boolean)).size;
+
+  document.getElementById('stat-entries').textContent = entries.length.toLocaleString();
+  document.getElementById('stat-pages').textContent = totalPages.toLocaleString();
+  document.getElementById('stat-books').textContent = uniqueBooks.toLocaleString();
+  document.getElementById('stat-topics').textContent = topics.toLocaleString();
+}
+
+// ── RENDER BREAKDOWN ──
+function renderBreakdown() {
+  const entries = getEntries();
+  const map = {};
+  entries.forEach(e => {
+    const k = e.topic || 'other';
+    if (!map[k]) map[k] = { pages: 0, sessions: 0 };
+    map[k].pages += (e.pages || 0);
+    map[k].sessions++;
+  });
+  const keys = Object.keys(map).sort((a,b) => map[b].pages - map[a].pages);
+  const grid = document.getElementById('breakdown-grid');
+  if (!keys.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);font-style:italic;padding:2rem;">No data yet.</div>';
+    return;
+  }
+  grid.innerHTML = keys.map(k => `
+    <div class="bd-card">
+      <div>
+        <div class="bd-label">${TOPIC_LABELS[k] || k}</div>
+        <div class="bd-sub">${map[k].sessions} session${map[k].sessions!==1?'s':''}</div>
+      </div>
+      <div>
+        <div class="bd-num">${map[k].pages.toLocaleString()}</div>
+        <div class="bd-sub" style="text-align:right;">pages</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAll() { renderStats(); renderLog(); renderBreakdown(); }
+
+// ── EDIT ──
+function openEdit(idx) {
+  if (!isAdmin()) return;
+  const e = getEntries()[idx];
+  if (!e) return;
+  document.getElementById('edit-idx').value = idx;
+  document.getElementById('e-name-en').value = e.nameEn || '';
+  document.getElementById('e-name-ar').value = e.nameAr || '';
+  document.getElementById('e-topic').value = e.topic || '';
+  document.getElementById('e-volume').value = e.volume || '';
+  document.getElementById('e-pages').value = e.pages || '';
+  document.getElementById('e-date').value = e.date || '';
+  document.getElementById('e-notes').value = e.notes || '';
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function saveEdit() {
+  const idx = parseInt(document.getElementById('edit-idx').value);
+  const entries = getEntries();
+  if (!entries[idx]) return;
+  entries[idx].nameEn = document.getElementById('e-name-en').value.trim();
+  entries[idx].nameAr = document.getElementById('e-name-ar').value.trim();
+  entries[idx].topic  = document.getElementById('e-topic').value;
+  entries[idx].volume = parseInt(document.getElementById('e-volume').value) || null;
+  entries[idx].pages  = parseInt(document.getElementById('e-pages').value) || 0;
+  entries[idx].date   = document.getElementById('e-date').value;
+  entries[idx].notes  = document.getElementById('e-notes').value.trim();
+  setEntries(entries);
+  closeEdit();
+  renderAll();
+  toast('Entry updated.');
+}
+
+function closeEdit() { document.getElementById('edit-modal').classList.remove('open'); }
+
+// ── DELETE ──
+function deleteEntry(idx) {
+  if (!isAdmin()) return;
+  if (!confirm('Remove this log entry?')) return;
+  const entries = getEntries();
+  entries.splice(idx, 1);
+  setEntries(entries);
+  renderAll();
+  toast('Entry removed.');
+}
+
+// ── ADMIN ──
+function isAdmin() { return sessionStorage.getItem('__admin') === '1'; }
+
+function applyAdminState() {
+  if (isAdmin()) {
+    document.body.classList.add('admin-mode');
+    document.getElementById('admin-badge').classList.add('visible');
+  } else {
+    document.body.classList.remove('admin-mode');
+    document.getElementById('admin-badge').classList.remove('visible');
+  }
+}
+
+function requireAdmin() {
+  if (isAdmin()) return;
+  document.getElementById('admin-pw-input').value = '';
+  document.getElementById('admin-error').classList.remove('show');
+  document.getElementById('admin-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('admin-pw-input').focus(), 120);
+}
+
+function submitAdminLogin() {
+  const val = document.getElementById('admin-pw-input').value;
+  if (val === ADMIN_PASSWORD) {
+    sessionStorage.setItem('__admin', '1');
+    document.getElementById('admin-overlay').classList.remove('open');
+    applyAdminState();
+    toast('Admin access granted.');
+  } else {
+    document.getElementById('admin-error').classList.add('show');
+    document.getElementById('admin-pw-input').value = '';
+    document.getElementById('admin-pw-input').focus();
+  }
+}
+
+function closeAdminOverlay() { document.getElementById('admin-overlay').classList.remove('open'); }
+
+function adminLogout() {
+  if (!confirm('Sign out of admin mode?')) return;
+  sessionStorage.removeItem('__admin');
+  applyAdminState();
+  toast('Signed out of admin mode.');
+}
+
+function togglePwVis() {
+  const inp = document.getElementById('admin-pw-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ── UTILS ──
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg) {
+  const e = document.getElementById('toast');
+  e.textContent = msg;
+  e.classList.add('show');
+  setTimeout(() => e.classList.remove('show'), 3200);
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('f-date').value = todayStr();
+  applyAdminState();
+  renderAll();
+
+  document.getElementById('edit-modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEdit(); });
+  document.getElementById('admin-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeAdminOverlay(); });
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'A') { e.preventDefault(); requireAdmin(); }
+    if (e.key === 'Escape') { closeEdit(); closeAdminOverlay(); }
+  });
+});
+</script>
+</body>
+</html>
