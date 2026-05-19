@@ -74,12 +74,6 @@ section{padding:3.5rem 2rem;position:relative;}
 .bg-navy .s-lead{color:rgba(255,255,255,.45);}
 .bg-navy .s-tag{color:var(--gold-pale);border-color:var(--gold-dim);}
 
-/* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2.5rem;}
-.stat-card{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:1.4rem 1.2rem;text-align:center;}
-.stat-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--navy);line-height:1;margin-bottom:.2rem;}
-.stat-label{font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);}
-
 /* FORM PANEL */
 .form-panel{background:var(--white);border:1px solid var(--border);border-top:4px solid var(--gold);padding:2rem;box-shadow:var(--shadow-sm);margin-bottom:2.5rem;}
 .form-panel-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem;}
@@ -243,30 +237,6 @@ footer p{font-size:.82rem;color:rgba(255,255,255,.35);line-height:1.9;}
     <p class="ph-sub">A private record of books studied — tracking volumes, pages, and topics across the Islamic sciences</p>
   </div>
 </div>
-
-<!-- STATS -->
-<section class="bg-white" style="padding-bottom:0;">
-  <div class="si">
-    <div class="stats-row" id="stats-row">
-      <div class="stat-card">
-        <div class="stat-num" id="stat-entries">0</div>
-        <div class="stat-label">Log Entries</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-pages">0</div>
-        <div class="stat-label">Total Pages Read</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-books">0</div>
-        <div class="stat-label">Unique Books</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-topics">0</div>
-        <div class="stat-label">Subjects Covered</div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- ADD ENTRY FORM (admin only) -->
 <section id="add-form-section" class="bg-white">
@@ -583,19 +553,6 @@ function renderLog() {
   tfoot.style.display = '';
 }
 
-// ── RENDER STATS ──
-function renderStats() {
-  const entries = getEntries();
-  const totalPages = entries.reduce((s, e) => s + (e.pages || 0), 0);
-  const uniqueBooks = new Set(entries.map(e => (e.nameEn || e.nameAr || '').toLowerCase().trim()).filter(Boolean)).size;
-  const topics = new Set(entries.map(e => e.topic).filter(Boolean)).size;
-
-  document.getElementById('stat-entries').textContent = entries.length.toLocaleString();
-  document.getElementById('stat-pages').textContent = totalPages.toLocaleString();
-  document.getElementById('stat-books').textContent = uniqueBooks.toLocaleString();
-  document.getElementById('stat-topics').textContent = topics.toLocaleString();
-}
-
 // ── RENDER BREAKDOWN ──
 function renderBreakdown() {
   const entries = getEntries();
@@ -626,7 +583,7 @@ function renderBreakdown() {
   `).join('');
 }
 
-function renderAll() { renderStats(); renderLog(); renderBreakdown(); }
+function renderAll() { renderLog(); renderBreakdown(); }
 
 // ── EDIT ──
 function openEdit(idx) {
