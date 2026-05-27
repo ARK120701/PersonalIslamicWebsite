@@ -21,25 +21,12 @@ nav{position:sticky;top:0;z-index:100;background:var(--navy);border-bottom:3px s
 .hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:.5rem;}
 .hero-sub{font-size:1rem;color:rgba(255,255,255,.5);font-style:italic;margin-bottom:1.75rem;}
 .hero-rule{width:80px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto;}
-main{max-width:800px;margin:0 auto;padding:4rem 2rem 6rem;}
-.proj-entry{border-left:3px solid var(--gold-dim);padding:0 0 2.75rem 2rem;position:relative;}
-.proj-entry::before{content:'';position:absolute;left:-6px;top:.45rem;width:10px;height:10px;background:var(--gold);border-radius:50%;}
-.proj-entry:last-child{border-left-color:transparent;padding-bottom:0;}
-.proj-title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--navy);margin-bottom:.2rem;line-height:1.3;}
-.proj-context{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--gold-dim);margin-bottom:.8rem;letter-spacing:.03em;}
-.proj-desc{color:var(--text-body);font-size:.97rem;line-height:1.78;}
-.proj-links{display:flex;gap:.75rem;margin-top:.9rem;flex-wrap:wrap;}
-.proj-link{font-family:'EB Garamond',serif;font-size:.85rem;padding:.35rem .95rem;text-decoration:none;transition:all .18s;border:1px solid var(--border);}
-.proj-link.primary{background:var(--navy);color:var(--gold-pale);border-color:var(--navy);}
-.proj-link.primary:hover{background:var(--navy-light);}
-.proj-link.secondary{color:var(--text-body);}
-.proj-link.secondary:hover{background:var(--slate);}
-.proj-del{background:none;border:none;color:var(--border);cursor:pointer;font-size:.85rem;margin-left:.6rem;transition:color .18s;vertical-align:middle;}
-.proj-del:hover{color:#c0392b;}
+main{max-width:1200px;margin:0 auto;padding:4rem 2rem 6rem;}
+/* ADD FORM */
 .add-section{margin-bottom:3.5rem;}
 .add-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.5rem;background:var(--navy);color:var(--gold-light);border:none;font-family:'EB Garamond',serif;font-size:.95rem;cursor:pointer;transition:background .18s;}
 .add-btn:hover{background:var(--navy-light);}
-.add-form{display:none;background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:2rem;box-shadow:var(--shadow-md);margin-top:1rem;}
+.add-form{display:none;background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:2rem;box-shadow:var(--shadow-md);margin-top:1rem;max-width:600px;}
 .add-form.open{display:block;}
 .fr{margin-bottom:1rem;}
 .fr label{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);margin-bottom:.35rem;font-weight:700;}
@@ -50,12 +37,28 @@ main{max-width:800px;margin:0 auto;padding:4rem 2rem 6rem;}
 .btn-sub:hover{background:var(--navy-light);}
 .btn-cancel{padding:.75rem 1.5rem;background:transparent;color:var(--text-muted);border:1px solid var(--border);cursor:pointer;font-family:'EB Garamond',serif;font-size:1rem;margin-left:.5rem;transition:all .18s;}
 .btn-cancel:hover{background:var(--slate);}
+/* PROJECT CARD GRID */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.5rem;}
+.proj-card{background:var(--white);border:1px solid var(--border);border-top:4px solid var(--navy-light);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;padding:1.5rem 1.4rem 1.25rem;transition:transform .2s,box-shadow .2s,border-top-color .2s;position:relative;}
+.proj-card.linked{cursor:pointer;border-top-color:var(--gold);}
+.proj-card.linked:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);border-top-color:var(--gold-light);}
+.proj-card-context{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--gold-dim);letter-spacing:.04em;margin-bottom:.45rem;line-height:1.4;}
+.proj-card-title{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--navy);line-height:1.25;margin-bottom:.75rem;}
+.proj-card-desc{font-size:.875rem;color:var(--text-muted);line-height:1.65;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;}
+.proj-card-footer{margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem;min-height:1.6rem;}
+.proj-card-cta{font-family:'EB Garamond',serif;font-size:.88rem;color:var(--gold);letter-spacing:.04em;font-weight:600;}
+.proj-coming-soon{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .6rem;background:var(--slate);color:var(--text-muted);border-radius:2px;}
+.proj-del{position:absolute;top:.55rem;right:.55rem;background:none;border:none;color:var(--border);cursor:pointer;font-size:.8rem;width:20px;height:20px;display:flex;align-items:center;justify-content:center;transition:color .18s;line-height:1;}
+.proj-del:hover{color:#c0392b;}
+body:not(.admin-mode) .proj-del{display:none!important;}
+/* EMPTY */
 .empty-state{text-align:center;padding:4rem 2rem;color:var(--text-muted);}
 .empty-state-icon{font-size:3rem;display:block;margin-bottom:1rem;}
+/* ADMIN */
 .admin-only{display:none!important;}body.admin-mode .admin-only{display:block!important;}
-body:not(.admin-mode) .proj-del{display:none!important;}
 .admin-badge{display:none;position:fixed;top:70px;right:1rem;background:var(--gold);color:var(--navy);font-family:'EB Garamond',serif;font-size:.72rem;font-weight:700;padding:.3rem .9rem;letter-spacing:.07em;z-index:999;cursor:pointer;box-shadow:var(--shadow-md);text-transform:uppercase;}
 .admin-badge.visible{display:block;}
+/* AUTH OVERLAY */
 .overlay{display:none;position:fixed;inset:0;background:rgba(13,31,60,.95);z-index:3000;align-items:center;justify-content:center;backdrop-filter:blur(5px);}
 .overlay.open{display:flex;}
 .auth-box{background:var(--white);width:100%;max-width:380px;border-top:4px solid var(--gold);box-shadow:0 40px 100px rgba(0,0,0,.55);}
@@ -69,9 +72,10 @@ body:not(.admin-mode) .proj-del{display:none!important;}
 .pw-wrap input{padding-right:2.8rem!important;}
 .pw-eye{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;}
 .auth-hint{font-size:.74rem;color:var(--text-muted);text-align:center;margin-top:.75rem;font-style:italic;}
+/* TOAST */
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--gold-pale);border-left:3px solid var(--gold);padding:.75rem 1.5rem;font-family:'EB Garamond',serif;font-size:.95rem;z-index:9999;box-shadow:var(--shadow-lg);transition:transform .3s;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);}
-@media(max-width:680px){nav{padding:0 1rem;}}
+@media(max-width:680px){nav{padding:0 1rem;}.proj-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -125,83 +129,128 @@ body:not(.admin-mode) .proj-del{display:none!important;}
 <script>
 const ADMIN_PASSWORD='admin123';
 const S={get:k=>{try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[];}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
-const DATA_VERSION='v2';
+const DATA_VERSION='v3';
 if(localStorage.getItem('cs_projects_ver')!==DATA_VERSION){localStorage.removeItem('cs_projects');localStorage.setItem('cs_projects_ver',DATA_VERSION);}
 const DEF_PROJECTS = [
   {
     title: "8 Queens Algorithm",
     context: "C++ · January 2023",
-    desc: "• Implemented a C++ algorithm to efficiently calculate all 92 solutions to the 8 Queens Problem using backtracking.\n• Implemented efficient algorithms while developing 6 variants of the 8 Queens Problem, including 2D, 1D with goto, 1D without goto, dummy 8 queens, N Queens, and fancy queens.",
+    desc: "Implemented a C++ algorithm to efficiently calculate all 92 solutions to the 8 Queens Problem using backtracking, developing 6 variants including 2D, 1D, N Queens, and fancy queens.",
     github: "", demo: ""
   },
   {
     title: "Surah Visualizer App",
     context: "Node.js · OAuth 2.0 · Quran API",
-    desc: "• Built a Node.js HTTP server integrating Dribbble OAuth 2.0 and the Quran API, dynamically rendering visual and textual content based on user-selected Surah numbers.\n• Implemented a multi-layer caching system (tokens, API responses, disk persistence, gzip handling) to optimize performance and reduce external API calls.",
+    desc: "Built a Node.js HTTP server integrating Dribbble OAuth 2.0 and the Quran API, dynamically rendering visual and textual content based on user-selected Surah numbers, with a multi-layer caching system.",
     github: "", demo: ""
   },
   {
     title: "Expense Tracker",
     context: "JavaScript · React · Firebase",
-    desc: "• A web application built with JavaScript, React, and Firebase, designed to help users manage and track their expenses in real-time. Features a responsive, user-friendly interface with secure user authentication, allowing for easy input, categorisation, and editing of transactions.\n• Includes real-time data synchronisation, budget tracking, data visualisation with charts, and personalised spending summaries.",
+    desc: "A web application built with React and Firebase for real-time expense management, featuring secure authentication, budget tracking, data visualisation with charts, and personalised spending summaries.",
     github: "", demo: ""
   },
   {
     title: "Java Date Sorter",
     context: "Java · GUI Application",
-    desc: "• Designed and implemented a Java GUI application to efficiently handle and sort a set of data, creating an intuitive user interface for data input and processing.\n• Transformed user-inputted data into Java Date objects and sorted in ascending or descending order based on their temporal values.",
+    desc: "Designed and implemented a Java GUI application to handle and sort user-inputted data, transforming entries into Java Date objects and sorting in ascending or descending temporal order.",
     github: "", demo: ""
   },
   {
     title: "Inventory Management App",
     context: "Next.js · React · Firebase · Full-Stack",
-    desc: "• Modern Full-Stack Web Application built with Next.js, React, Firebase, HTML, CSS, and JavaScript, providing a responsive, high-performance platform with server-side rendering, real-time updates, and secure user authentication.\n• Users can store detailed information about items including descriptions, categories, custom attributes, and quantity/inventory levels — enabling real-time stock management and tracking.",
+    desc: "Modern full-stack web application with server-side rendering, real-time updates, and secure authentication. Users can store item details, categories, custom attributes, and track stock levels.",
     github: "", demo: ""
   },
   {
     title: "Containerized ML Inference API",
     context: "Python · Flask · Docker",
-    desc: "• Designed and deployed a containerised REST API using Python, Flask, and Docker that serves real-time predictions, demonstrating backend service development and cloud-ready architecture.\n• Built a reproducible deployment pipeline by packaging application code, dependencies, and model artifacts into a Docker image and validating functionality through HTTP-based client requests.",
+    desc: "Designed and deployed a containerised REST API using Python, Flask, and Docker that serves real-time ML predictions, packaged with all dependencies and model artifacts for a reproducible deployment pipeline.",
     github: "", demo: ""
   },
   {
     title: "Tahawiyyah Institute Website",
     context: "Freelance Web Development · April 2026",
-    desc: "• Designed and developed the official website for Tahawiyyah Institute, a platform dedicated to Islamic education and scholarly resources.\n• Built a responsive, modern site providing visitors access to the Institute's programmes, courses, and scholarly content.",
+    desc: "Designed and developed the official website for Tahawiyyah Institute, a platform dedicated to Islamic education and scholarly resources, with a responsive modern interface.",
     github: "", demo: "https://www.darultahawiyyah.com/", demoLabel: "View Website →"
   },
   {
     title: "Jamia DarusSunnah Website",
     context: "Freelance Web Development · May 2026",
-    desc: "• Designed and developed the official website for Jamia DarusSunnah, an Islamic seminary providing access to information about the institution's programmes and scholarly resources.\n• Built a responsive, modern site providing visitors access to the seminary's courses, faculty, and educational content.",
+    desc: "Designed and developed the official website for Jamia DarusSunnah, an Islamic seminary, providing access to the institution's programmes, faculty, courses, and educational content.",
     github: "", demo: "https://ark120701.github.io/JamiaDarusSunnah/index.html", demoLabel: "View Website →"
   },
   {
     title: "Qiraat Database",
     context: "Web Development · May 2026",
-    desc: "• Developed a comprehensive database web application cataloguing the ten canonical Qiraat (recitation traditions) of the Quran.\n• Built a structured, searchable reference tool providing detailed information on each recitation tradition and its chain of transmission.",
+    desc: "Developed a comprehensive database web application cataloguing the ten canonical Qiraat (recitation traditions) of the Quran, with a structured, searchable reference tool for each tradition and its chain of transmission.",
     github: "", demo: "https://ark120701.github.io/QiraatDatabase/index.html", demoLabel: "View Website →"
   },
   {
     title: "Qari Nazrul Website",
     context: "Freelance Web Development · May 2026",
-    desc: "• Designed, developed, and maintain the official website for Qari Nazrul, a platform showcasing his work, recitations, and scholarly contributions.\n• Built a responsive, modern site providing visitors with access to his biography, audio content, and contact information.",
+    desc: "Designed, developed, and maintain the official website for Qari Nazrul, showcasing his work, recitations, and scholarly contributions with biography, audio content, and contact information.",
     github: "", demo: "https://qarinazrul.vercel.app/", demoLabel: "View Website →"
+  },
+  {
+    title: "Empire Auto Rentals",
+    context: "Freelance Web Development · 2026",
+    desc: "Designed and developed a clean, professional car rental website for Empire Auto Rentals, showcasing the fleet, rental services, pricing, and contact information in a modern, responsive layout.",
+    github: "", demo: "https://ark120701.github.io/EmpireAutoRentals/", demoLabel: "View Website →"
+  },
+  {
+    title: "Kashkul Application",
+    context: "Full-Stack Book Tracking App · May 2026",
+    desc: "Designed and developed Kashkul, a full-stack book tracking web application for logging, organising, and monitoring reading progress across Islamic and general texts, with real-time data and secure authentication.",
+    github: "", demo: "https://kashkul.vercel.app/login", demoLabel: "View App →"
+  },
+  {
+    title: "Sanad Visual Creator",
+    context: "Web Application · 2026",
+    desc: "A web application that allows users to write out and visualise their own Sanad (chain of scholarly transmission), generating a beautifully formatted, downloadable PDF for students and scholars.",
+    github: "", demo: "", comingSoon: true
   }
 ];
 
-function renderProjects(){
-  const all=S.get('cs_projects').length?S.get('cs_projects'):DEF_PROJECTS;const list=document.getElementById('proj-list');
-  if(!all.length){list.innerHTML='<div class="empty-state"><span class="empty-state-icon">💻</span><p>No projects added yet.</p></div>';return;}
-  list.innerHTML=all.map((p,i)=>`<div class="proj-entry"><div class="proj-title">${p.title}<button class="proj-del" onclick="deleteProject(${i})" title="Remove">✕</button></div>${p.context?`<div class="proj-context">${p.context}</div>`:''}<p class="proj-desc">${(p.desc||'').replace(/\n/g,'<br>')}</p>${(p.github||p.demo)?`<div class="proj-links">${p.github?`<a class="proj-link primary" href="${p.github}" target="_blank" rel="noopener">GitHub →</a>`:''}${p.demo?`<a class="proj-link secondary" href="${p.demo}" target="_blank" rel="noopener">${p.demoLabel||'Demo / Report'}</a>`:''}</div>`:''}</div>`).join('');
+function shortDesc(raw){
+  return (raw||'').split('\n').map(l=>l.replace(/^[•·]\s*/,'')).filter(Boolean).join(' ').trim();
 }
+
+function renderProjects(){
+  const all=S.get('cs_projects').length?S.get('cs_projects'):DEF_PROJECTS;
+  const list=document.getElementById('proj-list');
+  if(!all.length){list.innerHTML='<div class="empty-state"><span class="empty-state-icon">💻</span><p>No projects added yet.</p></div>';return;}
+  const linked=p=>p.demo||p.github;
+  list.innerHTML='<div class="proj-grid">'+all.map((p,i)=>{
+    const url=linked(p);
+    const isLinked=!!url;
+    return `<div class="proj-card${isLinked?' linked':''}" onclick="${isLinked?`openProject(${i})`:''}" role="${isLinked?'link':'article'}" ${isLinked?'tabindex="0"':''}>
+      <button class="proj-del" onclick="event.stopPropagation();deleteProject(${i})" title="Remove">✕</button>
+      ${p.context?`<div class="proj-card-context">${p.context}</div>`:''}
+      <div class="proj-card-title">${p.title}</div>
+      <p class="proj-card-desc">${shortDesc(p.desc)}</p>
+      <div class="proj-card-footer">
+        ${isLinked?'<span class="proj-card-cta">Visit →</span>':'<span></span>'}
+        ${p.comingSoon?'<span class="proj-coming-soon">Coming Soon</span>':''}
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function openProject(i){
+  const all=S.get('cs_projects').length?S.get('cs_projects'):DEF_PROJECTS;
+  const p=all[i];if(!p)return;
+  const url=p.demo||p.github;
+  if(url)window.open(url,'_blank','noopener');
+}
+
 function toggleForm(){const f=document.getElementById('add-form');f.classList.toggle('open');if(f.classList.contains('open')){['pj-title','pj-context','pj-desc','pj-github','pj-demo'].forEach(id=>document.getElementById(id).value='');}}
 function addProject(){
   const title=document.getElementById('pj-title').value.trim();if(!title){toast('Please enter a project title.');return;}
   const p={title,context:document.getElementById('pj-context').value.trim(),desc:document.getElementById('pj-desc').value.trim(),github:document.getElementById('pj-github').value.trim(),demo:document.getElementById('pj-demo').value.trim()};
-  const all=S.get('cs_projects');all.push(p);S.set('cs_projects',all);renderProjects();toggleForm();toast(`"${title}" added.`);
+  const all=S.get('cs_projects').length?S.get('cs_projects'):[...DEF_PROJECTS];all.push(p);S.set('cs_projects',all);renderProjects();toggleForm();toast(`"${title}" added.`);
 }
-function deleteProject(i){if(!isAdmin()||!confirm('Remove this project?'))return;const all=S.get('cs_projects');all.splice(i,1);S.set('cs_projects',all);renderProjects();toast('Project removed.');}
+function deleteProject(i){if(!isAdmin()||!confirm('Remove this project?'))return;const all=S.get('cs_projects').length?S.get('cs_projects'):[...DEF_PROJECTS];all.splice(i,1);S.set('cs_projects',all);renderProjects();toast('Project removed.');}
 function isAdmin(){return sessionStorage.getItem('__admin')==='1';}
 function applyAdminState(){document.body.classList.toggle('admin-mode',isAdmin());document.getElementById('admin-badge').classList.toggle('visible',isAdmin());}
 function requireAdmin(){if(isAdmin())return;document.getElementById('auth-pw').value='';document.getElementById('auth-error').classList.remove('show');document.getElementById('auth-overlay').classList.add('open');setTimeout(()=>document.getElementById('auth-pw').focus(),120);}
@@ -213,7 +262,12 @@ function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e
 document.addEventListener('DOMContentLoaded',()=>{
   applyAdminState();renderProjects();
   document.getElementById('auth-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeOverlay();});
-  document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();requireAdmin();}});
+  document.addEventListener('keydown',e=>{
+    if(e.ctrlKey&&e.shiftKey&&e.key==='A'){e.preventDefault();requireAdmin();}
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&e.target.classList.contains('proj-card')&&e.target.classList.contains('linked')){e.target.click();}
+  });
 });
 </script>
 </body>
