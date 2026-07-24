@@ -129,7 +129,7 @@ body:not(.admin-mode) .proj-del{display:none!important;}
 <script>
 const ADMIN_PASSWORD='admin123';
 const S={get:k=>{try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[];}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
-const DATA_VERSION='v3';
+const DATA_VERSION='v4';
 if(localStorage.getItem('cs_projects_ver')!==DATA_VERSION){localStorage.removeItem('cs_projects');localStorage.setItem('cs_projects_ver',DATA_VERSION);}
 const DEF_PROJECTS = [
   {
@@ -209,6 +209,12 @@ const DEF_PROJECTS = [
     context: "Web Application · 2026",
     desc: "A web application that allows users to write out and visualise their own Sanad (chain of scholarly transmission), generating a beautifully formatted, downloadable PDF for students and scholars.",
     github: "", demo: "", comingSoon: true
+  },
+  {
+    title: "National Muslim Chaplains Association (NMCA) Website",
+    context: "Freelance Web Development · 2026",
+    desc: "Designed and developed the official website for the National Muslim Chaplains Association, an organisation supporting and connecting Muslim chaplains across the United States, co-founded by Abdurrahman Khan.",
+    github: "", demo: "https://nmca-usa.org/index.html", demoLabel: "View Website →"
   }
 ];
 
