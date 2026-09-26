@@ -352,13 +352,30 @@ const filters        = { fatawa:'all', notes:'all' };
 const cache          = { fatawa:[], notes:[] };
 var pFile = null, pSec = null, pLinkMode = false;
 
+// ── STATIC ENTRIES (committed directly to the repo, no Firebase needed) ──
+const STATIC_NOTES = [
+  {
+    title: 'Visual Diagram Of Books Authored In Mustalihul Hadith',
+    type: 'other', description: '', date: '',
+    url: 'notes-pdfs/Visual%20Diagram%20Of%20Books%20Authored%20In%20Mustalihul%20Hadith.pdf',
+    storage_path: 'STATIC_PDF'
+  },
+  {
+    title: 'Notes On Books of the Hanafi Madhab (Work In Progress)',
+    type: 'other', description: '', date: '',
+    url: 'https://docs.google.com/document/d/1chgUTYnUBHQbBlYqfZJYUYy1_zWFZnN9C7SF1EeuguE/edit?tab=t.0',
+    storage_path: ''
+  }
+];
+
 // ── LOAD FROM FIREBASE ───────────────────────────────────────
 async function refreshCache(sec) {
+  var staticItems = sec==='notes' ? STATIC_NOTES.map(function(item,i){ return Object.assign({id:'static-'+i}, item); }) : [];
   try {
     var snapshot = await firestoreDb.collection(sec).orderBy('created_at', 'desc').get();
-    cache[sec] = snapshot.docs.map(function(d){ return Object.assign({id: d.id}, d.data()); });
+    cache[sec] = staticItems.concat(snapshot.docs.map(function(d){ return Object.assign({id: d.id}, d.data()); }));
   } catch(e) {
-    cache[sec] = [];
+    cache[sec] = staticItems;
     console.error('Firebase load error:', e);
   }
 }
@@ -390,7 +407,9 @@ function renderPubs(sec) {
             ? '<button class="btn-view" onclick="_openPdf(\''+esc(item.url)+'\',\''+esc(item.title)+'\')">View PDF</button>' +
               (sec==='notes' ? '<a class="btn-sm" href="'+item.url+'" target="_blank" download>⬇</a>' : '')
             : '<a class="btn-view" style="text-decoration:none;text-align:center;display:inline-block;" href="'+item.url+'" target="_blank" rel="noopener">Open Link ↗</a>') +
-          '<button class="btn-sm btn-del" onclick="_delDoc(\''+sec+'\',\''+item.id+'\',\''+esc(item.storage_path||'')+'\')">✕</button>' +
+          (String(item.id).indexOf('static-')===0
+            ? ''
+            : '<button class="btn-sm btn-del" onclick="_delDoc(\''+sec+'\',\''+item.id+'\',\''+esc(item.storage_path||'')+'\')">✕</button>') +
         '</div>' +
       '</div>' +
     '</div>';
@@ -418,6 +437,7 @@ function closePdf() {
 
 // ── DELETE ───────────────────────────────────────────────────
 async function _delDoc(sec, id, storagePath) {
+  if (String(id).indexOf('static-')===0) return toast('This is a static entry — edit the code and redeploy to remove it.');
   if (!isAdmin() || !confirm('Remove this document?')) return;
   try {
     if (storagePath) await storageRef.ref(storagePath).delete();
