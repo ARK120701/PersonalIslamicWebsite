@@ -223,6 +223,7 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
         <div class="u-title">Upload Notes / Works — Click or Drag PDFs Here</div>
         <p class="u-hint">Accepts PDF files · Multiple files supported</p>
       </div>
+      <button class="btn-sm" style="margin:.75rem auto 0;display:block;" onclick="openLinkAdd('notes')">🔗 Add a Link Instead (no file)</button>
     </div>
     <div class="search-wrap">
       <input class="search-inp" id="notes-search" type="text" placeholder="Search notes and works…" oninput="renderPubs('notes')" />
@@ -282,6 +283,7 @@ body:not(.admin-mode) .fab-wrap{display:none!important;}
           <option value="other">Notes — Other</option>
         </select>
       </div>
+      <div class="fr" id="f-url-row" style="display:none;"><label>Link URL</label><input type="url" id="f-url" placeholder="https://…" /></div>
       <div class="fr"><label>Description</label><textarea id="f-desc" placeholder="Brief description…"></textarea></div>
       <div class="fr"><label>Date / Year</label><input type="text" id="f-date" placeholder="e.g. 1446 AH / 2025 CE" /></div>
       <button class="btn-sub" onclick="saveDoc()">Save to Collection</button>
@@ -348,7 +350,7 @@ const ADMIN_PASSWORD = 'admin123';
 const FATAWA_TYPES   = ['purification','fasting','finance','food-drink','funerals','hajj-umrah','hunting-sacrifice','inheritance','marriage-divorce','masjids','prayer','prohibition-permissibility','zakaat-sadaqah','miscellaneous'];
 const filters        = { fatawa:'all', notes:'all' };
 const cache          = { fatawa:[], notes:[] };
-var pFile = null, pSec = null;
+var pFile = null, pSec = null, pLinkMode = false;
 
 // ── LOAD FROM FIREBASE ───────────────────────────────────────
 async function refreshCache(sec) {
@@ -384,8 +386,10 @@ function renderPubs(sec) {
         '<div class="pub-date">'+(item.date||'')+'</div>' +
         '<p class="pub-excerpt">'+(item.description||'No description provided.')+'</p>' +
         '<div class="pub-ft">' +
-          '<button class="btn-view" onclick="_openPdf(\''+esc(item.url)+'\',\''+esc(item.title)+'\')">View PDF</button>' +
-          (sec==='notes' ? '<a class="btn-sm" href="'+item.url+'" target="_blank" download>⬇</a>' : '') +
+          (item.storage_path
+            ? '<button class="btn-view" onclick="_openPdf(\''+esc(item.url)+'\',\''+esc(item.title)+'\')">View PDF</button>' +
+              (sec==='notes' ? '<a class="btn-sm" href="'+item.url+'" target="_blank" download>⬇</a>' : '')
+            : '<a class="btn-view" style="text-decoration:none;text-align:center;display:inline-block;" href="'+item.url+'" target="_blank" rel="noopener">Open Link ↗</a>') +
           '<button class="btn-sm btn-del" onclick="_delDoc(\''+sec+'\',\''+item.id+'\',\''+esc(item.storage_path||'')+'\')">✕</button>' +
         '</div>' +
       '</div>' +
@@ -425,9 +429,54 @@ async function _delDoc(sec, id, storagePath) {
 }
 
 // ── ADD MODAL ────────────────────────────────────────────────
-function closeAdd() { document.getElementById('add-modal').classList.remove('open'); pFile=null; pSec=null; }
+function closeAdd() {
+  document.getElementById('add-modal').classList.remove('open');
+  pFile=null; pSec=null; pLinkMode=false;
+  document.getElementById('f-url-row').style.display='none';
+  document.getElementById('f-url').value='';
+}
+
+function openLinkAdd(sec) {
+  if (!isAdmin()) return requireAdmin();
+  pFile=null; pSec=sec; pLinkMode=true;
+  document.getElementById('add-title').textContent = 'Add Link';
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-type').value  = sec==='fatawa' ? 'purification' : 'notes';
+  document.getElementById('f-desc').value  = '';
+  document.getElementById('f-date').value  = '';
+  document.getElementById('f-url').value   = '';
+  document.getElementById('f-url-row').style.display='block';
+  document.getElementById('add-modal').classList.add('open');
+}
 
 async function saveDoc() {
+  if (pLinkMode) {
+    var url = document.getElementById('f-url').value.trim();
+    if (!url) return toast('Please enter a link URL.');
+    var title = document.getElementById('f-title').value.trim() || url;
+    var type  = document.getElementById('f-type').value;
+    var desc  = document.getElementById('f-desc').value.trim();
+    var date  = document.getElementById('f-date').value.trim();
+    var sec   = pSec || (FATAWA_TYPES.includes(type) ? 'fatawa' : 'notes');
+    var btn   = document.querySelector('#add-modal .btn-sub');
+    btn.textContent = 'Saving…'; btn.disabled = true;
+    try {
+      await firestoreDb.collection(sec).add({
+        title: title, type: type, description: desc, date: date,
+        url: url, storage_path: '',
+        created_at: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      closeAdd();
+      await refreshCache(sec);
+      renderPubs(sec);
+      toast('"' + title + '" saved.');
+    } catch(e) {
+      toast('Save failed: ' + e.message);
+    } finally {
+      btn.textContent = 'Save to Collection'; btn.disabled = false;
+    }
+    return;
+  }
   if (!pFile) return toast('No file selected.');
   var title = document.getElementById('f-title').value.trim() || pFile.name.replace(/\.pdf$/i,'');
   var type  = document.getElementById('f-type').value;
